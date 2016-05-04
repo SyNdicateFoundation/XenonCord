@@ -325,7 +325,7 @@ public class DownstreamBridge extends PacketHandler
 
             brand = ByteBufAllocator.DEFAULT.heapBuffer();
             DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand );
-            pluginMessage.setData( DefinedPacket.toArray( brand ) );
+            pluginMessage.setData( brand );
             brand.release();
             // changes in the packet are ignored so we need to send it manually
             con.unsafe().sendPacket( pluginMessage );
