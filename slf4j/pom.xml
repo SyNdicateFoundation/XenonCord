@@ -4,18 +4,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>net.md-5</groupId>
-        <artifactId>bungeecord-parent</artifactId>
-        <version>1.21-R0.1-SNAPSHOT</version>
+        <groupId>io.github.waterfallmc</groupId>
+        <artifactId>waterfall-super</artifactId>
+        <version>dev-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>net.md-5</groupId>
-    <artifactId>bungeecord-slf4j</artifactId>
+    <groupId>io.github.waterfallmc</groupId>
+    <artifactId>waterfall-slf4j</artifactId>
     <version>1.21-R0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>BungeeCord-SLF4J</name>
+    <name>Waterfall-SLF4J</name>
     <description>Wrapper over SLF4J for BungeeCord purposes.</description>
 
     <properties>
