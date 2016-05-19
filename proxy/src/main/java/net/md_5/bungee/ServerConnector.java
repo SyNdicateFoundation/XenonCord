@@ -234,6 +234,12 @@ public class ServerConnector extends PacketHandler
     public static void handleLogin(ProxyServer bungee, ChannelWrapper ch, UserConnection user, BungeeServerInfo target, ForgeServerHandler handshakeHandler, ServerConnection server, Login login) throws Exception
     {
         ServerConnectedEvent event = new ServerConnectedEvent( user, server );
+
+        if (server.isForgeServer() && user.isForgeUser()) {
+            ((net.md_5.bungee.protocol.MinecraftDecoder) server.getCh().getHandle().pipeline().get(net.md_5.bungee.netty.PipelineUtils.PACKET_DECODER)).setSupportsForge(true);
+            ((net.md_5.bungee.protocol.MinecraftDecoder) user.getCh().getHandle().pipeline().get(net.md_5.bungee.netty.PipelineUtils.PACKET_DECODER)).setSupportsForge(true);
+        }
+
         bungee.getPluginManager().callEvent( event );
 
         ch.write( BungeeCord.getInstance().registerChannels( user.getPendingConnection().getVersion() ) );
