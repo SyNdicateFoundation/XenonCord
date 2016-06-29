@@ -667,10 +667,18 @@ public class BungeeCord extends ProxyServer
         return config.getServers();
     }
 
+    // Waterfall start
+    @Override
+    public Map<String, ServerInfo> getServersCopy()
+    {
+        return config.getServersCopy();
+    }
+    // Waterfall end
+
     @Override
     public ServerInfo getServerInfo(String name)
     {
-        return getServers().get( name );
+        return config.getServerInfo( name ); // Waterfall
     }
 
     @Override

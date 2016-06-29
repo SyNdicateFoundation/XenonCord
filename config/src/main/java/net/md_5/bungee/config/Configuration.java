@@ -44,6 +44,13 @@ public final class Configuration
         }
     }
 
+    // Waterfall start - Allow configuration objects to be cloned
+    public Configuration(Configuration values, Configuration defaults)
+    {
+        this( values.self, defaults );
+    }
+    // Waterfall end
+
     private Configuration getSectionFor(String path)
     {
         int index = path.indexOf( SEPARATOR );
