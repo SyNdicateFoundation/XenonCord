@@ -439,7 +439,7 @@ public class ServerConnector extends PacketHandler
         ServerKickEvent event = new ServerKickEvent( user, target, new BaseComponent[]
         {
             kick.getMessage()
-        }, def, ServerKickEvent.State.CONNECTING );
+        }, def, ServerKickEvent.State.CONNECTING, ServerKickEvent.Cause.SERVER );  // Waterfall );
         if ( event.getKickReason().toLowerCase( Locale.ROOT ).contains( "outdated" ) && def != null )
         {
             // Pre cancel the event if we are going to try another server
