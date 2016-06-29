@@ -214,6 +214,13 @@ public interface ProxyConfig
     // Waterfall Options
     //
 
+    /**
+     * The supported versions
+     *
+     * @return the supported versions
+     */
+    String getGameVersion();
+
     // Throttling options
 
     /**
