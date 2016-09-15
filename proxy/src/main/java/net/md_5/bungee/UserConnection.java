@@ -1,7 +1,9 @@
 package net.md_5.bungee;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Multimap;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -129,6 +131,10 @@ public final class UserConnection implements ProxiedPlayer
     private final Scoreboard serverSentScoreboard = new Scoreboard();
     @Getter
     private final Collection<UUID> sentBossBars = new HashSet<>();
+    // Waterfall start
+    @Getter
+    private final Multimap<Integer, Integer> potions = HashMultimap.create();
+    // Waterfall end
     @Getter
     @Setter
     private String lastCommandTabbed;

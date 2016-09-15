@@ -764,6 +764,32 @@ public class DownstreamBridge extends PacketHandler
         }
     }
 
+    // Waterfall start
+    @Override
+    public void handle(net.md_5.bungee.protocol.packet.EntityEffect entityEffect) throws Exception
+    {
+        // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
+        // condition on the client.
+        if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
+            throw CancelSendSignal.INSTANCE;
+        }
+        con.getPotions().put(rewriteEntityId(entityEffect.getEntityId()), entityEffect.getEffectId());
+    }
+
+    @Override
+    public void handle(net.md_5.bungee.protocol.packet.EntityRemoveEffect removeEffect) throws Exception
+    {
+        con.getPotions().remove(rewriteEntityId(removeEffect.getEntityId()), removeEffect.getEffectId());
+    }
+
+    private int rewriteEntityId(int entityId) {
+        if (entityId == con.getServerEntityId()) {
+            return con.getClientEntityId();
+        }
+        return entityId;
+    }
+    // Waterfall end
+
     @Override
     public void handle(Respawn respawn)
     {
