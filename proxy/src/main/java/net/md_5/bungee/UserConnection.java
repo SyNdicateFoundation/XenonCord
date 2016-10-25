@@ -173,9 +173,12 @@ public final class UserConnection implements ProxiedPlayer
 
         forgeClientHandler = new ForgeClientHandler( this );
 
+        // No-config FML handshake marker.
         // Set whether the connection has a 1.8 FML marker in the handshake.
-        forgeClientHandler.setFmlTokenInHandshake( this.getPendingConnection().getExtraDataInHandshake().contains( ForgeConstants.FML_HANDSHAKE_TOKEN ) );
-
+        if (this.getPendingConnection().getExtraDataInHandshake().contains( ForgeConstants.FML_HANDSHAKE_TOKEN ))
+        {
+            forgeClientHandler.setFmlTokenInHandshake( true );
+        }
         return BungeeCord.getInstance().addConnection( this );
     }
 

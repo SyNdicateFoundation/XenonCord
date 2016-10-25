@@ -7,6 +7,7 @@ import io.netty.buffer.ByteBufAllocator;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.Arrays; // Waterfall
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
@@ -115,15 +116,39 @@ public class ServerConnector extends PacketHandler
             String newHost = copiedHandshake.getHost() + "\00" + AddressUtil.sanitizeAddress( user.getAddress() ) + "\00" + user.getUUID();
 
             LoginResult profile = user.getPendingConnection().getLoginProfile();
+
+            // Handle properties.
+            net.md_5.bungee.protocol.Property[] properties = new net.md_5.bungee.protocol.Property[0];
+
             if ( profile != null && profile.getProperties() != null && profile.getProperties().length > 0 )
             {
-                newHost += "\00" + BungeeCord.getInstance().gson.toJson( profile.getProperties() );
+                properties = profile.getProperties();
             }
+
+            if ( user.getForgeClientHandler().isFmlTokenInHandshake() )
+            {
+                // Get the current properties and copy them into a slightly bigger array.
+                net.md_5.bungee.protocol.Property[] newp = Arrays.copyOf( properties, properties.length + 2 );
+
+                // Add a new profile property that specifies that this user is a Forge user.
+                newp[newp.length - 2] = new net.md_5.bungee.protocol.Property( ForgeConstants.FML_LOGIN_PROFILE, "true", null );
+
+                // If we do not perform the replacement, then the IP Forwarding code in Spigot et. al. will try to split on this prematurely.
+                newp[newp.length - 1] = new net.md_5.bungee.protocol.Property( ForgeConstants.EXTRA_DATA, user.getExtraDataInHandshake().replaceAll( "\0", "\1"), "" );
+
+                // All done.
+                properties = newp;
+            }
+
+            // If we touched any properties, then append them
+            if (properties.length > 0) {
+                newHost += "\00" + BungeeCord.getInstance().gson.toJson(properties);
+            }
+
             copiedHandshake.setHost( newHost );
         } else if ( !user.getExtraDataInHandshake().isEmpty() )
         {
-            // Only restore the extra data if IP forwarding is off.
-            // TODO: Add support for this data with IP forwarding.
+            // Restore the extra data
             copiedHandshake.setHost( copiedHandshake.getHost() + user.getExtraDataInHandshake() );
         }
 
