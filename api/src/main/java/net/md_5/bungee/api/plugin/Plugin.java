@@ -102,7 +102,7 @@ public class Plugin
         this.proxy = proxy;
         this.description = description;
         this.file = description.getFile();
-        this.logger = new PluginLogger( this );
+        this.logger = Logger.getLogger(description.getName()); // Waterfall - Handle plugin prefixes in implementation
     }
 
     //
