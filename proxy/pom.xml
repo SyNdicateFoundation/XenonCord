@@ -83,7 +83,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.waterfallmc</groupId>
-            <artifactId>waterfall-log</artifactId>
+            <artifactId>waterfall-log4j</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
@@ -105,12 +105,13 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
+        <!-- // Waterfall - We already bundle an slf4j impl
         <dependency>
             <groupId>io.github.waterfallmc</groupId>
             <artifactId>waterfall-slf4j</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
-        </dependency>
+        </dependency> // Waterfall - We already bundle an slf4j impl -->
         <dependency>
             <groupId>net.sf.jopt-simple</groupId>
             <artifactId>jopt-simple</artifactId>
@@ -142,6 +143,35 @@
             <version>1.9.18</version>
             <scope>runtime</scope>
         </dependency>
+        <!-- Waterfall start - Console improvements - bring back slf4j-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.7.36</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.minecrell</groupId>
+            <artifactId>terminalconsoleappender</artifactId>
+            <version>1.3.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jline</groupId>
+                    <artifactId>jline-terminal</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jline</groupId>
+            <artifactId>jline-terminal-jansi</artifactId>
+            <version>3.21.0</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- Waterfall end -->
     </dependencies>
 
     <!-- Waterfall start - copy license files into jar -->
