@@ -44,6 +44,13 @@ public class Plugin
         // init( proxy, description );
     }
 
+    // Waterfall start - Allow plugins to use SLF4J for logging
+    public org.slf4j.Logger getSLF4JLogger() {
+        return org.slf4j.LoggerFactory.getLogger(logger.getName());
+    }
+    // Waterfall end
+
+
     /**
      * Called when the plugin has just been loaded. Most of the proxy will not
      * be initialized, so only use it for registering
