@@ -15,6 +15,7 @@ public final class WaterfallConsole extends SimpleTerminalConsole {
         ProxyServer proxy = ProxyServer.getInstance();
         return super.buildReader(builder
                 .appName(proxy.getName())
+                .completer(new ConsoleCommandCompleter(proxy))
         );
     }
 

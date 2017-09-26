@@ -221,6 +221,41 @@ public final class PluginManager
         return true;
     }
 
+    // Waterfall start - Add method to tab-complete command names
+    /**
+     * Searches for tab-complete suggestions for the given command line.
+     *
+     * <p>This is similar to {@link #dispatchCommand(CommandSender, String, List)}
+     * called with a list, but it also handles completing the command names itself
+     * instead of just the arguments.</p>
+     *
+     * @param sender The command sender
+     * @param commandLine The current command line
+     * @return The tab-complete suggestions
+     */
+    public List<String> tabCompleteCommand(CommandSender sender, String commandLine) {
+        List<String> suggestions = new java.util.ArrayList<>();
+
+        if (commandLine.indexOf(' ') == -1) {
+            // Complete command name
+            for (Command command : this.commandMap.values()) {
+                if (command.getName().startsWith(commandLine)) {
+                    // Check command permissions before adding it to the suggestions
+                    String permission = command.getPermission();
+                    if (permission == null || permission.isEmpty() || sender.hasPermission(permission)) {
+                        suggestions.add(command.getName());
+                    }
+                }
+            }
+        } else {
+            // Complete command arguments
+            dispatchCommand(sender, commandLine, suggestions);
+        }
+
+        return suggestions;
+    }
+    // Waterfall end
+
     /**
      * Returns the {@link Plugin} objects corresponding to all loaded plugins.
      *
