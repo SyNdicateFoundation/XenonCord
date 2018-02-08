@@ -215,6 +215,13 @@ public interface ProxyConfig
     //
 
     /**
+     * Whether we log InitialHandler connections
+     *
+     * @return whether we log InitialHandler connections
+     */
+    boolean isLogInitialHandlerConnections();
+
+    /**
      * The supported versions
      *
      * @return the supported versions

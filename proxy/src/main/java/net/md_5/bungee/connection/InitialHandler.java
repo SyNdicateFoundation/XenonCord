@@ -388,7 +388,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
             case 3:
                 transferred = handshake.getRequestedProtocol() == 3;
                 // Login
-                bungee.getLogger().log( Level.INFO, "{0} has connected", this );
+                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections() ) // Waterfall
+                {
+                    bungee.getLogger().log( Level.INFO, "{0} has connected", this );
+                }
                 thisState = State.USERNAME;
                 ch.setProtocol( Protocol.LOGIN );
 
