@@ -293,8 +293,6 @@ public class BungeeCord extends ProxyServer
             registerChannel( ForgeConstants.FML_TAG );
             registerChannel( ForgeConstants.FML_HANDSHAKE_TAG );
             registerChannel( ForgeConstants.FORGE_REGISTER );
-
-            getLogger().warning( "MinecraftForge support is currently unmaintained and may have unresolved issues. Please use at your own risk." );
         }
 
         isRunning = true;
