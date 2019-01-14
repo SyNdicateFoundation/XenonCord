@@ -264,7 +264,8 @@ public class ServerConnector extends PacketHandler
             ch.write( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:register" : "REGISTER", Joiner.on( "\0" ).join( registeredChannels ).getBytes( StandardCharsets.UTF_8 ), false ) );
         }
 
-        if ( user.getSettings() != null )
+        // Something deeper is going wrong here, but, as it stands, this project is EOL, so, we'll just shove this through.
+        if (user.getSettings() != null && (!user.isDisableEntityMetadataRewrite() || user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_20_2))
         {
             ch.write( user.getSettings() );
         }
@@ -319,6 +320,7 @@ public class ServerConnector extends PacketHandler
             user.getTabListHandler().onServerChange();
 
             Scoreboard serverScoreboard = user.getServerSentScoreboard();
+            if ( !user.isDisableEntityMetadataRewrite() ) { // Waterfall
             for ( Objective objective : serverScoreboard.getObjectives() )
             {
                 user.unsafe().sendPacket( new ScoreboardObjective(
@@ -342,6 +344,7 @@ public class ServerConnector extends PacketHandler
             {
                 user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
             }
+            } // Waterfall
             serverScoreboard.clear();
 
             for ( UUID bossbar : user.getSentBossBars() )
@@ -360,13 +363,34 @@ public class ServerConnector extends PacketHandler
             }
 
             user.setDimensionChange( true );
-            if ( login.getDimension() == user.getDimension() )
+            if ( !user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension() ) // Waterfall - defer
             {
                 user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(),
                         (byte) 0, login.getDeathLocation(), login.getPortalCooldown() ) );
             }
 
             user.setServerEntityId( login.getEntityId() );
+
+            // Waterfall start
+            if ( user.isDisableEntityMetadataRewrite() ) {
+                // Ensure that we maintain consistency
+                user.setClientEntityId( login.getEntityId() );
+                // Only send if we are not in the same dimension
+                if ( login.getDimension() != user.getDimension() ) // Waterfall - defer
+                {
+                    user.unsafe().sendPacket( new Respawn( (Integer) user.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), (byte) 0, login.getDeathLocation(), login.getPortalCooldown() ) );
+                }
+                Login modLogin = new Login( login.getEntityId(), login.isHardcore(), login.getGameMode(), login.getPreviousGameMode(), login.getWorldNames(), login.getDimensions(), login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(),
+                        (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType(), login.getViewDistance(), login.getSimulationDistance(), login.isReducedDebugInfo(), login.isNormalRespawn(), login.isLimitedCrafting(), login.isDebug(), login.isFlat(), login.getDeathLocation(),
+                        login.getPortalCooldown(), login.isSecureProfile() );
+                user.unsafe().sendPacket(modLogin);
+                // Only send if we're in the same dimension
+                if ( login.getDimension() == user.getDimension() ) // Waterfall - defer
+                {
+                    user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), (byte) 0, login.getDeathLocation(), login.getPortalCooldown() ) );
+                }
+            }
+            // Waterfall end
             user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(),
                     (byte) 0, login.getDeathLocation(), login.getPortalCooldown() ) );
             if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )

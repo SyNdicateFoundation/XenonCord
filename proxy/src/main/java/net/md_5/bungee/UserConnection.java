@@ -821,4 +821,9 @@ public final class UserConnection implements ProxiedPlayer
 
         unsafe().sendPacket( new Transfer( host, port ) );
     }
+    // Waterfall start
+    public boolean isDisableEntityMetadataRewrite() {
+        return entityRewrite == net.md_5.bungee.entitymap.EntityMap_Dummy.INSTANCE;
+    }
+    // Waterfall end
 }
