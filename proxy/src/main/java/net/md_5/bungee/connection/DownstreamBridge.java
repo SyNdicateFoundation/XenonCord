@@ -803,9 +803,25 @@ public class DownstreamBridge extends PacketHandler
     {
         boolean modified = false;
 
-        for ( Map.Entry<String, Command> command : bungee.getPluginManager().getCommands() )
+        // Waterfall start
+        Map<String, Command> commandMap = new java.util.HashMap<>();
+        for ( Map.Entry<String, Command> commandEntry : bungee.getPluginManager().getCommands() ) {
+            if ( !bungee.getDisabledCommands().contains( commandEntry.getKey() )
+                    && commands.getRoot().getChild( commandEntry.getKey() ) == null
+                    && commandEntry.getValue().hasPermission( this.con ) ) {
+
+                commandMap.put( commandEntry.getKey(), commandEntry.getValue() );
+            }
+        }
+
+        io.github.waterfallmc.waterfall.event.ProxyDefineCommandsEvent event = new io.github.waterfallmc.waterfall.event.ProxyDefineCommandsEvent( this.server, this.con, commandMap );
+        bungee.getPluginManager().callEvent( event );
+
+        for ( Map.Entry<String, Command> command : event.getCommands().entrySet() )
         {
-            if ( !bungee.getDisabledCommands().contains( command.getKey() ) && commands.getRoot().getChild( command.getKey() ) == null && command.getValue().hasPermission( con ) )
+            //noinspection ConstantConditions
+            if ( true ) // Moved up
+            // Waterfall end
             {
                 CommandNode dummy = LiteralArgumentBuilder.literal( command.getKey() ).executes( DUMMY_COMMAND )
                         .then( RequiredArgumentBuilder.argument( "args", StringArgumentType.greedyString() )
