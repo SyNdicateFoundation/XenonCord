@@ -47,6 +47,9 @@ public abstract class DefinedPacket
         }
     }
 
+    public static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
+    private static final OverflowPacketException OVERSIZED_VAR_INT_EXCEPTION = new OverflowPacketException( "VarInt too big" );
+    private static final BadPacketException NO_MORE_BYTES_EXCEPTION = new BadPacketException("No more bytes reading varint");
     public static void writeString(String s, ByteBuf buf)
     {
         writeString( s, buf, Short.MAX_VALUE );
@@ -242,13 +245,18 @@ public abstract class DefinedPacket
         byte in;
         while ( true )
         {
+            // Waterfall start
+            if (input.readableBytes() == 0) {
+                throw PROCESS_TRACES ? new BadPacketException("No more bytes reading varint") : NO_MORE_BYTES_EXCEPTION;
+            }
+            // Waterfall end
             in = input.readByte();
 
             out |= ( in & 0x7F ) << ( bytes++ * 7 );
 
             if ( bytes > maxBytes )
             {
-                throw new OverflowPacketException( "VarInt too big (max " + maxBytes + ")" );
+                throw PROCESS_TRACES ? new OverflowPacketException( "VarInt too big (max " + maxBytes + ")" ) : OVERSIZED_VAR_INT_EXCEPTION;
             }
 
             if ( ( in & 0x80 ) != 0x80 )

@@ -32,6 +32,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
     /*========================================================================*/
     private final Random random = new Random();
     private final Cache<InetAddress, QuerySession> sessions = CacheBuilder.newBuilder().expireAfterWrite( 30, TimeUnit.SECONDS ).build();
+    private static io.github.waterfallmc.waterfall.utils.FastException cachedNoSessionException = new io.github.waterfallmc.waterfall.utils.FastException("No Session!");
 
     private void writeShort(ByteBuf buf, int s)
     {
@@ -96,7 +97,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
             QuerySession session = sessions.getIfPresent( msg.sender().getAddress() );
             if ( session == null || session.getToken() != challengeToken )
             {
-                throw new IllegalStateException( "No session!" );
+                throw cachedNoSessionException; // Waterfall
             }
 
             // Waterfall start

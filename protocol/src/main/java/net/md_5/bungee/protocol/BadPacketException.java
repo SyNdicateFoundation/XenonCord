@@ -12,4 +12,24 @@ public class BadPacketException extends RuntimeException
     {
         super( message, cause );
     }
+
+    // Waterfall start
+    @Override
+    public Throwable initCause(Throwable cause)
+    {
+        if (DefinedPacket.PROCESS_TRACES) {
+            return super.initCause(cause);
+        }
+        return this;
+    }
+
+    @Override
+    public Throwable fillInStackTrace()
+    {
+        if (DefinedPacket.PROCESS_TRACES) {
+            return super.fillInStackTrace();
+        }
+        return this;
+    }
+    // Waterfall end
 }

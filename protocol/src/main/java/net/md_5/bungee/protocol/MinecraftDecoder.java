@@ -80,7 +80,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
             } else {
                 packetTypeStr = "unknown";
             }
-            throw new DecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e);
+            throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e); // Waterfall
         } finally
         {
             if ( slice != null )
