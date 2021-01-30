@@ -71,4 +71,13 @@ public class LoginRequest extends DefinedPacket
     {
         handler.handle( this );
     }
+
+    // Waterfall start: Additional DoS mitigations, courtesy of Velocity
+    public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        // Accommodate the rare (but likely malicious) use of UTF-8 usernames, since it is technically
+        // legal on the protocol level.
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19) return -1;
+        return 1 + (16 * 3);
+    }
+    // Waterfall end
 }
