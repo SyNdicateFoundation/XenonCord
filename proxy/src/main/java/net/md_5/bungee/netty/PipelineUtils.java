@@ -5,6 +5,7 @@ import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelException;
+import io.netty.channel.ChannelFactory;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -125,6 +126,12 @@ public class PipelineUtils
 
     private static boolean epoll;
     private static boolean io_uring;
+    // Waterfall start: netty reflection -> factory
+    private static final ChannelFactory<? extends ServerChannel> serverChannelFactory;
+    private static final ChannelFactory<? extends ServerChannel> serverChannelDomainFactory;
+    private static final ChannelFactory<? extends Channel> channelFactory;
+    private static final ChannelFactory<? extends Channel> channelDomainFactory;
+    // Waterfall end
 
     static
     {
@@ -155,6 +162,12 @@ public class PipelineUtils
                 }
             }
         }
+        // Waterfall start: netty reflection -> factory
+        serverChannelFactory = epoll ? EpollServerSocketChannel::new : NioServerSocketChannel::new;
+        serverChannelDomainFactory = epoll ? EpollServerDomainSocketChannel::new : null;
+        channelFactory = epoll ? EpollSocketChannel::new : NioSocketChannel::new;
+        channelDomainFactory = epoll ? EpollDomainSocketChannel::new : null;
+        // Waterfall end
     }
 
     public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory)
@@ -185,6 +198,34 @@ public class PipelineUtils
 
         return io_uring ? IOUringSocketChannel.class : epoll ? EpollSocketChannel.class : NioSocketChannel.class;
     }
+
+    // Waterfall start: netty reflection -> factory
+    public static ChannelFactory<? extends ServerChannel> getServerChannelFactory(SocketAddress address)
+    {
+        if ( address instanceof DomainSocketAddress )
+        {
+            ChannelFactory<? extends ServerChannel> factory = PipelineUtils.serverChannelDomainFactory;
+            Preconditions.checkState( factory != null, "Epoll required to have UNIX sockets" );
+
+            return factory;
+        }
+
+        return serverChannelFactory;
+    }
+
+    public static ChannelFactory<? extends Channel> getChannelFactory(SocketAddress address)
+    {
+        if ( address instanceof DomainSocketAddress )
+        {
+            ChannelFactory<? extends Channel> factory = PipelineUtils.channelDomainFactory;
+            Preconditions.checkState( factory != null, "Epoll required to have UNIX sockets" );
+
+            return factory;
+        }
+
+        return channelFactory;
+    }
+    // Waterfall end
 
     public static Class<? extends DatagramChannel> getDatagramChannel()
     {

@@ -414,7 +414,7 @@ public final class UserConnection implements ProxiedPlayer
             }
         };
         Bootstrap b = new Bootstrap()
-                .channel( PipelineUtils.getChannel( target.getAddress() ) )
+                .channelFactory( PipelineUtils.getChannelFactory( target.getAddress() ) ) // Waterfall - netty reflection -> factory
                 .group( ch.getHandle().eventLoop() )
                 .handler( initializer )
                 .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )

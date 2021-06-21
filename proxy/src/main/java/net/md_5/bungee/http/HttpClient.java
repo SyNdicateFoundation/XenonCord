@@ -111,7 +111,8 @@ public class HttpClient
 
     private static void getWithNettyResolver(EventLoop eventLoop, URI uri, int port, ChannelFutureListener future, Callback<String> callback, boolean ssl) {
         java.net.InetSocketAddress address = java.net.InetSocketAddress.createUnresolved(uri.getHost(), port);
-        new Bootstrap().channel( PipelineUtils.getChannel( null ) ).group( eventLoop ).handler( new HttpInitializer( callback, ssl, uri.getHost(), port ) ).
+        // Waterfall - netty reflection -> factory
+        new Bootstrap().channelFactory( PipelineUtils.getChannelFactory( null ) ).group( eventLoop ).handler( new HttpInitializer( callback, ssl, uri.getHost(), port ) ).
                 option( ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT ).resolver(dnsResolverGroup).remoteAddress( address ).connect().addListener( future );
     }
 
@@ -130,7 +131,8 @@ public class HttpClient
             }
             addressCache.put( uri.getHost(), inetHost );
         }
-        new Bootstrap().channel( PipelineUtils.getChannel( null ) ).group( eventLoop ).handler( new HttpInitializer( callback, ssl, uri.getHost(), port ) ).
+        // Waterfall - netty reflection -> factory
+        new Bootstrap().channelFactory( PipelineUtils.getChannelFactory( null ) ).group( eventLoop ).handler( new HttpInitializer( callback, ssl, uri.getHost(), port ) ).
                 option( ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT ).remoteAddress( inetHost, port ).connect().addListener( future );
     }
     // Waterfall End

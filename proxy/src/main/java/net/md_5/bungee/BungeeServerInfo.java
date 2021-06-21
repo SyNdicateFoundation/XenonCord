@@ -184,7 +184,7 @@ public class BungeeServerInfo implements ServerInfo
             }
         };
         new Bootstrap()
-                .channel( PipelineUtils.getChannel( socketAddress ) )
+                .channelFactory( PipelineUtils.getChannelFactory( socketAddress ) ) // Waterfall - netty reflection -> factory
                 .group( BungeeCord.getInstance().workerEventLoopGroup )
                 .handler( PipelineUtils.BASE_SERVERSIDE )
                 .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().getConfig().getRemotePingTimeout() )
