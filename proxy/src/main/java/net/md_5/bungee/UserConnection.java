@@ -429,7 +429,8 @@ public final class UserConnection implements ProxiedPlayer
 
     private String connectionFailMessage(Throwable cause)
     {
-        return groups.contains( "admin" ) ? Util.exception( cause, false ) : cause.getClass().getName();
+        bungee.getLogger().log(Level.WARNING, "Error occurred processing connection for " + this.name + " " + Util.exception( cause, false )); // Waterfall
+        return ""; // Waterfall
     }
 
     @Override
