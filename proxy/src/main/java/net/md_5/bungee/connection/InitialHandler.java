@@ -512,6 +512,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     {
         Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
         Preconditions.checkState( EncryptionUtil.check( loginRequest.getPublicKey(), encryptResponse, request ), "Invalid verification" );
+        thisState = State.FINISHING; // Waterfall - move earlier - There is no verification of this later (and this is not API)
 
         SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
         // Waterfall start
@@ -566,7 +567,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                 }
             }
         };
-        thisState = State.FINISHING;
+        //thisState = State.FINISHING; // Waterfall - move earlier
         HttpClient.get( authURL, ch.getHandle().eventLoop(), handler );
     }
 
