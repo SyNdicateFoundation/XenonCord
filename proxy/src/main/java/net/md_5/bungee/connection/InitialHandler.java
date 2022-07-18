@@ -435,6 +435,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
 
         if ( BungeeCord.getInstance().config.isEnforceSecureProfile() && getVersion() < ProtocolConstants.MINECRAFT_1_19_3 )
         {
+            if ( handshake.getProtocolVersion() < ProtocolConstants.MINECRAFT_1_19 ) {disconnect(bungee.getTranslation("secure_profile_unsupported"));} // Waterfall - Tell old clients to update if secure profiles are required
             PlayerPublicKey publicKey = loginRequest.getPublicKey();
             if ( publicKey == null )
             {
