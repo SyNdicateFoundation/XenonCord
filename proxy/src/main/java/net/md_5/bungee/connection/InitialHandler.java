@@ -188,7 +188,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     @Override
     public void handle(PluginMessage pluginMessage) throws Exception
     {
-        this.relayMessage( pluginMessage );
+        // Waterfall start
+        try {
+            this.relayMessage(pluginMessage);
+        } catch (IllegalStateException | IllegalArgumentException ex) {
+            if (net.md_5.bungee.protocol.MinecraftDecoder.DEBUG) {
+                throw ex;
+            } else {
+                throw new QuietException(ex.getMessage());
+            }
+        }
+        // Waterfall end
     }
 
     @Override
