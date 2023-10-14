@@ -108,4 +108,9 @@ public class ClientCommand extends DefinedPacket
     {
         handler.handle( this );
     }
+
+    public boolean isSigned() {
+        if (salt == 0) return false;
+        return this.seenMessages != null && !this.seenMessages.getAcknowledged().isEmpty();
+    }
 }

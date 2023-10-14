@@ -196,7 +196,7 @@ public class UpstreamBridge extends PacketHandler
     @Override
     public void handle(ClientCommand command) throws Exception
     {
-        handleChat( "/" + command.getCommand() );
+        handleChat( "/" + command.getCommand(), command ); // Waterfall
     }
 
     @Override
@@ -205,7 +205,12 @@ public class UpstreamBridge extends PacketHandler
         handleChat( "/" + command.getCommand() );
     }
 
-    private String handleChat(String message)
+    // Waterfall start
+    private String handleChat(String message) {
+        return handleChat(message, null);
+    }
+    private String handleChat(String message, @javax.annotation.Nullable ClientCommand clientCommand)
+    // Waterfall end
     {
         boolean empty = true;
         for ( int index = 0, length = message.length(); index < length; index++ )
@@ -231,6 +236,12 @@ public class UpstreamBridge extends PacketHandler
             if ( !chatEvent.isCommand() || !bungee.getPluginManager().dispatchCommand( con, message.substring( 1 ) ) )
             {
                 return message;
+                // Waterfall start - We're going to cancel this packet, so, no matter what, we might as well try to send this
+            } else if(clientCommand != null && clientCommand.isSigned() && clientCommand.getSeenMessages() != null) {
+                if (con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_19_3) {
+                    con.getServer().unsafe().sendPacket(new net.md_5.bungee.protocol.packet.ClientChatAcknowledgement(clientCommand.getSeenMessages().getOffset()));
+                }
+                // Waterfall end
             }
         }
         throw CancelSendSignal.INSTANCE;

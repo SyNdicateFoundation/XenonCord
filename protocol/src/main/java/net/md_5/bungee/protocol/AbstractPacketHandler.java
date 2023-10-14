@@ -287,5 +287,9 @@ public abstract class AbstractPacketHandler
     public void handle(net.md_5.bungee.protocol.packet.EntityRemoveEffect removeEffect) throws Exception
     {
     }
+
+    public void handle(net.md_5.bungee.protocol.packet.ClientChatAcknowledgement clientChatAcknowledgement)
+    {
+    }
     // Waterfall end
 }

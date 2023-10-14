@@ -558,6 +558,13 @@ public enum Protocol
                     map( ProtocolConstants.MINECRAFT_1_19_1, 0x05 ),
                     map( ProtocolConstants.MINECRAFT_1_20_5, 0x06 )
             );
+            // Waterfall start
+            TO_SERVER.registerPacket(
+                    net.md_5.bungee.protocol.packet.ClientChatAcknowledgement.class,
+                    net.md_5.bungee.protocol.packet.ClientChatAcknowledgement::new,
+                    map (ProtocolConstants.MINECRAFT_1_19_3, 0x3)
+            );
+            // Waterfall end
             TO_SERVER.registerPacket(
                     TabCompleteRequest.class,
                     TabCompleteRequest::new,
