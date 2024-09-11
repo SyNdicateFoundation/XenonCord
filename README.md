@@ -1,26 +1,31 @@
-BungeeCord
-==========
-Layer 7 proxy designed to link Minecraft servers.
---------------------------------------------------
+# XenonCord: A lightweight, easy to use, scaleable bungeecord instance.
 
-BungeeCord is a sophisticated proxy and API designed mainly to teleport players between multiple Minecraft servers. It is the latest incarnation of similar software written by the author from 2011-present.
+## Overview
 
-Information
------------
-BungeeCord is maintained by [SpigotMC](https://www.spigotmc.org/) and has its own [discussion thread](https://www.spigotmc.org/go/bungeecord) with plenty of helpful information and links.
+- this project is a waterfall fork, which is a fork of bungeecord.
+- this project contains some fixes, patches, and as well as new features, such as anti bot and etc.
+- we will add features and complete this readme.md file.
 
-### Security warning
 
-As your Minecraft servers have to run without authentication (online-mode=false) for BungeeCord to work, this poses a new security risk. Users may connect to your servers directly, under any username they wish to use. The kick "If you wish to use IP forwarding, please enable it in your BungeeCord config as well!" does not protect your Spigot servers.
+### Key Features 🚀
 
-To combat this, you need to restrict access to these servers for example with a firewall (please see [firewall guide](https://www.spigotmc.org/wiki/firewall-guide/)).
+- Lightweight - this project is focused on being clean code, which means our proxy is focused on being optimized.
 
-Source
-------
-Source code is currently available on [GitHub](https://www.spigotmc.org/go/bungeecord-git).
+## Getting Started 🚧
+- NOTE: We removed waterfall's patch system, and we're going to add updates manually.
 
-Binaries
---------
-Precompiled binaries are available for end users on [Jenkins](https://www.spigotmc.org/go/bungeecord-dl).
+- setting up:
+- As a proxy:
+- download jar file
+- put it into your minecraft server folder, and then use your start script to run it.
 
-(c) 2012-2024 SpigotMC Pty. Ltd.
+- As a development workspace:
+- git clone it in Intelij, and use it.
+
+## TODO 📝
+- optimize
+- add features
+
+## Contribution Guidelines 🤝
+
+Feel free to contribute to the development of XenonCord. we will notice it.
