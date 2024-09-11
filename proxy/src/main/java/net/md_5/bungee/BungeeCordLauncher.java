@@ -66,6 +66,7 @@ public class BungeeCordLauncher
         bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
         bungee.start();
 
+        System.out.print("");
         if ( !options.has( "noconsole" ) )
         {
             // Waterfall start - Use TerminalConsoleAppender
