@@ -26,6 +26,10 @@
 - optimize
 - add features
 
-## Contribution Guidelines 🤝
+## Credits:
+- thanks to BungeeCord by SpigotMC for their hard work.
+- thanks to Waterfall by PaperMC to make stuff easier for us.
+
+## Contribution Guidelines 
 
 Feel free to contribute to the development of XenonCord. we will notice it.
