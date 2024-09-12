@@ -1,11 +1,12 @@
 package net.md_5.bungee.command;
 
-import java.util.Collections;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import java.util.Collections;
 
 public class CommandIP extends PlayerCommand
 {

@@ -120,7 +120,7 @@ public class PlayerListItemUpdate extends DefinedPacket
         handler.handle( this );
     }
 
-    public static enum Action
+    public enum Action
     {
 
         ADD_PLAYER,
@@ -128,6 +128,6 @@ public class PlayerListItemUpdate extends DefinedPacket
         UPDATE_GAMEMODE,
         UPDATE_LISTED,
         UPDATE_LATENCY,
-        UPDATE_DISPLAY_NAME;
+        UPDATE_DISPLAY_NAME
     }
 }

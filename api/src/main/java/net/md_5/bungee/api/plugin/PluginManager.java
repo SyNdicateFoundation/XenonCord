@@ -547,10 +547,7 @@ public final class PluginManager
 
         if ( dependencyGraph.nodes().contains( plugin.getName() ) )
         {
-            if ( Graphs.reachableNodes( dependencyGraph, plugin.getName() ).contains( depend.getName() ) )
-            {
-                return true;
-            }
+            return Graphs.reachableNodes(dependencyGraph, plugin.getName()).contains(depend.getName());
         }
         return false;
     }

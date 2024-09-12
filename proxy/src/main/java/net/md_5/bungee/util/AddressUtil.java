@@ -1,10 +1,11 @@
 package net.md_5.bungee.util;
 
 import com.google.common.base.Preconditions;
-import java.net.Inet6Address;
-import java.net.InetSocketAddress;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import java.net.Inet6Address;
+import java.net.InetSocketAddress;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddressUtil

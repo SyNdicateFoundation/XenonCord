@@ -13,6 +13,6 @@ public class NumberFormat
     {
         BLANK,
         STYLED,
-        FIXED;
+        FIXED
     }
 }

@@ -3,10 +3,11 @@ package net.md_5.bungee.compress;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import java.util.zip.Deflater;
 import lombok.Setter;
 import net.md_5.bungee.jni.zlib.BungeeZlib;
 import net.md_5.bungee.protocol.DefinedPacket;
+
+import java.util.zip.Deflater;
 
 public class PacketCompressor extends MessageToByteEncoder<ByteBuf>
 {

@@ -1,8 +1,10 @@
 package net.md_5.bungee.util;
 
-import static org.junit.jupiter.api.Assertions.*;
-import java.net.InetSocketAddress;
 import org.junit.jupiter.api.Test;
+
+import java.net.InetSocketAddress;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AddressUtilTest
 {

@@ -134,6 +134,6 @@ public class ProtocolConstants
     public enum Direction
     {
 
-        TO_CLIENT, TO_SERVER;
+        TO_CLIENT, TO_SERVER
     }
 }

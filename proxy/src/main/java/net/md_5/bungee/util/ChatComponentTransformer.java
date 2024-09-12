@@ -1,9 +1,6 @@
 package net.md_5.bungee.util;
 
 import com.google.common.base.Preconditions;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -13,6 +10,10 @@ import net.md_5.bungee.api.chat.hover.content.Content;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.score.Score;
 import net.md_5.bungee.protocol.ProtocolConstants;
+
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * This class transforms chat components by attempting to replace transformable

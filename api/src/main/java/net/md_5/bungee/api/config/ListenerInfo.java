@@ -108,9 +108,7 @@ public class ListenerInfo
      * Gets the bind address as an InetSocketAddress if possible.
      *
      * @return bind host
-     * @deprecated BungeeCord can listen via Unix domain sockets
      */
-    @Deprecated
     public InetSocketAddress getHost()
     {
         return (InetSocketAddress) socketAddress;

@@ -102,7 +102,7 @@ public class Title extends DefinedPacket
         handler.handle( this );
     }
 
-    public static enum Action
+    public enum Action
     {
 
         TITLE,

@@ -1,17 +1,14 @@
 package net.md_5.bungee.forge;
 
 import com.google.common.base.Preconditions;
-import java.util.ArrayDeque;
-import java.util.Map;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
 import net.md_5.bungee.protocol.packet.PluginMessage;
+
+import java.util.ArrayDeque;
+import java.util.Map;
 
 /**
  * Handles the Forge Client data and handshake procedure.

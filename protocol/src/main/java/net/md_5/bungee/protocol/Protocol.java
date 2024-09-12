@@ -897,12 +897,12 @@ public enum Protocol
             return supportsForge || i >= 0 && i <= MAX_PACKET_ID;
         }
 
-        public final DefinedPacket createPacket(int id, int version)
+        public DefinedPacket createPacket(int id, int version)
         {
             return createPacket(id, version, true);
         }
 
-        public final DefinedPacket createPacket(int id, int version, boolean supportsForge)
+        public DefinedPacket createPacket(int id, int version, boolean supportsForge)
         {
             ProtocolData protocolData = getProtocolData( version );
             if ( protocolData == null )
@@ -966,7 +966,7 @@ public enum Protocol
             return protocolData.packetMap.containsKey( packet );
         }
 
-        final int getId(Class<? extends DefinedPacket> packet, int version)
+        int getId(Class<? extends DefinedPacket> packet, int version)
         {
 
             ProtocolData protocolData = getProtocolData( version );

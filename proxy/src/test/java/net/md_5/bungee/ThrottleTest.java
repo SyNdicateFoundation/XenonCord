@@ -1,12 +1,15 @@
 package net.md_5.bungee;
 
-import static org.junit.jupiter.api.Assertions.*;
 import com.google.common.base.Ticker;
+import org.junit.jupiter.api.Test;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ThrottleTest
 {

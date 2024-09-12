@@ -54,13 +54,13 @@ public class ServerKickEvent extends Event implements Cancellable
     public enum State
     {
 
-        CONNECTING, CONNECTED, UNKNOWN;
+        CONNECTING, CONNECTED, UNKNOWN
     }
 
     // Waterfall start
     public enum Cause
     {
-        SERVER, LOST_CONNECTION, EXCEPTION, UNKNOWN;
+        SERVER, LOST_CONNECTION, EXCEPTION, UNKNOWN
     }
     // Waterfall end
 

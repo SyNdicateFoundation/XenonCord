@@ -190,7 +190,7 @@ public final class TranslatableComponent extends BaseComponent
                 {
                     addFormat( builder );
                 }
-                builder.append( trans.substring( position, pos ) );
+                builder.append(trans, position, pos);
             }
             position = matcher.end();
 
@@ -225,7 +225,7 @@ public final class TranslatableComponent extends BaseComponent
             {
                 addFormat( builder );
             }
-            builder.append( trans.substring( position, trans.length() ) );
+            builder.append( trans.substring( position) );
         }
     }
 }

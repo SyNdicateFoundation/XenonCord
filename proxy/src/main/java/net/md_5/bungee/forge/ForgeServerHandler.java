@@ -1,6 +1,5 @@
 package net.md_5.bungee.forge;
 
-import java.util.ArrayDeque;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +8,8 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.forge.ForgeLogger.LogDirection;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.packet.PluginMessage;
+
+import java.util.ArrayDeque;
 
 /**
  * Contains data about the Forge server, and handles the handshake.

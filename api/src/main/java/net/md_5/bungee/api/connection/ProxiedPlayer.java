@@ -26,7 +26,7 @@ public interface ProxiedPlayer extends Connection, CommandSender
     /**
      * Represents the player's chat state.
      */
-    public enum ChatMode
+    enum ChatMode
     {
 
         /**
@@ -40,15 +40,15 @@ public interface ProxiedPlayer extends Connection, CommandSender
         /**
          * The chat is completely disabled, the player won't see anything.
          */
-        HIDDEN;
+        HIDDEN
 
     }
 
-    public enum MainHand
+    enum MainHand
     {
 
         LEFT,
-        RIGHT;
+        RIGHT
     }
 
     /**
@@ -71,7 +71,7 @@ public interface ProxiedPlayer extends Connection, CommandSender
      * @param position the screen position
      * @param message the message to send
      */
-    public void sendMessage(ChatMessageType position, BaseComponent... message);
+    void sendMessage(ChatMessageType position, BaseComponent... message);
 
     /**
      * Send a message to the specified screen position of this player.
@@ -79,7 +79,7 @@ public interface ProxiedPlayer extends Connection, CommandSender
      * @param position the screen position
      * @param message the message to send
      */
-    public void sendMessage(ChatMessageType position, BaseComponent message);
+    void sendMessage(ChatMessageType position, BaseComponent message);
 
     /**
      * Send a message to this player.
@@ -87,7 +87,7 @@ public interface ProxiedPlayer extends Connection, CommandSender
      * @param sender the sender of the message
      * @param message the message to send
      */
-    public void sendMessage(UUID sender, BaseComponent... message);
+    void sendMessage(UUID sender, BaseComponent... message);
 
     /**
      * Send a message to this player.
@@ -95,7 +95,7 @@ public interface ProxiedPlayer extends Connection, CommandSender
      * @param sender the sender of the message
      * @param message the message to send
      */
-    public void sendMessage(UUID sender, BaseComponent message);
+    void sendMessage(UUID sender, BaseComponent message);
 
     /**
      * Connects / transfers this user to the specified connection, gracefully

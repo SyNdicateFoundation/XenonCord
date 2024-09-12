@@ -42,7 +42,7 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
                 in.resetReaderIndex();
                 int length = DefinedPacket.readVarInt( in );
                 // Waterfall end
-                if ( false && length == 0) // Waterfall - ignore
+                if (false) // Waterfall - ignore
                 {
                     throw new CorruptedFrameException( "Empty Packet!" );
                 }

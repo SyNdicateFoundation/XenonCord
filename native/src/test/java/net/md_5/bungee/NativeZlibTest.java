@@ -75,7 +75,7 @@ public class NativeZlibTest
         long elapsed = System.currentTimeMillis() - start;
         System.out.println( "Took: " + elapsed + "ms" );
 
-        assertTrue( Arrays.equals( dataBuf, check ), "Results do not match" );
+        assertArrayEquals(dataBuf, check, "Results do not match");
     }
 
     private void testExceptionImpl(BungeeZlib zlib) throws DataFormatException

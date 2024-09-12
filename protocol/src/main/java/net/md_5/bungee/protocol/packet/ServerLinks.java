@@ -79,7 +79,7 @@ public class ServerLinks extends DefinedPacket
         WEBSITE,
         FORUMS,
         NEWS,
-        ANNOUNCEMENTS;
+        ANNOUNCEMENTS
     }
 
     @Data

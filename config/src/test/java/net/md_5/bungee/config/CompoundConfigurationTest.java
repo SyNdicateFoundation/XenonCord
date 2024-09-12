@@ -23,8 +23,7 @@ public class CompoundConfigurationTest
                         // provider
                         YamlConfiguration.class,
                         // testDocument
-                        ""
-                        + "receipt:     Oz-Ware Purchase Invoice\n"
+                        "receipt:     Oz-Ware Purchase Invoice\n"
                         + "date:        2012-08-06\n"
                         + "customer:\n"
                         + "    given:   Dorothy\n"
@@ -57,15 +56,13 @@ public class CompoundConfigurationTest
                         + "    Pay no attention to the\n"
                         + "    man behind the curtain.",
                         // numberTest
-                        ""
-                        + "someKey:\n"
+                        "someKey:\n"
                         + "    1: 1\n"
                         + "    2: 2\n"
                         + "    3: 3\n"
                         + "    4: 4",
                         // nullTest
-                        ""
-                        + "null:\n"
+                        "null:\n"
                         + "    null: object\n"
                         + "    object: null\n"
                 ),
@@ -73,8 +70,7 @@ public class CompoundConfigurationTest
                         // provider
                         JsonConfiguration.class,
                         // testDocument
-                        ""
-                        + "{\n"
+                        "{\n"
                         + "  \"customer\": {\n"
                         + "    \"given\": \"Dorothy\", \n"
                         + "    \"family\": \"Gale\"\n"
@@ -109,8 +105,7 @@ public class CompoundConfigurationTest
                         + "  \"specialDelivery\": \"Follow the Yellow Brick Road to the Emerald City. Pay no attention to the man behind the curtain.\"\n"
                         + "}",
                         // numberTest
-                        ""
-                        + "{\n"
+                        "{\n"
                         + "  \"someKey\": {\n"
                         + "    \"1\": 1, \n"
                         + "    \"2\": 2, \n"
@@ -119,8 +114,7 @@ public class CompoundConfigurationTest
                         + "  }\n"
                         + "}",
                         // nullTest
-                        ""
-                        + "{\n"
+                        "{\n"
                         + "  \"null\": {\n"
                         + "    \"null\": \"object\", \n"
                         + "    \"object\": null\n"
@@ -162,7 +156,7 @@ public class CompoundConfigurationTest
         assertEquals( "A4786", item.get( "part_no" ), "items[0].part_no" );
 
         conf.set( "receipt", null );
-        assertEquals( null, conf.get( "receipt" ) );
+        assertNull(conf.get("receipt"));
         assertEquals( "foo", conf.get( "receipt", "foo" ) );
 
         Configuration newSection = conf.getSection( "new.section" );
@@ -201,7 +195,7 @@ public class CompoundConfigurationTest
         assertEquals( "object", conf.get( "null.null" ) );
         assertEquals( "object", conf.getSection( "null" ).get( "null" ) );
 
-        assertEquals( null, conf.get( "null.object" ) );
+        assertNull(conf.get("null.object"));
         assertEquals( "", conf.getString( "null.object" ) );
     }
 
@@ -217,6 +211,6 @@ public class CompoundConfigurationTest
         assertEquals( "bar", conf.getSection( "addition" ).getString( "foo" ) );
         assertEquals( "bar", conf.getString( "addition.foo" ) );
 
-        assertTrue( conf.get( "addition" ) instanceof Configuration );
+        assertInstanceOf(Configuration.class, conf.get("addition"));
     }
 }

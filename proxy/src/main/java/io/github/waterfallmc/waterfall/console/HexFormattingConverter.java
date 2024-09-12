@@ -69,7 +69,7 @@ public final class HexFormattingConverter extends LogEventPatternConverter {
    * @param formatters The pattern formatters to generate the text to manipulate
    * @param strip      If true, the converter will strip all formatting codes
    */
-  protected HexFormattingConverter(List<PatternFormatter> formatters, boolean strip) {
+  private HexFormattingConverter(List<PatternFormatter> formatters, boolean strip) {
     super("paperMinecraftFormatting", null);
     this.formatters = formatters;
     this.ansi = !strip;
@@ -142,7 +142,7 @@ public final class HexFormattingConverter extends LogEventPatternConverter {
     matcher.appendTail(buffer);
 
     result.setLength(start);
-    result.append(buffer.toString());
+    result.append(buffer);
     if (ansi) {
       result.append(ANSI_RESET);
     }

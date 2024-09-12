@@ -115,7 +115,6 @@ public class Plugin
     //
     private ExecutorService service;
 
-    @Deprecated
     public ExecutorService getExecutorService()
     {
         if ( service == null )
