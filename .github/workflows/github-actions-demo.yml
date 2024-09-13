@@ -64,23 +64,19 @@ jobs:
       - name: List target directory
         run: ls -al bootstrap/target
 
-      - name: Get jar file
-        id: set_output_path
+      - name: Check for XenonCord.jar
+        id: check_jar
         run: |
-          jar_file=$(ls bootstrap/target | grep XenonCord.jar || echo "No JAR file found")
-          if [ "$jar_file" = "No JAR file found" ]; then
+          if [ -f "bootstrap/target/XenonCord.jar" ]; then
+            echo "XenonCord.jar found."
+            echo "JAR_FILE_PATH=bootstrap/target/XenonCord.jar" >> $GITHUB_ENV
+            echo "JAR_FILE_NAME=XenonCord.jar" >> $GITHUB_ENV
+          else
+            echo "XenonCord.jar not found!"
             exit 1
           fi
-          echo "JAR_FILE_PATH=bootstrap/target/$jar_file" >> $GITHUB_ENV
-          echo "JAR_FILE_NAME=$jar_file" >> $GITHUB_ENV
-          echo "Found JAR file: $jar_file"
 
-      - name: Debug Environment Variables
-        run: |
-          echo "JAR_FILE_PATH=${{ env.JAR_FILE_PATH }}"
-          echo "JAR_FILE_NAME=${{ env.JAR_FILE_NAME }}"
-
-      - name: Upload jar file
+      - name: Upload XenonCord.jar
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
