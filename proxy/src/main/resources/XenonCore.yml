@@ -1,0 +1,7 @@
+prefix: "&b&lXenonCore"
+# PREFIX --> your prefix
+loadingmessage: "PREFIX\n &r&cstill loading.\n\n &cYou got disconnected to prevent problems."
+modules:
+  motd: "&b&lA XenonCord server."
+  enables:
+    - MotdChanger
