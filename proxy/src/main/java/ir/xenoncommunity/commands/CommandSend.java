@@ -1,4 +1,4 @@
-package net.md_5.bungee.command;
+package ir.xenoncommunity.commands;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSet;

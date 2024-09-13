@@ -20,7 +20,7 @@ public class CommandSpy extends ModuleListener implements Listener {
         if(player.hasPermission(XenonCore.instance.getConfigData().getModules().getSpybypass())) return;
 
         final String rawCommand = e.getMessage();
-        final String command = e.getMessage().replace("/", "");
+        final String command = e.getMessage().substring(1);
 
         if(Arrays.asList(XenonCore.instance.getConfigData().getModules().getSpyexceptions()).contains(command)) return;
 
@@ -28,10 +28,10 @@ public class CommandSpy extends ModuleListener implements Listener {
         XenonCore.instance.getBungeeInstance().getPlayers().stream().filter(
                 proxiedPlayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getModules().getSpyperm())).forEach(
                         proxiedPlayer -> {
-            proxiedPlayer.sendMessage(
+            proxiedPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&',
                     XenonCore.instance.getConfigData().getModules().getSpymessage()
                             .replace("PLAYER", player.getDisplayName())
-                            .replace("COMMAND", rawCommand));
+                            .replace("COMMAND", rawCommand)));
         });
     }
 }

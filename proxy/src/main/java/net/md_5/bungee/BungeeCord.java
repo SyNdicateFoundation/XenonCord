@@ -15,6 +15,7 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.util.ResourceLeakDetector;
 import ir.xenoncommunity.XenonCore;
+import ir.xenoncommunity.commands.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Synchronized;
@@ -23,6 +24,7 @@ import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.config.ConfigurationAdapter;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.chat.*;
@@ -37,10 +39,14 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
 import net.md_5.bungee.query.RemoteQuery;
 import net.md_5.bungee.scheduler.BungeeScheduler;
 import net.md_5.bungee.util.CaseInsensitiveMap;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import org.reflections.util.ConfigurationBuilder;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -145,19 +151,6 @@ public class BungeeCord extends ProxyServer
 
         pluginManager = new PluginManager( this );
 
-        // sadge, we can't use reflections
-        getPluginManager().registerCommand(null, new CommandBungee());
-        getPluginManager().registerCommand(null, new CommandEnd());
-        getPluginManager().registerCommand(null, new CommandIP());
-        getPluginManager().registerCommand(null, new CommandPerms());
-        getPluginManager().registerCommand(null, new CommandReload());
-        getPluginManager().registerCommand(null, new CommandSend());
-        getPluginManager().registerCommand(null, new CommandList());
-        getPluginManager().registerCommand(null, new CommandFind());
-        getPluginManager().registerCommand(null, new CommandAlert());
-        getPluginManager().registerCommand(null, new CommandAlertRaw());
-
-
         if ( Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )return;
 
         logger.info(String.format("Using %s.", EncryptionUtil.nativeFactory.load() ? "mbed TLS based native cipher" : "Using standard Java JCE cipher"));
@@ -195,6 +188,18 @@ public class BungeeCord extends ProxyServer
 
         isRunning = true;
 
+        XenonCore.instance.getTaskManager().add(() ->{
+            XenonCore.instance.getLogger().info("ASYNC task command registerer is starting...");
+            new Reflections("ir.xenoncommunity.commands").getSubTypesOf(Command.class).stream().filter(
+                    command -> !command.getSimpleName().toLowerCase().contains("playercommand")).forEach(command -> {
+                try {
+                    XenonCore.instance.getLogger().info(String.format("Command %s registered.", command.getSimpleName()));
+                    this.getPluginManager().registerCommand(null, command.newInstance());
+                } catch (Exception e) {
+                    XenonCore.instance.getLogger().error(e.getMessage());
+                }
+            });
+        });
         XenonCore.instance.getTaskManager().independentTask(() -> {
             XenonCore.instance.getLogger().info("ASYNC task plugin loader is starting...");
             pluginManager.detectPlugins( pluginsFolder );

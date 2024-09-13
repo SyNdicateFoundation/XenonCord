@@ -1,4 +1,4 @@
-package net.md_5.bungee.command;
+package ir.xenoncommunity.commands;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,4 +1,4 @@
-package net.md_5.bungee.command;
+package ir.xenoncommunity.commands;
 
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.CommandSender;
