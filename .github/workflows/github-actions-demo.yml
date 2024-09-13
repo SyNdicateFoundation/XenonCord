@@ -86,3 +86,4 @@ jobs:
 permissions:
   contents: write
   packages: write
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
