@@ -144,25 +144,21 @@ public class ChannelWrapper
         return ch;
     }
 
-    public void setCompressionThreshold(int compressionThreshold) {
-        PacketCompressor compressor = ch.pipeline().get(PacketCompressor.class);
-        PacketDecompressor decompressor = ch.pipeline().get(PacketDecompressor.class);
+    public void setCompressionThreshold(int compressionThreshold)
+    {
 
-        if (compressionThreshold >= 0) {
-            if (compressor == null) {
-                addBefore(PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor());
-                compressor = ch.pipeline().get(PacketCompressor.class);  // Get the newly added compressor
-            }
-            compressor.setThreshold(compressionThreshold);
-            if (decompressor == null)
-                addBefore(PipelineUtils.PACKET_DECODER, "decompress", new PacketDecompressor(compressionThreshold));
-        } else {
-            if (compressor != null)
-                ch.pipeline().remove("compress");
+        if ( compressionThreshold >= 0 )
+        {
+            if(ch.pipeline().get( PacketCompressor.class ) == null) addBefore( PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor() );
 
-            if (decompressor != null)
-                ch.pipeline().remove("decompress");
-        }
+            ch.pipeline().get( PacketCompressor.class ).setThreshold( compressionThreshold );
+        } else
+            ch.pipeline().remove( "compress" );
+
+        if ( ch.pipeline().get( PacketDecompressor.class ) == null && compressionThreshold >= 0 )
+            addBefore( PipelineUtils.PACKET_DECODER, "decompress", new PacketDecompressor(compressionThreshold) );
+
+        if ( compressionThreshold < 0 )
+            ch.pipeline().remove( "decompress" );
     }
-
 }
