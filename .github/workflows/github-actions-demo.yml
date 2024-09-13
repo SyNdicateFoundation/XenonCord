@@ -64,7 +64,7 @@ jobs:
       - name: Get jar file
         id: set_output_path
         run: |
-          jar_file=$(ls target | grep .jar)
+          jar_file=$(ls bootstrap/target | grep .jar)
           echo "path=$jar_file" >> $GITHUB_ENV
 
       - name: Upload jar file
