@@ -20,7 +20,7 @@ public class CommandSpy extends ModuleListener implements Listener {
         if(player.hasPermission(XenonCore.instance.getConfigData().getModules().getSpybypass())) return;
 
         final String rawCommand = e.getMessage();
-        final String command = e.getMessage().substring(1);
+        final String command = e.getMessage().replace("/", "");
 
         if(Arrays.asList(XenonCore.instance.getConfigData().getModules().getSpyexceptions()).contains(command)) return;
 

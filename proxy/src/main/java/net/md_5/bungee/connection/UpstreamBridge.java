@@ -59,56 +59,45 @@ public class UpstreamBridge extends PacketHandler
         con.getTabListHandler().onDisconnect();
         BungeeCord.getInstance().removeConnection( con );
 
-        if ( con.getServer() != null )
-        {
-            // Manually remove from everyone's tab list
-            // since the packet from the server arrives
-            // too late
-            // TODO: This should only done with server_unique
-            //       tab list (which is the only one supported
-            //       currently)
-            PlayerListItem oldPacket = new PlayerListItem();
-            oldPacket.setAction( PlayerListItem.Action.REMOVE_PLAYER );
-            PlayerListItem.Item item = new PlayerListItem.Item();
-            item.setUuid( con.getRewriteId() );
-            oldPacket.setItems( new PlayerListItem.Item[]
-            {
-                item
-            } );
+        if ( con.getServer() == null) return;
 
-            PlayerListItemRemove newPacket = new PlayerListItemRemove();
-            newPacket.setUuids( new UUID[]
-            {
-                con.getRewriteId()
-            } );
+        final PlayerListItem oldPacket = new PlayerListItem();
+        final PlayerListItem.Item item = new PlayerListItem.Item();
+        oldPacket.setAction( PlayerListItem.Action.REMOVE_PLAYER );
+        item.setUuid( con.getRewriteId() );
+        oldPacket.setItems( new PlayerListItem.Item[]
+                {
+                        item
+                } );
 
-            for ( ProxiedPlayer player : con.getServer().getInfo().getPlayers() )
+        final PlayerListItemRemove newPacket = new PlayerListItemRemove();
+        newPacket.setUuids( new UUID[]
+                {
+                        con.getRewriteId()
+                } );
+
+        con.getServer().getInfo().getPlayers().forEach(player -> {
+            if ( player.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_19_3 )
             {
-                if ( player.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_19_3 )
-                {
-                    player.unsafe().sendPacket( newPacket );
-                } else
-                {
-                    player.unsafe().sendPacket( oldPacket );
-                }
+                player.unsafe().sendPacket( newPacket );
+            } else
+            {
+                player.unsafe().sendPacket( oldPacket );
             }
-            con.getServer().disconnect( "Quitting" );
-        }
+        });
+        con.getServer().disconnect( "Quitting" );
     }
 
     @Override
-    public void writabilityChanged(ChannelWrapper channel) throws Exception
-    {
-        if ( con.getServer() != null )
-        {
-            Channel server = con.getServer().getCh().getHandle();
-            server.config().setAutoRead(channel.getHandle().isWritable());
-        }
+    public void writabilityChanged(ChannelWrapper channel) {
+        if ( con.getServer() == null )return;
+
+        Channel server = con.getServer().getCh().getHandle();
+        server.config().setAutoRead(channel.getHandle().isWritable());
     }
 
     @Override
-    public boolean shouldHandle(PacketWrapper packet) throws Exception
-    {
+    public boolean shouldHandle(PacketWrapper packet) {
         return con.getServer() != null || packet.packet instanceof PluginMessage || packet.packet instanceof CookieResponse;
     }
 
