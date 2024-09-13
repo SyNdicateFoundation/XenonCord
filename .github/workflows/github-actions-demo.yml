@@ -1,0 +1,82 @@
+name: GitHub Actions Demo
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Auto Increment Semver Action
+        uses: MCKanpolat/auto-semver-action@v1
+        id: versioning
+        with:
+          releaseType: patch
+          incrementPerCommit: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Next Release Number
+        run: echo ${{ steps.versioning.outputs.version }}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.versioning.outputs.version }}
+          release_name: Release ${{ steps.versioning.outputs.version }}
+          body: |
+            Automatically created release by GitHub Actions
+          draft: false
+          prerelease: false
+
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.versioning.outputs.version }}
+
+
+  build:
+    name: Build and Upload
+    needs: release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml -DskipTests --no-transfer-progress
+
+      - name: Get jar file
+        id: set_output_path
+        run: |
+          echo "path=$(ls target | grep .jar)" >> $GITHUB_OUTPUT
+
+      - name: Upload jar file
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: ./target/${{ steps.set_output_path.outputs.path }}
+          asset_name: ${{ steps.set_output_path.outputs.path }}
+          asset_content_type: application/java-archive
+
+
+permissions:
+  contents: write
+  packages: write
