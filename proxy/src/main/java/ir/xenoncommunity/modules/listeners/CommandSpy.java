@@ -13,20 +13,25 @@ import java.util.Arrays;
 public class CommandSpy extends ModuleListener implements Listener {
     @EventHandler
     public void onCommand(final ChatEvent e) {
-        if (!(e.getSender() instanceof ProxiedPlayer)
-                || !e.getMessage().startsWith("/")
-                || ((ProxiedPlayer) e.getSender()).hasPermission(XenonCore.instance.getConfigData().getModules().getSpybypass())) return;
-        final ProxiedPlayer proxiedPlayer = (ProxiedPlayer) e.getSender();
-        final String command = e.getMessage();
-        final String rawMessage = e.getMessage().replace("/", "");
+        if(!e.getMessage().startsWith("/")
+            || !(e.getSender() instanceof ProxiedPlayer)) return;
 
-        XenonCore.instance.getTaskManager().add(() -> {
-            if(Arrays.asList((XenonCore.instance.getConfigData().getModules().getSpyexceptions())).contains(rawMessage)) return;
-            XenonCore.instance.getBungeeInstance().getPlayers().stream()
-                    .filter(proxyplayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getModules().getSpyperm()))
-                    .forEach(player -> {
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', XenonCore.instance.getConfigData().getModules().getSpymessage().replace("PLAYER", player.getName().replace("COMMAND",  command))));
-                    });
+        final ProxiedPlayer player = (ProxiedPlayer) e.getSender();
+        if(player.hasPermission(XenonCore.instance.getConfigData().getModules().getSpybypass())) return;
+
+        final String rawCommand = e.getMessage();
+        final String command = e.getMessage().replace("/", "");
+
+        if(Arrays.asList(XenonCore.instance.getConfigData().getModules().getSpyexceptions()).contains(command)) return;
+
+
+        XenonCore.instance.getBungeeInstance().getPlayers().stream().filter(
+                proxiedPlayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getModules().getSpyperm())).forEach(
+                        proxiedPlayer -> {
+            proxiedPlayer.sendMessage(
+                    XenonCore.instance.getConfigData().getModules().getSpymessage()
+                            .replace("PLAYER", player.getDisplayName())
+                            .replace("COMMAND", rawCommand));
         });
     }
 }

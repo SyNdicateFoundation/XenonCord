@@ -1,7 +1,6 @@
 package ir.xenoncommunity;
 
 //import ir.xenoncommunity.listener.JoinListener;
-
 import ir.xenoncommunity.abstracts.ModuleListener;
 import ir.xenoncommunity.utils.Configuration;
 import ir.xenoncommunity.utils.TaskManager;
