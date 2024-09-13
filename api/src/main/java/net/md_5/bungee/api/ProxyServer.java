@@ -17,7 +17,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 
-public abstract class ProxyServer
+@SuppressWarnings({"unused", "deprecation"}) public abstract class ProxyServer
 {
 
     @Getter
@@ -101,7 +101,6 @@ public abstract class ProxyServer
      *             and may be modified concurrently by the proxy.
      *             The safe alternative is {@link #getServersCopy()}.
      */
-    @Deprecated // Waterfall
     public abstract Map<String, ServerInfo> getServers();
 
     // Waterfall begin - Cloned servers map
@@ -200,7 +199,6 @@ public abstract class ProxyServer
      *
      * @return the supported Minecraft version
      */
-    @Deprecated
     public abstract String getGameVersion();
 
     /**
@@ -208,7 +206,6 @@ public abstract class ProxyServer
      *
      * @return the Minecraft protocol version
      */
-    @Deprecated
     public abstract int getProtocolVersion();
 
     /**
@@ -306,7 +303,6 @@ public abstract class ProxyServer
     /**
      * Attempts to match any players with the given name, and returns a list of
      * all possible matches.
-     *
      * The exact algorithm to use to match players is implementation specific,
      * but in general you can expect this method to return player's whose names
      * begin with the specified prefix.

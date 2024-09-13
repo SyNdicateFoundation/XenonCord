@@ -53,15 +53,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@SuppressWarnings("deprecation")
 public class DownstreamBridge extends PacketHandler
 {
 
     // #3246: Recent versions of MinecraftForge alter Vanilla behaviour and require a command so that the executable flag is set
     // If the flag is not set, then the command will appear and successfully tab complete, but cannot be successfully executed
+    @SuppressWarnings("rawtypes")
     private static final com.mojang.brigadier.Command DUMMY_COMMAND = (context) ->
-    {
-        return 0;
-    };
+            0;
     //
     private final ProxyServer bungee;
     private final UserConnection con;
@@ -71,25 +71,17 @@ public class DownstreamBridge extends PacketHandler
     @Override
     public void exception(Throwable t) throws Exception
     {
-        if ( server.isObsolete() )
-        {
-            // do not perform any actions if the user has already moved
-            return;
-        }
+        if ( server.isObsolete() ) return;
 
-        // Waterfall start
-        ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
-        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), TextComponent.fromLegacyText( bungee.getTranslation( "server_went_down" ) ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.EXCEPTION ) );
+        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), TextComponent.fromLegacyText( bungee.getTranslation( "server_went_down" ) ),  con.updateAndGetNextServer( server.getInfo()), ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.EXCEPTION ) );
+
         if ( event.isCancelled() && event.getCancelServer() != null )
         {
             server.setObsolete( true );
             con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT );
+            return;
         }
-        else
-        {
-            con.disconnect0( event.getReason() );
-        }
-        // Waterfall end
+        con.disconnect0( event.getReason() );
     }
 
     @Override

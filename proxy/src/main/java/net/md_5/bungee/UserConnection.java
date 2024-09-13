@@ -15,7 +15,9 @@ import net.md_5.bungee.api.Title;
 import net.md_5.bungee.api.*;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ConfigurationAdapter;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PermissionCheckEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -136,28 +138,24 @@ public final class UserConnection implements ProxiedPlayer
 
     public boolean init()
     {
-        this.entityRewrite = EntityMap.getEntityMap( getPendingConnection().getVersion() );
+        final ConfigurationAdapter configAdapter = bungee.getConfigurationAdapter();
+        final InitialHandler pendingConnection = this.getPendingConnection();
+        final Collection<String> groups = new HashSet<>(configAdapter.getGroups(name));
+
+        groups.addAll(configAdapter.getGroups(getUniqueId().toString()));
+
+        this.entityRewrite = EntityMap.getEntityMap(pendingConnection.getVersion());
 
         this.displayName = name;
 
-        tabListHandler = new ServerUnique( this );
+        this.tabListHandler = new ServerUnique(this);
+        groups.forEach(this::addGroups);
 
-        Collection<String> g = bungee.getConfigurationAdapter().getGroups( name );
-        g.addAll( bungee.getConfigurationAdapter().getGroups( getUniqueId().toString() ) );
-        for ( String s : g )
-        {
-            addGroups( s );
-        }
+        this.forgeClientHandler = new ForgeClientHandler(this);
 
-        forgeClientHandler = new ForgeClientHandler( this );
+        if (pendingConnection.getExtraDataInHandshake().contains(ForgeConstants.FML_HANDSHAKE_TOKEN)) this.forgeClientHandler.setFmlTokenInHandshake(true);
 
-        // No-config FML handshake marker.
-        // Set whether the connection has a 1.8 FML marker in the handshake.
-        if (this.getPendingConnection().getExtraDataInHandshake().contains( ForgeConstants.FML_HANDSHAKE_TOKEN ))
-        {
-            forgeClientHandler.setFmlTokenInHandshake( true );
-        }
-        return BungeeCord.getInstance().addConnection( this );
+        return BungeeCord.getInstance().addConnection(this);
     }
 
     public void sendPacket(PacketWrapper packet)
@@ -167,14 +165,11 @@ public final class UserConnection implements ProxiedPlayer
 
     public void sendPacketQueued(DefinedPacket packet)
     {
-        Protocol encodeProtocol = ch.getEncodeProtocol();
-        if ( !encodeProtocol.TO_CLIENT.hasPacket( packet.getClass(), getPendingConnection().getVersion() ) )
-        {
-            packetQueue.add( packet );
-        } else
-        {
+        if ( ch.getEncodeProtocol().TO_CLIENT.hasPacket( packet.getClass(), getPendingConnection().getVersion() ) ) {
             unsafe().sendPacket( packet );
+            return;
         }
+        packetQueue.add(packet);
     }
 
     public void sendQueuedPackets()

@@ -113,12 +113,6 @@ public class BungeeCord extends ProxyServer
     private final File pluginsFolder = new File( "plugins" );
     @Getter
     private final BungeeScheduler scheduler = new BungeeScheduler();
-    // Waterfall start - Remove ConsoleReader for JLine 3 update
-    /*
-    @Getter
-    private final ConsoleReader consoleReader;
-    */
-    // Waterfall end
     @Getter
     private final Logger logger;
     public final Gson gson = new GsonBuilder()
@@ -205,7 +199,7 @@ public class BungeeCord extends ProxyServer
             XenonCore.instance.getLogger().info("ASYNC task plugin loader is starting...");
             pluginManager.detectPlugins( pluginsFolder );
             pluginManager.loadPlugins();
-            XenonCore.instance.setProxyCompletlyLoaded(pluginManager.enablePlugins());;
+            XenonCore.instance.setProxyCompletlyLoaded(pluginManager.enablePlugins());
             XenonCore.instance.getLogger().info("Plugins are loaded!");
         });
 
@@ -647,12 +641,17 @@ public class BungeeCord extends ProxyServer
 
         connectionLock.writeLock().lock();
 
+        final String name = con.getName();
+        final UUID uniqueID = con.getUniqueId();
+        if ( connections.containsKey( name ) ||
+                connectionsByUUID.containsKey( uniqueID ) ||
+                connectionsByOfflineUUID.containsKey( offlineId ) )
+            return false;
+
         try
         {
-            if ( connections.containsKey( con.getName() ) || connectionsByUUID.containsKey( con.getUniqueId() ) || connectionsByOfflineUUID.containsKey( offlineId ) )
-                return false;
-            connections.put( con.getName(), con );
-            connectionsByUUID.put( con.getUniqueId(), con );
+            connections.put( name, con );
+            connectionsByUUID.put( uniqueID, con );
             connectionsByOfflineUUID.put( offlineId, con );
         } finally
         {
@@ -664,15 +663,12 @@ public class BungeeCord extends ProxyServer
     public void removeConnection(final UserConnection con)
     {
         connectionLock.writeLock().lock();
+        if (!(connections.get( con.getName() ) == con)) return;
         try
         {
-            // TODO See #1218
-            if ( connections.get( con.getName() ) == con )
-            {
-                connections.remove( con.getName() );
-                connectionsByUUID.remove( con.getUniqueId() );
-                connectionsByOfflineUUID.remove( con.getPendingConnection().getOfflineId() );
-            }
+            connections.remove( con.getName() );
+            connectionsByUUID.remove( con.getUniqueId() );
+            connectionsByOfflineUUID.remove( con.getPendingConnection().getOfflineId() );
         } finally
         {
             connectionLock.writeLock().unlock();
