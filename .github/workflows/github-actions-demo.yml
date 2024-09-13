@@ -72,6 +72,7 @@ jobs:
             exit 1
           fi
           echo "JAR_FILE_PATH=bootstrap/target/$jar_file" >> $GITHUB_ENV
+          echo "JAR_FILE_NAME=$jar_file" >> $GITHUB_ENV
 
       - name: Upload jar file
         uses: actions/upload-release-asset@v1
@@ -80,7 +81,7 @@ jobs:
         with:
           upload_url: ${{ needs.release.outputs.upload_url }}
           asset_path: ${{ env.JAR_FILE_PATH }}
-          asset_name: $(basename ${{ env.JAR_FILE_PATH }})
+          asset_name: ${{ env.JAR_FILE_NAME }}
           asset_content_type: application/java-archive
 
 permissions:
