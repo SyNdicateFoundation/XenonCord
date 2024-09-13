@@ -1,4 +1,4 @@
-package net.md_5.bungee.module.cmd.alert;
+package net.md_5.bungee.command;
 
 import com.google.common.base.Joiner;
 import net.md_5.bungee.api.ChatColor;

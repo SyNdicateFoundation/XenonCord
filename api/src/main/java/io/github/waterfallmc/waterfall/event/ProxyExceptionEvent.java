@@ -9,7 +9,7 @@ import net.md_5.bungee.api.plugin.Event;
  */
 public class ProxyExceptionEvent extends Event {
 
-    private final ProxyException exception;
+    private ProxyException exception;
 
     public ProxyExceptionEvent(ProxyException exception) {
         this.exception = Preconditions.checkNotNull(exception, "exception");

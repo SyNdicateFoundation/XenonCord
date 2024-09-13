@@ -6,6 +6,9 @@ import ir.xenoncommunity.utils.TaskManager;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.util.ChatComponentTransformer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,6 +34,10 @@ public class XenonCore {
      */
     public void init(final long startTime){
         //bungeeInstance.getPluginManager().registerListener(null , new JoinListener());
+        getTaskManager().independentTask(() -> {
+            while(!isProxyCompletlyLoaded)
+                bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(TextComponent.fromLegacy("XenonCore is still loading plugins!\n\nYou got disconnected to prevent problems.")));
+        });
         getLogger().info(String.format("Done loading! took %sMS to load!", System.currentTimeMillis() - startTime));
     }
 

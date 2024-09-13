@@ -1,4 +1,4 @@
-package net.md_5.bungee.module.cmd.alert;
+package net.md_5.bungee.command;
 
 import java.util.Locale;
 import net.md_5.bungee.api.ChatColor;

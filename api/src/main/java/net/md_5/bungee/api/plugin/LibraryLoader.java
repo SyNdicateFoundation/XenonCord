@@ -6,7 +6,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,7 +68,7 @@ class LibraryLoader
         session.setSystemProperties( System.getProperties() );
         session.setReadOnly();
 
-        this.repositories = repository.newResolutionRepositories( session, Collections.singletonList(new RemoteRepository.Builder("central", "default", "https://repo.maven.apache.org/maven2").build()));
+        this.repositories = repository.newResolutionRepositories( session, Arrays.asList( new RemoteRepository.Builder( "central", "default", "https://repo.maven.apache.org/maven2" ).build() ) );
     }
 
     public ClassLoader createLoader(PluginDescription desc)

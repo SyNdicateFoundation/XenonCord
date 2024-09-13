@@ -157,6 +157,11 @@ public class BungeeCord extends ProxyServer
         getPluginManager().registerCommand(null, new CommandIP());
         getPluginManager().registerCommand(null, new CommandPerms());
         getPluginManager().registerCommand(null, new CommandReload());
+        getPluginManager().registerCommand(null, new CommandSend());
+        getPluginManager().registerCommand(null, new CommandList());
+        getPluginManager().registerCommand(null, new CommandFind());
+        getPluginManager().registerCommand(null, new CommandAlert());
+        getPluginManager().registerCommand(null, new CommandAlertRaw());
 
 
         if ( Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )return;
@@ -200,9 +205,8 @@ public class BungeeCord extends ProxyServer
             XenonCore.instance.getLogger().info("ASYNC task plugin loader is starting...");
             pluginManager.detectPlugins( pluginsFolder );
             pluginManager.loadPlugins();
-            pluginManager.enablePlugins();
+            XenonCore.instance.setProxyCompletlyLoaded(pluginManager.enablePlugins());;
             XenonCore.instance.getLogger().info("Plugins are loaded!");
-            XenonCore.instance.setProxyCompletlyLoaded(true);
         });
 
 

@@ -1,5 +1,6 @@
 package net.md_5.bungee;
 
+import java.io.FileWriter;
 import java.security.Security;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;

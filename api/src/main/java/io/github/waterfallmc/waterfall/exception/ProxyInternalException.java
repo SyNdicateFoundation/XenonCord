@@ -26,7 +26,7 @@ public class ProxyInternalException extends ProxyException {
 
     public static void reportInternalException(Throwable cause) {
         try {
-            ProxyServer.getInstance().getPluginManager().callEvent(new ProxyExceptionEvent(new ProxyInternalException(cause)));
+            ProxyServer.getInstance().getPluginManager().callEvent(new ProxyExceptionEvent(new ProxyInternalException(cause)));;
         } catch (Throwable t) {
             t.printStackTrace(); // Don't want to rethrow!
         }

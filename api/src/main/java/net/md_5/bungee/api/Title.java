@@ -22,7 +22,7 @@ public interface Title
      * @param text The text to use as the title.
      * @return This title configuration.
      */
-    Title title(BaseComponent text);
+    public Title title(BaseComponent text);
 
     /**
      * Set the title to send to the player.
@@ -30,7 +30,7 @@ public interface Title
      * @param text The text to use as the title.
      * @return This title configuration.
      */
-    Title title(BaseComponent... text);
+    public Title title(BaseComponent... text);
 
     /**
      * Set the subtitle to send to the player.
@@ -38,7 +38,7 @@ public interface Title
      * @param text The text to use as the subtitle.
      * @return This title configuration.
      */
-    Title subTitle(BaseComponent text);
+    public Title subTitle(BaseComponent text);
 
     /**
      * Set the subtitle to send to the player.
@@ -46,7 +46,7 @@ public interface Title
      * @param text The text to use as the subtitle.
      * @return This title configuration.
      */
-    Title subTitle(BaseComponent... text);
+    public Title subTitle(BaseComponent... text);
 
     /**
      * Set the duration in ticks of the fade in effect of the title. Once this
@@ -57,7 +57,7 @@ public interface Title
      * @param ticks The amount of ticks (1/20 second) for the fade in effect.
      * @return This title configuration.
      */
-    Title fadeIn(int ticks);
+    public Title fadeIn(int ticks);
 
     /**
      * Set the duration in ticks how long the title should stay on the screen.
@@ -68,7 +68,7 @@ public interface Title
      * @param ticks The amount of ticks (1/20 second) for the stay effect.
      * @return This title configuration.
      */
-    Title stay(int ticks);
+    public Title stay(int ticks);
 
     /**
      * Set the duration in ticks of the fade out effect of the title. The
@@ -77,7 +77,7 @@ public interface Title
      * @param ticks The amount of ticks (1/20 second) for the fade out effect.
      * @return This title configuration.
      */
-    Title fadeOut(int ticks);
+    public Title fadeOut(int ticks);
 
     /**
      * Remove the currently displayed title from the player's screen. This will
@@ -85,7 +85,7 @@ public interface Title
      *
      * @return This title configuration.
      */
-    Title clear();
+    public Title clear();
 
     /**
      * Remove the currently displayed title from the player's screen and set the
@@ -93,7 +93,7 @@ public interface Title
      *
      * @return This title configuration.
      */
-    Title reset();
+    public Title reset();
 
     /**
      * Send this title configuration to the specified player. This is the same
@@ -102,5 +102,5 @@ public interface Title
      * @param player The player to send the title to.
      * @return This title configuration.
      */
-    Title send(ProxiedPlayer player);
+    public Title send(ProxiedPlayer player);
 }

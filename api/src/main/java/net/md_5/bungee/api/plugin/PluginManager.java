@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.CountDownLatch;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -298,7 +299,7 @@ public final class PluginManager
         for ( Map.Entry<String, PluginDescription> entry : toLoad.entrySet() )
         {
             PluginDescription plugin = entry.getValue();
-            if ( !enablePlugin( pluginStatuses, new Stack<PluginDescription>(), plugin ) )
+            if ( !enablePlugin( pluginStatuses, new Stack<>(), plugin ) )
             {
                 ProxyServer.getInstance().getLogger().log( Level.WARNING, "Failed to enable {0}", entry.getKey() );
             }
@@ -307,26 +308,37 @@ public final class PluginManager
         toLoad = null;
     }
 
-    public void enablePlugins()
+
+
+    public boolean enablePlugins()
     {
-        for ( Plugin plugin : plugins.values() )
-        {
+        final CountDownLatch countDown = new CountDownLatch(plugins.size());
+
+        plugins.values().forEach(plugin -> new Thread(() -> {
             try
             {
                 plugin.onEnable();
-                ProxyServer.getInstance().getLogger().log( Level.INFO, "Enabled plugin {0} version {1} by {2}", new Object[]
-                {
-                    plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getAuthor()
-                } );
-            } catch ( Throwable t )
+                ProxyServer.getInstance().getLogger().log(Level.INFO, "Enabled plugin {0} version {1} by {2}", new Object[]
+                        {
+                                plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getAuthor()
+                        });
+            } catch (Throwable t)
             {
-                // Waterfall start - throw exception event
                 String msg = "Exception encountered when loading plugin: " + plugin.getDescription().getName();
-                ProxyServer.getInstance().getLogger().log( Level.WARNING, msg, t );
-                this.callEvent( new ProxyExceptionEvent( new ProxyPluginEnableDisableException( msg, t, plugin) ) );
-                // Waterfall end
+                ProxyServer.getInstance().getLogger().log(Level.WARNING, msg, t);
+                this.callEvent(new ProxyExceptionEvent(new ProxyPluginEnableDisableException(msg, t, plugin)));
+            } finally
+            {
+                countDown.countDown();
             }
-        }
+        }).start());
+
+        try
+        {
+            countDown.await();
+        } catch (Exception ignored) {}
+
+        return true;
     }
 
     private boolean enablePlugin(Map<PluginDescription, Boolean> pluginStatuses, Stack<PluginDescription> dependStack, PluginDescription plugin)
@@ -547,7 +559,10 @@ public final class PluginManager
 
         if ( dependencyGraph.nodes().contains( plugin.getName() ) )
         {
-            return Graphs.reachableNodes(dependencyGraph, plugin.getName()).contains(depend.getName());
+            if ( Graphs.reachableNodes( dependencyGraph, plugin.getName() ).contains( depend.getName() ) )
+            {
+                return true;
+            }
         }
         return false;
     }

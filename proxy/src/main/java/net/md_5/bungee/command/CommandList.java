@@ -1,4 +1,4 @@
-package net.md_5.bungee.module.cmd.list;
+package net.md_5.bungee.command;
 
 import java.util.ArrayList;
 import java.util.Collection;
