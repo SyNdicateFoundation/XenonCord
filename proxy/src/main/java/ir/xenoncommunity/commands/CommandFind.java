@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+import ir.xenoncommunity.XenonCore;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -59,6 +60,6 @@ public class CommandFind extends Command implements TabExecutor
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        return args.length == 1 ? Lists.newArrayList(args) : Collections.emptyList();
+        return args.length == 1 ? XenonCore.instance.getPlayerNames() : Collections.emptyList();
     }
 }

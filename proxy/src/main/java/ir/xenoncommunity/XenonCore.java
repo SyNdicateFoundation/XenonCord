@@ -11,6 +11,9 @@ import net.md_5.bungee.api.ChatColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Getter
 public class XenonCore {
@@ -52,5 +55,10 @@ public class XenonCore {
      * Called when proxy is shutting down.
      */
     public void shutdown(){
+    }
+    public List<String> getPlayerNames(){
+        List<String> players = new ArrayList<>();
+        bungeeInstance.getPlayers().forEach(player -> players.add(player.getName()));
+        return players;
     }
 }

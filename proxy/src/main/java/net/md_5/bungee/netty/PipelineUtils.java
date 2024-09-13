@@ -30,6 +30,7 @@ import java.net.SocketAddress;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PipelineUtils
 {
@@ -38,33 +39,22 @@ public class PipelineUtils
     public static final ChannelInitializer<Channel> SERVER_CHILD = new ChannelInitializer<Channel>()
     {
         @Override
-        protected void initChannel(Channel ch) throws Exception
-        {
+        protected void initChannel(Channel ch) {
             SocketAddress remoteAddress = ( ch.remoteAddress() == null ) ? ch.parent().localAddress() : ch.remoteAddress();
-
-            if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
-            {
-                ch.close();
-                return;
-            }
             ListenerInfo listener = ch.attr( LISTENER ).get();
-
-            if ( BungeeCord.getInstance().getPluginManager().callEvent( new ClientConnectEvent( remoteAddress, listener ) ).isCancelled() )
-            {
-                ch.close();
-                return;
-            }
-
             ConnectionInitEvent connectionInitEvent = new ConnectionInitEvent(ch.remoteAddress(), listener, (result, throwable) -> { // Waterfall
 
-            if (result.isCancelled()) {
+           if (
+           (BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ))
+           || ( BungeeCord.getInstance().getPluginManager().callEvent( new ClientConnectEvent( remoteAddress, listener ) ).isCancelled() )
+           || (result.isCancelled()))
+            {
                 ch.close();
                 return;
             }
 
-
             try {
-            BASE.initChannel( ch );
+                BASE.initChannel( ch );
             } catch (Exception e) {
                 e.printStackTrace();
                 ch.close();
@@ -77,10 +67,8 @@ public class PipelineUtils
             ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( BungeeCord.getInstance(), listener ) );
 
             if ( listener.isProxyProtocol() )
-            {
                 ch.pipeline().addFirst( new HAProxyMessageDecoder() );
-            }
-            }); // Waterfall
+            });
 
             BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
         }
@@ -110,42 +98,30 @@ public class PipelineUtils
     private static final ChannelFactory<? extends Channel> channelDomainFactory;
     // Waterfall end
 
-    static
-    {
-        if ( !PlatformDependent.isWindows() )
-        {
-            // disable by default (experimental)
-            if ( Boolean.parseBoolean( System.getProperty( "bungee.io_uring", "false" ) ) )
-            {
-                ProxyServer.getInstance().getLogger().info( "Not on Windows, attempting to use enhanced IOUringEventLoopGroup" );
-                if ( io_uring = IOUring.isAvailable() )
-                {
-                    ProxyServer.getInstance().getLogger().log( Level.WARNING, "io_uring is enabled and working, utilising it! (experimental feature)" );
-                } else
-                {
-                    ProxyServer.getInstance().getLogger().log( Level.WARNING, "io_uring is not working: {0}", Util.exception( IOUring.unavailabilityCause() ) );
-                }
-            }
+    static {
+        final Logger logger = ProxyServer.getInstance().getLogger();
 
-            if ( !io_uring && Boolean.parseBoolean( System.getProperty( "bungee.epoll", "true" ) ) )
-            {
-                ProxyServer.getInstance().getLogger().info( "Not on Windows, attempting to use enhanced EpollEventLoop" );
-                if ( epoll = Epoll.isAvailable() )
-                {
-                    ProxyServer.getInstance().getLogger().info( "Epoll is working, utilising it!" );
-                } else
-                {
-                    ProxyServer.getInstance().getLogger().log( Level.WARNING, "Epoll is not working, falling back to NIO: {0}", Util.exception( Epoll.unavailabilityCause() ) );
-                }
+        if (!PlatformDependent.isWindows()) {
+            boolean ioUringEnabled = Boolean.parseBoolean(System.getProperty("bungee.io_uring", "false"));
+            boolean epollEnabled = Boolean.parseBoolean(System.getProperty("bungee.epoll", "true"));
+
+            if (ioUringEnabled) {
+                logger.info("Not on Windows, attempting to use enhanced IOUringEventLoopGroup");
+                io_uring = IOUring.isAvailable();
+                logger.log(io_uring ? Level.WARNING : Level.INFO, String.format("io_uring is %s", io_uring ? "enabled and working, utilising it! (experimental feature)." : "not working: {0}"), Util.exception(IOUring.unavailabilityCause()));
+            }
+            if (!io_uring && epollEnabled) {
+                logger.info("Not on Windows, attempting to use enhanced EpollEventLoop");
+                epoll = Epoll.isAvailable();
+                logger.log(epoll ? Level.INFO : Level.WARNING, String.format("Epoll is %s", epoll ? "working, utilising it!" : "not working, falling back to NIO: {0}"), Util.exception(Epoll.unavailabilityCause()));
             }
         }
-        // Waterfall start: netty reflection -> factory
         serverChannelFactory = epoll ? EpollServerSocketChannel::new : NioServerSocketChannel::new;
         serverChannelDomainFactory = epoll ? EpollServerDomainSocketChannel::new : null;
         channelFactory = epoll ? EpollSocketChannel::new : NioSocketChannel::new;
         channelDomainFactory = epoll ? EpollDomainSocketChannel::new : null;
-        // Waterfall end
     }
+
 
     public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory)
     {
