@@ -56,12 +56,17 @@ public class Configuration {
     public static class ConfigData{
         private String prefix;
         private String loadingmessage;
+        private String ingamebrandname;
         private ModulesData modules;
     }
     @Getter
     @Setter
     public static class ModulesData{
         private String motd;
+        private String[] spyexceptions;
+        private String spybypass;
+        private String spyperm;
+        private String spymessage;
         private String[] enables;
     }
 }

@@ -16,6 +16,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.unix.DomainSocketAddress;
+import ir.xenoncommunity.XenonCore;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.ServerConnection.KeepAliveData;
@@ -315,16 +316,11 @@ public class DownstreamBridge extends PacketHandler
         if ( pluginMessage.getTag().equals( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand" ) )
         {
             ByteBuf brand = Unpooled.wrappedBuffer( pluginMessage.getData() );
-            String serverBrand = DefinedPacket.readString( brand );
             brand.release();
-
-            Preconditions.checkState( !serverBrand.contains( bungee.getName() ), "Cannot connect proxy to itself!" );
-
             brand = ByteBufAllocator.DEFAULT.heapBuffer();
-            DefinedPacket.writeString( bungee.getName() + " <- " + serverBrand, brand ); // Waterfall
+            DefinedPacket.writeString(XenonCore.instance.getConfigData().getIngamebrandname(), brand); // Waterfall
             pluginMessage.setData( brand );
             brand.release();
-            // changes in the packet are ignored so we need to send it manually
             con.unsafe().sendPacket( pluginMessage );
             throw CancelSendSignal.INSTANCE;
         }

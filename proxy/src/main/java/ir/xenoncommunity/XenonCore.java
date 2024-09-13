@@ -37,9 +37,10 @@ public class XenonCore {
      */
     public void init(final long startTime){
         setConfigData(configuration.init());
+        configData.setLoadingmessage(configData.getLoadingmessage().replace("PREFIX", configData.getPrefix()));
+        configData.getModules().setSpymessage(configData.getModules().getSpymessage().replace("PREFIX", configData.getPrefix()));
         //bungeeInstance.getPluginManager().registerListener(null , new JoinListener());
         getTaskManager().independentTask(() -> {
-            configData.setLoadingmessage(configData.getLoadingmessage().replace("PREFIX", configData.getPrefix()));
             while(!isProxyCompletlyLoaded)
                 bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(ChatColor.translateAlternateColorCodes('&', configData.getLoadingmessage())));
 

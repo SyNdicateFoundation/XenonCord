@@ -1,7 +1,17 @@
 prefix: "&b&lXenonCore"
 # PREFIX --> your prefix
 loadingmessage: "PREFIX\n &r&cstill loading.\n\n &cYou got disconnected to prevent problems."
+ingamebrandname: "XenonCord"
 modules:
   motd: "&b&lA XenonCord server."
+  spyexceptions:
+    - "login"
+    - "reg"
+    - "register"
+    - "log"
+  spybypass: "xenoncord.spy.bypass"
+  spyperm: "xenoncord.spy.alerts"
+  spymessage: "PREFIX &r&cPLAYER &b>> COMMAND"
   enables:
     - MotdChanger
+    - CommandSpy
