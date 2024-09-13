@@ -20,18 +20,22 @@ public class CommandSpy extends ModuleListener implements Listener {
         if(player.hasPermission(XenonCore.instance.getConfigData().getModules().getSpybypass())) return;
 
         final String rawCommand = e.getMessage();
-        final String command = e.getMessage().replace("/", "");
+        final String command = rawCommand.substring(1).toLowerCase();
 
-        if(Arrays.asList(XenonCore.instance.getConfigData().getModules().getSpyexceptions()).contains(command)) return;
+        XenonCore.instance.getTaskManager().add(() -> {
+            if (Arrays.stream(XenonCore.instance.getConfigData().getModules().getSpyexceptions())
+                    .map(String::toLowerCase)
+                    .anyMatch(command::contains)) return;
 
 
-        XenonCore.instance.getBungeeInstance().getPlayers().stream().filter(
-                proxiedPlayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getModules().getSpyperm())).forEach(
-                        proxiedPlayer -> {
-            proxiedPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    XenonCore.instance.getConfigData().getModules().getSpymessage()
-                            .replace("PLAYER", player.getDisplayName())
-                            .replace("COMMAND", rawCommand)));
+            XenonCore.instance.getBungeeInstance().getPlayers().stream().filter(
+                    proxiedPlayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getModules().getSpyperm())).forEach(
+                    proxiedPlayer -> {
+                        proxiedPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                                XenonCore.instance.getConfigData().getModules().getSpymessage()
+                                        .replace("PLAYER", player.getDisplayName())
+                                        .replace("COMMAND", rawCommand)));
+                    });
         });
     }
 }
