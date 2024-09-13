@@ -73,6 +73,12 @@ jobs:
           fi
           echo "JAR_FILE_PATH=bootstrap/target/$jar_file" >> $GITHUB_ENV
           echo "JAR_FILE_NAME=$jar_file" >> $GITHUB_ENV
+          echo "Found JAR file: $jar_file"
+
+      - name: Debug Environment Variables
+        run: |
+          echo "JAR_FILE_PATH=${{ env.JAR_FILE_PATH }}"
+          echo "JAR_FILE_NAME=${{ env.JAR_FILE_NAME }}"
 
       - name: Upload jar file
         uses: actions/upload-release-asset@v1
