@@ -71,7 +71,7 @@ jobs:
           if [ "$jar_file" = "No JAR file found" ]; then
             exit 1
           fi
-          echo "path=$jar_file" >> $GITHUB_ENV
+          echo "::set-env name=JAR_FILE_PATH::bootstrap/target/$jar_file"
 
       - name: Upload jar file
         uses: actions/upload-release-asset@v1
@@ -79,8 +79,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: bootstrap/target/${{ env.path }}
-          asset_name: ${{ env.path }}
+          asset_path: ${{ env.JAR_FILE_PATH }}
+          asset_name: ${{ env.JAR_FILE_PATH }}
           asset_content_type: application/java-archive
 
 permissions:
