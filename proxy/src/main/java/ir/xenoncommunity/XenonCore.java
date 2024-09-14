@@ -41,6 +41,8 @@ public class XenonCore {
         setConfigData(configuration.init());
         configData.setLoadingmessage(configData.getLoadingmessage().replace("PREFIX", configData.getPrefix()));
         configData.getModules().setSpymessage(configData.getModules().getSpymessage().replace("PREFIX", configData.getPrefix()));
+        configData.getModules().setStaffchatmessage(configData.getModules().getStaffchatmessage().replace("PREFIX", configData.getPrefix()));
+        configData.getCommandwhitelist().setBlockmessage(configData.getCommandwhitelist().getBlockmessage().replace("PREFIX", configData.getPrefix()));
         //bungeeInstance.getPluginManager().registerListener(null , new JoinListener());
         getTaskManager().independentTask(() -> {
             while(!isProxyCompletlyLoaded)

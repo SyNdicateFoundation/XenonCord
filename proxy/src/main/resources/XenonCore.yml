@@ -1,17 +1,54 @@
+# prefix for messages.
 prefix: "&b&lXenonCord"
-# PREFIX --> your prefix
+# XenonCord will kick players during loading process. this is it's kick messsage.
+# PREFIX: your prefix
 loadingmessage: "PREFIX\n &r&cstill loading.\n\n &cYou got disconnected to prevent problems."
+# changes ingame brand name (F3)
 ingamebrandname: "XenonCord"
 modules:
+  # Requires MotdChanger module to be enabled.
+  # Changes motd to this.
   motd: "&b&lA XenonCord server."
+  # Requires CommandSpy module to be enabled.
+  # exceptions for command spy.
   spyexceptions:
     - "login"
     - "reg"
     - "register"
     - "log"
+    - "l"
+  # Spy bypass permission
   spybypass: "xenoncord.spy.bypass"
+  # Spy alert permission
   spyperm: "xenoncord.spy.alerts"
+  # Spy message
+  # PREFIX: your prefix, PLAYER: player, COMMAND: executed command.
   spymessage: "PREFIX &r&cPLAYER &b>> COMMAND"
+  # Requires StaffChat module to be enabled.
+  # permission for staffchat
+  staffchatperm: "xenoncord.staffchat"
+  # Staffchat message format.
+  # PREFIX: your prefix, PLAYER: player, MESSAGE: message.
+  staffchatmessage: "PREFIX &cStaffChat &8PLAYER>> &8MESSAGE"
+  # List of enabled modules
   enables:
     - MotdChanger
     - CommandSpy
+    - StaffChat
+    - CommandWhitelist
+# Requires CommandWhiteList module to be enabled.
+# pergroup works with permission. permission is xenoncord.commandwhitelist.example
+commandwhitelist:
+  bypass: "xenoncord.commandwhitelist.bypass"
+  blockmessage: "PREFIX&c>> Sorry, this command is blocked."
+  pergroup:
+    default:
+      servers:
+        - "auth"
+        - "lobby"
+      commands:
+        - "login"
+        - "reg"
+        - "register"
+        - "log"
+        - "l"

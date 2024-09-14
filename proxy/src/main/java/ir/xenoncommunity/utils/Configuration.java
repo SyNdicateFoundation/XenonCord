@@ -9,6 +9,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.*;
+import java.util.Map;
 import java.util.Objects;
 
 public class Configuration {
@@ -58,6 +59,7 @@ public class Configuration {
         private String loadingmessage;
         private String ingamebrandname;
         private ModulesData modules;
+        private CommandWhitelistData commandwhitelist;
     }
     @Getter
     @Setter
@@ -67,6 +69,22 @@ public class Configuration {
         private String spybypass;
         private String spyperm;
         private String spymessage;
+        private String staffchatperm;
+        private String staffchatmessage;
         private String[] enables;
+    }
+    @Getter
+    @Setter
+    public static class CommandWhitelistData {
+        private String bypass;
+        private String blockmessage;
+        private Map<String, GroupData> pergroup;
+    }
+
+    @Getter
+    @Setter
+    public static class GroupData {
+        private String[] servers;
+        private String[] commands;
     }
 }
