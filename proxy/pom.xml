@@ -186,6 +186,11 @@
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.42.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>6.6.3</version>
+        </dependency>
         <!-- Waterfall end -->
     </dependencies>
 
