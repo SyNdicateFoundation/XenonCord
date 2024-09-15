@@ -1,7 +1,8 @@
 package ir.xenoncommunity.modules.listeners;
 
 import ir.xenoncommunity.XenonCore;
-import ir.xenoncommunity.abstracts.ModuleListener;
+import ir.xenoncommunity.annotations.ModuleListener;
+import ir.xenoncommunity.modules.ModuleManager;
 import ir.xenoncommunity.utils.Configuration;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -14,7 +15,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unused") public class CommandWhitelist extends ModuleListener implements Listener {
+@SuppressWarnings("unused")
+@ModuleListener public class CommandWhitelist implements Listener {
 
     @EventHandler public void onCommandExecution(final ChatEvent e) {
         if (!e.getMessage().startsWith("/")

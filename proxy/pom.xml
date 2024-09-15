@@ -187,9 +187,9 @@
             <version>3.42.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.github.oshi</groupId>
-            <artifactId>oshi-core</artifactId>
-            <version>6.6.3</version>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf</artifactId>
+            <version>3.5.1</version>
         </dependency>
         <!-- Waterfall end -->
     </dependencies>

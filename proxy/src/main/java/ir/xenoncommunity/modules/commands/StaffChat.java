@@ -1,6 +1,7 @@
 package ir.xenoncommunity.modules.commands;
 
 import ir.xenoncommunity.XenonCore;
+import ir.xenoncommunity.annotations.ModuleListener;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

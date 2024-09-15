@@ -1,7 +1,6 @@
 package ir.xenoncommunity;
 
-//import ir.xenoncommunity.listener.JoinListener;
-import ir.xenoncommunity.abstracts.ModuleListener;
+import ir.xenoncommunity.modules.ModuleManager;
 import ir.xenoncommunity.gui.SwingManager;
 import ir.xenoncommunity.utils.Configuration;
 import ir.xenoncommunity.utils.TaskManager;
@@ -14,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
 @Getter
@@ -26,6 +24,7 @@ public class XenonCore {
     private final BungeeCord bungeeInstance;
     private final Configuration configuration;
     @Setter private Configuration.ConfigData configData;
+    private final ModuleManager moduleManager;
     /**
      * Initializes all required variables.
      */
@@ -35,6 +34,7 @@ public class XenonCore {
         this.taskManager = new TaskManager();
         this.bungeeInstance = BungeeCord.getInstance();
         this.configuration = new Configuration();
+        this.moduleManager = new ModuleManager();
     }
     /**
      * Called when proxy is loaded.
@@ -45,15 +45,13 @@ public class XenonCore {
         configData.getModules().setSpymessage(configData.getModules().getSpymessage().replace("PREFIX", configData.getPrefix()));
         configData.getModules().setStaffchatmessage(configData.getModules().getStaffchatmessage().replace("PREFIX", configData.getPrefix()));
         configData.getCommandwhitelist().setBlockmessage(configData.getCommandwhitelist().getBlockmessage().replace("PREFIX", configData.getPrefix()));
-        //bungeeInstance.getPluginManager().registerListener(null , new JoinListener());
         getTaskManager().independentTask(() -> {
             while(!isProxyCompletlyLoaded)
                 bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(ChatColor.translateAlternateColorCodes('&', configData.getLoadingmessage())));
 
-            ModuleListener.init();
-            SwingManager.initSwingGuis();
+            moduleManager.init();
+            SwingManager.initSwingGui();
         });
-        getTaskManager().repeatingTask(System::gc, 0, 5000, TimeUnit.MILLISECONDS);
         getLogger().info(String.format("Done loading! took %sMS to load!", System.currentTimeMillis() - startTime));
     }
 
