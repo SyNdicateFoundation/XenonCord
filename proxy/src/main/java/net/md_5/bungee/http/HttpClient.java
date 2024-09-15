@@ -102,7 +102,7 @@ public class HttpClient
         } else {
             getWithDefaultResolver(eventLoop, uri, port, future, callback, ssl);
         }
-        //new Bootstrap().channel( PipelineUtils.getChannel() ).group( eventLoop ).handler( new HttpInitializer( callback, ssl, uri.getHost(), port ) ).
+        //new Bootstrap().channel( PipelineUtils.getChannel() ).group( eventLoop ).gui( new HttpInitializer( callback, ssl, uri.getHost(), port ) ).
         //        option( ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT ).remoteAddress( inetHost, port ).connect().addListener( future );
     }
 

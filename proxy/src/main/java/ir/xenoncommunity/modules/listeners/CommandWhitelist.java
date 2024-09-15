@@ -48,6 +48,9 @@ import java.util.stream.Collectors;
 
         ProxiedPlayer player = (ProxiedPlayer) e.getSender();
         String command = e.getCursor().trim();
+        if(command.contains("/") && command.substring(1).isEmpty())
+            e.getSuggestions().clear();
+
         Configuration.CommandWhitelistData whitelistData = XenonCore.instance.getConfigData().getCommandwhitelist();
 
         if (whitelistData.getPergroup().entrySet().stream()

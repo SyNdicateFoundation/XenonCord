@@ -491,7 +491,7 @@ public class ServerConnector extends PacketHandler
 
                 if ( isForgeServer && !this.handshakeHandler.isServerForge() )
                 {
-                    // We now set the server-side handshake handler for the client to this.
+                    // We now set the server-side handshake gui for the client to this.
                     handshakeHandler.setServerAsForgeServer();
                     user.setForgeServerHandler( handshakeHandler );
                 }
@@ -501,7 +501,7 @@ public class ServerConnector extends PacketHandler
             {
                 this.handshakeHandler.handle( pluginMessage );
 
-                // We send the message as part of the handler, so don't send it here.
+                // We send the message as part of the gui, so don't send it here.
                 throw CancelSendSignal.INSTANCE;
             }
         }

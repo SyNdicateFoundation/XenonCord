@@ -2,6 +2,7 @@ package ir.xenoncommunity;
 
 //import ir.xenoncommunity.listener.JoinListener;
 import ir.xenoncommunity.abstracts.ModuleListener;
+import ir.xenoncommunity.gui.SwingManager;
 import ir.xenoncommunity.utils.Configuration;
 import ir.xenoncommunity.utils.TaskManager;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 @Getter
@@ -49,7 +51,9 @@ public class XenonCore {
                 bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(ChatColor.translateAlternateColorCodes('&', configData.getLoadingmessage())));
 
             ModuleListener.init();
+            SwingManager.initSwingGuis();
         });
+        getTaskManager().repeatingTask(System::gc, 0, 5000, TimeUnit.MILLISECONDS);
         getLogger().info(String.format("Done loading! took %sMS to load!", System.currentTimeMillis() - startTime));
     }
 

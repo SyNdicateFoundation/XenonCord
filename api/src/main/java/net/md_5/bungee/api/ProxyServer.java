@@ -147,16 +147,16 @@ import net.md_5.bungee.api.scheduler.TaskScheduler;
     public abstract void setConfigurationAdapter(ConfigurationAdapter adapter);
 
     /**
-     * Get the currently in use reconnect handler.
+     * Get the currently in use reconnect gui.
      *
-     * @return the in use reconnect handler
+     * @return the in use reconnect gui
      */
     public abstract ReconnectHandler getReconnectHandler();
 
     /**
-     * Sets the reconnect handler to be used for subsequent connections.
+     * Sets the reconnect gui to be used for subsequent connections.
      *
-     * @param handler the new handler
+     * @param handler the new gui
      */
     public abstract void setReconnectHandler(ReconnectHandler handler);
 

@@ -9,7 +9,7 @@ import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-public class MotdChanger extends ModuleListener implements Listener {
+@SuppressWarnings("unused") public class MotdChanger extends ModuleListener implements Listener {
     @EventHandler public void proxyPingEvent(final ProxyPingEvent e){
         final ServerPing serverPing = e.getResponse();
         serverPing.setDescriptionComponent(new TextComponent(ChatColor.translateAlternateColorCodes('&', XenonCore.instance.getConfigData().getModules().getMotd())));

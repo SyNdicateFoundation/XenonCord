@@ -476,7 +476,7 @@ public final class PluginManager
         Preconditions.checkNotNull( event, "event" );
 
         long start = System.nanoTime();
-        eventBus.post( event, this::handleEventException ); //Waterfall - pass exception handler below
+        eventBus.post( event, this::handleEventException ); //Waterfall - pass exception gui below
         event.postCall();
 
         long elapsed = System.nanoTime() - start;
@@ -490,7 +490,7 @@ public final class PluginManager
         return event;
     }
 
-    //Waterfall start - Exception handler passed to event bus to fire the exception event
+    //Waterfall start - Exception gui passed to event bus to fire the exception event
     private <T extends Event> void handleEventException(String msg, T event, EventHandlerMethod method, Throwable ex) {
         if( !(event instanceof ProxyExceptionEvent) ) {
             this.callEvent( new ProxyExceptionEvent( new ProxyEventException( msg, ex, (Listener) method.getListener(), event) ) );

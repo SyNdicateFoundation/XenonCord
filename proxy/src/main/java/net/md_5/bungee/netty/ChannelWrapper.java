@@ -155,7 +155,7 @@ public class ChannelWrapper
 
     public void addBefore(String baseName, String name, ChannelHandler handler)
     {
-        Preconditions.checkState( ch.eventLoop().inEventLoop(), "cannot add handler outside of event loop" );
+        Preconditions.checkState( ch.eventLoop().inEventLoop(), "cannot add gui outside of event loop" );
         ch.pipeline().flush();
         ch.pipeline().addBefore( baseName, name, handler );
     }

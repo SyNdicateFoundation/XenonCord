@@ -34,7 +34,7 @@ public class EventBus
         this.logger = ( logger == null ) ? Logger.getLogger( Logger.GLOBAL_LOGGER_NAME ) : logger;
     }
 
-    // Waterfall - Add generic to signature so we don't have to cast in exception handler
+    // Waterfall - Add generic to signature so we don't have to cast in exception gui
     public <T> void post(T event, EventExceptionHandler<T> exceptionHandler)
     {
         EventHandlerMethod[] handlers = byEventBaked.get( event.getClass() );
@@ -58,7 +58,7 @@ public class EventBus
                 {
                     String msg = MessageFormat.format( "Error dispatching event {0} to listener {1}", event, method.getListener() );
                     logger.log( Level.WARNING, msg, ex.getCause() );
-                    if( exceptionHandler != null ) exceptionHandler.handleEventException( msg, event, method, ex ); //Waterfall - call passed exception handler
+                    if( exceptionHandler != null ) exceptionHandler.handleEventException( msg, event, method, ex ); //Waterfall - call passed exception gui
                 }
 
                 long elapsed = System.nanoTime() - start;

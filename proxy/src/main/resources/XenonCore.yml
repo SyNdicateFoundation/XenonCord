@@ -5,6 +5,11 @@ prefix: "&9&lXenon&bCord"
 loadingmessage: "PREFIX\n &r&cstill loading.\n\n &cYou got disconnected to prevent problems."
 # changes ingame brand name (F3)
 ingamebrandname: "XenonCord"
+# A gui for proxy server
+# it has performance impact, indeed.
+usegui: true
+guirefreshrate: 200 # GUI will be refreshed every 200 MS
+# what GUIs should we show?
 modules:
   # Requires MotdChanger module to be enabled.
   # Changes motd to this.

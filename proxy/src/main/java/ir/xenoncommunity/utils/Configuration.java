@@ -55,36 +55,28 @@ public class Configuration {
     @Getter
     @Setter
     public static class ConfigData{
-        private String prefix;
-        private String loadingmessage;
-        private String ingamebrandname;
+        private String prefix, loadingmessage, ingamebrandname;
+        private boolean usegui;
+        private long guirefreshrate;
         private ModulesData modules;
         private CommandWhitelistData commandwhitelist;
     }
     @Getter
     @Setter
     public static class ModulesData{
-        private String motd;
-        private String[] spyexceptions;
-        private String spybypass;
-        private String spyperm;
-        private String spymessage;
-        private String staffchatperm;
-        private String staffchatmessage;
-        private String[] enables;
+        private String motd, spybypass, spyperm, spymessage, staffchatperm, staffchatmessage;
+        private String[] spyexceptions, enables;
     }
     @Getter
     @Setter
     public static class CommandWhitelistData {
-        private String bypass;
-        private String blockmessage;
+        private String bypass, blockmessage;
         private Map<String, GroupData> pergroup;
     }
 
     @Getter
     @Setter
     public static class GroupData {
-        private String[] servers;
-        private String[] commands;
+        private String[] servers, commands;
     }
 }

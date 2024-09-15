@@ -10,9 +10,8 @@ import net.md_5.bungee.event.EventHandler;
 
 import java.util.Arrays;
 
-public class CommandSpy extends ModuleListener implements Listener {
-    @EventHandler
-    public void onCommand(final ChatEvent e) {
+@SuppressWarnings("unused") public class CommandSpy extends ModuleListener implements Listener {
+    @EventHandler public void onCommand(final ChatEvent e) {
         if(!e.getMessage().startsWith("/")
             || !(e.getSender() instanceof ProxiedPlayer)) return;
 
@@ -30,12 +29,10 @@ public class CommandSpy extends ModuleListener implements Listener {
 
             XenonCore.instance.getBungeeInstance().getPlayers().stream().filter(
                     proxiedPlayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getModules().getSpyperm())).forEach(
-                    proxiedPlayer -> {
-                        proxiedPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                                XenonCore.instance.getConfigData().getModules().getSpymessage()
-                                        .replace("PLAYER", player.getDisplayName())
-                                        .replace("COMMAND", rawCommand)));
-                    });
+                    proxiedPlayer -> proxiedPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                            XenonCore.instance.getConfigData().getModules().getSpymessage()
+                                    .replace("PLAYER", player.getDisplayName())
+                                    .replace("COMMAND", rawCommand))));
         });
     }
 }
