@@ -53,7 +53,7 @@ public class XenonCore {
             ModuleListener.init();
             SwingManager.initSwingGuis();
         });
-        //getTaskManager().repeatingTask(System::gc, 0, 5000, TimeUnit.MILLISECONDS);
+        getTaskManager().repeatingTask(System::gc, 0, 5000, TimeUnit.MILLISECONDS);
         getLogger().info(String.format("Done loading! took %sMS to load!", System.currentTimeMillis() - startTime));
     }
 
