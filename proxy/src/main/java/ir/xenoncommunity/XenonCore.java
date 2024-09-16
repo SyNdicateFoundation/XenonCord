@@ -63,6 +63,6 @@ public class XenonCore {
     public List<String> getPlayerNames(){
         List<String> players = new ArrayList<>();
         bungeeInstance.getPlayers().forEach(player -> players.add(player.getName()));
-        return players;
+        return players;//
     }
 }

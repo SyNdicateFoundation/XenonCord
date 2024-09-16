@@ -20,6 +20,7 @@ import net.md_5.bungee.ServerConnection.KeepAliveData;
 import net.md_5.bungee.ServerConnector;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.Util;
+import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -43,6 +44,8 @@ import net.md_5.bungee.tab.TabList;
 import java.io.DataInput;
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -62,62 +65,116 @@ public class DownstreamBridge extends PacketHandler
     private boolean receivedLogin;
 
     @Override
-    public void exception(Throwable t) throws Exception
-    {
-        if ( server.isObsolete() ) return;
+    public void exception(Throwable t) throws Exception {
+        if (server.isObsolete()) return;
 
-        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), TextComponent.fromLegacyText( bungee.getTranslation( "server_went_down" ) ),  con.updateAndGetNextServer( server.getInfo()), ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.EXCEPTION ) );
+        XenonCore.instance.getTaskManager().add(() -> {
+            ServerInfo nextServer;
+            try {
+                Future<ServerInfo> future = new CompletableFuture<>();
+                con.updateAndGetNextServer(server.getInfo(), (result, error) -> {
+                    if (error != null) {
+                        System.err.println("Error while updating and getting the next server: " + error.getMessage());
+                        ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
+                    } else {
+                        ((CompletableFuture<ServerInfo>) future).complete(result);
+                    }
+                });
 
-        if ( event.isCancelled() && event.getCancelServer() != null )
-        {
-            server.setObsolete( true );
-            con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT );
-            return;
-        }
-        con.disconnect0( event.getReason() );
-    }
+                nextServer = future.get();
 
-    @Override
-    public void disconnected(ChannelWrapper channel) throws Exception
-    {
-        // We lost connection to the server
-        server.getInfo().removePlayer( con );
-        if ( bungee.getReconnectHandler() != null )
-        {
-            bungee.getReconnectHandler().setServer( con );
-        }
-
-        ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent( con, server.getInfo() );
-        bungee.getPluginManager().callEvent( serverDisconnectEvent );
-
-        if ( server.isObsolete() )
-        {
-            // do not perform any actions if the user has already moved
-            return;
-        }
-
-            // Waterfall start
-            ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
-            ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), TextComponent.fromLegacyText( bungee.getTranslation( "lost_connection" ) ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.LOST_CONNECTION ) );
-            if ( event.isCancelled() && event.getCancelServer() != null )
-            {
-                server.setObsolete( true );
-                con.connectNow( event.getCancelServer() );
+            } catch (Exception e) {
+                e.printStackTrace();
+                nextServer = null;
             }
-            else
-            {
-                if ( def != null )
-                {
-                    server.setObsolete( true );
-                    con.connectNow( def, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT );
-                    con.sendMessage( bungee.getTranslation( "server_went_down", def.getName() ) );
-                } else
-                {
-                    con.disconnect0( event.getReason() );
+
+            ServerKickEvent event = new ServerKickEvent(
+                    con,
+                    server.getInfo(),
+                    TextComponent.fromLegacyText(bungee.getTranslation("server_went_down")),
+                    nextServer,
+                    ServerKickEvent.State.CONNECTED,
+                    ServerKickEvent.Cause.EXCEPTION
+            );
+
+            bungee.getPluginManager().callEvent(event);
+
+            if (event.isCancelled() && event.getCancelServer() != null) {
+                server.setObsolete(true);
+                con.connectNow(event.getCancelServer(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
+            } else {
+                if (nextServer != null) {
+                    server.setObsolete(true);
+                    con.connectNow(nextServer, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
+                    con.sendMessage(bungee.getTranslation("server_went_down", nextServer.getName()));
+                } else {
+                    con.disconnect0(event.getReason());
                 }
             }
-            // Waterfall end
+        });
     }
+
+
+    @Override
+    public void disconnected(ChannelWrapper channel) {
+        server.getInfo().removePlayer(con);
+
+        if (bungee.getReconnectHandler() != null) {
+            bungee.getReconnectHandler().setServer(con);
+        }
+
+        ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent(con, server.getInfo());
+        bungee.getPluginManager().callEvent(serverDisconnectEvent);
+
+        if (server.isObsolete())
+            return;
+
+        XenonCore.instance.getTaskManager().add(() -> {
+            ServerInfo nextServer;
+            try {
+                Future<ServerInfo> future = new CompletableFuture<>();
+                con.updateAndGetNextServer(server.getInfo(), (result, error) -> {
+                    if (error != null) {
+                        System.err.println("Error while updating and getting the next server: " + error.getMessage());
+                        ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
+                    } else {
+                        ((CompletableFuture<ServerInfo>) future).complete(result);
+                    }
+                });
+
+                nextServer = future.get();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                nextServer = null;
+            }
+
+            ServerKickEvent event = new ServerKickEvent(
+                    con,
+                    server.getInfo(),
+                    TextComponent.fromLegacyText(bungee.getTranslation("lost_connection")),
+                    nextServer,
+                    ServerKickEvent.State.CONNECTED,
+                    ServerKickEvent.Cause.LOST_CONNECTION
+            );
+
+            bungee.getPluginManager().callEvent(event);
+
+            if (event.isCancelled() && event.getCancelServer() != null) {
+                server.setObsolete(true);
+                con.connectNow(event.getCancelServer());
+            } else {
+                if (nextServer != null) {
+                    server.setObsolete(true);
+                    con.connectNow(nextServer, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
+                    con.sendMessage(bungee.getTranslation("server_went_down", nextServer.getName()));
+                } else {
+                    con.disconnect0(event.getReason());
+                }
+            }
+        });
+    }
+
 
     @Override
     public boolean shouldHandle(PacketWrapper packet) throws Exception
@@ -519,24 +576,52 @@ public class DownstreamBridge extends PacketHandler
 
     @Override
     public void handle(Kick kick) throws Exception {
-        ServerInfo def = con.updateAndGetNextServer(server.getInfo());
-        if (server.getInfo().equals(def))
-            def = null;
+        XenonCore.instance.getTaskManager().add(() -> {
+            ServerInfo nextServer;
+            try {
+                Future<ServerInfo> future = new CompletableFuture<>();
+                con.updateAndGetNextServer(server.getInfo(), (result, error) -> {
+                    if (error != null) {
+                        System.err.println("Error while updating and getting the next server: " + error.getMessage());
+                        ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
+                    } else {
+                        ((CompletableFuture<ServerInfo>) future).complete(result);
+                    }
+                });
 
-        ServerKickEvent event = bungee.getPluginManager().callEvent(
-                new ServerKickEvent(con, server.getInfo(), new BaseComponent[]{ kick.getMessage() },
-                        def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.SERVER)
-        );
+                nextServer = future.get();
+                if (server.getInfo().equals(nextServer)) {
+                    nextServer = null;
+                }
 
-        if (event.isCancelled() && event.getCancelServer() != null)
-            con.connectNow(event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT);
-        else
-            con.disconnect(event.getKickReasonComponent());
+                ServerKickEvent event = new ServerKickEvent(
+                        con,
+                        server.getInfo(),
+                        new BaseComponent[]{kick.getMessage()},
+                        nextServer,
+                        ServerKickEvent.State.CONNECTED,
+                        ServerKickEvent.Cause.SERVER
+                );
 
+                bungee.getPluginManager().callEvent(event);
 
-        server.setObsolete(true);
+                if (event.isCancelled() && event.getCancelServer() != null) {
+                    con.connectNow(event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT);
+                } else {
+                    con.disconnect(event.getKickReasonComponent());
+                }
+
+                server.setObsolete(true);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                con.disconnect(new BaseComponent[]{kick.getMessage()});
+            }
+        });
+
         throw CancelSendSignal.INSTANCE;
     }
+
 
 
     @Override

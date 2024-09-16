@@ -4,8 +4,10 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import ir.xenoncommunity.XenonCore;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -37,6 +39,8 @@ import net.md_5.bungee.util.QuietException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor
@@ -295,29 +299,29 @@ public class ServerConnector extends PacketHandler
 
             Scoreboard serverScoreboard = user.getServerSentScoreboard();
             if ( !user.isDisableEntityMetadataRewrite() ) { // Waterfall
-            for ( Objective objective : serverScoreboard.getObjectives() )
-            {
-                user.unsafe().sendPacket( new ScoreboardObjective(
-                        objective.getName(),
-                        ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ) ? Either.right( ComponentSerializer.deserialize( objective.getValue() ) ) : Either.left( objective.getValue() ),
-                        ScoreboardObjective.HealthDisplay.fromString( objective.getType() ),
-                        (byte) 1, null )
-                );
-            }
-            for ( Score score : serverScoreboard.getScores() )
-            {
-                if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_20_3 )
+                for ( Objective objective : serverScoreboard.getObjectives() )
                 {
-                    user.unsafe().sendPacket( new ScoreboardScoreReset( score.getItemName(), null ) );
-                } else
-                {
-                    user.unsafe().sendPacket( new ScoreboardScore( score.getItemName(), (byte) 1, score.getScoreName(), score.getValue(), null, null ) );
+                    user.unsafe().sendPacket( new ScoreboardObjective(
+                            objective.getName(),
+                            ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ) ? Either.right( ComponentSerializer.deserialize( objective.getValue() ) ) : Either.left( objective.getValue() ),
+                            ScoreboardObjective.HealthDisplay.fromString( objective.getType() ),
+                            (byte) 1, null )
+                    );
                 }
-            }
-            for ( Team team : serverScoreboard.getTeams() )
-            {
-                user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
-            }
+                for ( Score score : serverScoreboard.getScores() )
+                {
+                    if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_20_3 )
+                    {
+                        user.unsafe().sendPacket( new ScoreboardScoreReset( score.getItemName(), null ) );
+                    } else
+                    {
+                        user.unsafe().sendPacket( new ScoreboardScore( score.getItemName(), (byte) 1, score.getScoreName(), score.getValue(), null, null ) );
+                    }
+                }
+                for ( Team team : serverScoreboard.getTeams() )
+                {
+                    user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Team( team.getName() ) );
+                }
             } // Waterfall
             serverScoreboard.clear();
 
@@ -431,38 +435,50 @@ public class ServerConnector extends PacketHandler
     }
 
     @Override
-    public void handle(Kick kick) throws Exception
-    {
-        ServerInfo def = user.updateAndGetNextServer( target );
-        ServerKickEvent event = new ServerKickEvent( user, target, new BaseComponent[]
-        {
-            kick.getMessage()
-        }, def, ServerKickEvent.State.CONNECTING, ServerKickEvent.Cause.SERVER );  // Waterfall );
-        if ( event.getKickReason().toLowerCase( Locale.ROOT ).contains( "outdated" ) && def != null )
-        {
-            // Pre cancel the event if we are going to try another server
-            event.setCancelled( true );
-        }
-        bungee.getPluginManager().callEvent( event );
-        if ( event.isCancelled() && event.getCancelServer() != null )
-        {
-            obsolete = true;
-            user.connect( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
+    public void handle(Kick kick) throws Exception {
+        XenonCore.instance.getTaskManager().add(() -> {
+            ServerInfo nextServer;
+            try {
+                final Future<ServerInfo> future = new CompletableFuture<>();
+                user.updateAndGetNextServer(target, (result, error) -> {
+                    if (error != null) {
+                        System.err.println("Error while updating and getting next server: " + error.getMessage());
+                        ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
+                    } else {
+                        ((CompletableFuture<ServerInfo>) future).complete(result);
+                    }
+                });
+
+                nextServer = future.get();
+
+            } catch (final Exception e) {
+                e.printStackTrace();
+                return;
+            }
+
+            ServerKickEvent event = new ServerKickEvent(user, target, new BaseComponent[] { kick.getMessage() }, nextServer, ServerKickEvent.State.CONNECTING, ServerKickEvent.Cause.SERVER);
+
+            if (event.getKickReason().toLowerCase(Locale.ROOT).contains("outdated") && nextServer != null)
+                event.setCancelled(true);
+
+            bungee.getPluginManager().callEvent(event);
+
+            if (event.isCancelled() && event.getCancelServer() != null) {
+                obsolete = true;
+                user.connect(event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT);
+                throw CancelSendSignal.INSTANCE;
+            }
+
+            final String message = bungee.getTranslation("connect_kick", target.getName(), event.getKickReason());
+            if (user.isDimensionChange())
+                user.disconnect(message);
+            else
+                user.sendMessage(message);
+
+
             throw CancelSendSignal.INSTANCE;
-        }
-
-        String message = bungee.getTranslation( "connect_kick", target.getName(), event.getKickReason() );
-        if ( user.isDimensionChange() )
-        {
-            user.disconnect( message );
-        } else
-        {
-            user.sendMessage( message );
-        }
-
-        throw CancelSendSignal.INSTANCE;
+        });
     }
-
     @Override
     public void handle(PluginMessage pluginMessage) throws Exception
     {

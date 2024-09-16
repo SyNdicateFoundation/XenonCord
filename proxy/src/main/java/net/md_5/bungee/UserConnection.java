@@ -7,6 +7,7 @@ import com.google.common.collect.Multimap;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.util.internal.PlatformDependent;
+import ir.xenoncommunity.XenonCore;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ConfigurationAdapter;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PermissionCheckEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -42,6 +42,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
@@ -125,42 +126,52 @@ public final class UserConnection implements ProxiedPlayer
     @Getter
     @Setter
     private ForgeServerHandler forgeServerHandler;
+    private static final Map<Integer, EntityMap> entityMapCache = new ConcurrentHashMap<>();
+
     /*========================================================================*/
     private final Queue<DefinedPacket> packetQueue = new ConcurrentLinkedQueue<>();
+    private static EntityMap getCachedEntityMap(int version) {
+        return entityMapCache.computeIfAbsent(version, EntityMap::getEntityMap);
+    }
     private final Unsafe unsafe = new Unsafe()
     {
         @Override
         public void sendPacket(DefinedPacket packet)
         {
+            //.instance.getTaskManager().add(() -> {
             ch.write( packet );
+            // });
         }
     };
 
-    public boolean init()
-    {
+    public boolean init() {
         final ConfigurationAdapter configAdapter = bungee.getConfigurationAdapter();
-        final InitialHandler pendingConnection = this.getPendingConnection();
-        final Collection<String> groups = new HashSet<>(configAdapter.getGroups(name));
 
-        groups.addAll(configAdapter.getGroups(getUniqueId().toString()));
+        Set<String> nameGroups = new HashSet<>(configAdapter.getGroups(name));
+        Set<String> uuidGroups = new HashSet<>(configAdapter.getGroups(getUniqueId().toString()));
+        nameGroups.addAll(uuidGroups);
 
-        this.entityRewrite = EntityMap.getEntityMap(pendingConnection.getVersion());
+        nameGroups.forEach(this::addGroups);
+
+        this.entityRewrite = getCachedEntityMap(this.getPendingConnection().getVersion());
 
         this.displayName = name;
-
         this.tabListHandler = new ServerUnique(this);
-        groups.forEach(this::addGroups);
 
+        InitialHandler pendingConnection = this.getPendingConnection();
         this.forgeClientHandler = new ForgeClientHandler(this);
-
-        if (pendingConnection.getExtraDataInHandshake().contains(ForgeConstants.FML_HANDSHAKE_TOKEN)) this.forgeClientHandler.setFmlTokenInHandshake(true);
+        if (pendingConnection.getExtraDataInHandshake().contains(ForgeConstants.FML_HANDSHAKE_TOKEN)) {
+            this.forgeClientHandler.setFmlTokenInHandshake(true);
+        }
 
         return BungeeCord.getInstance().addConnection(this);
     }
 
     public void sendPacket(PacketWrapper packet)
     {
-        ch.write( packet );
+        //XenonCore.instance.getTaskManager().add(() -> {
+        ch.write(packet);
+        //});
     }
 
     public void sendPacketQueued(DefinedPacket packet)
@@ -174,11 +185,14 @@ public final class UserConnection implements ProxiedPlayer
 
     public void sendQueuedPackets()
     {
-        DefinedPacket packet;
-        while ( ( packet = packetQueue.poll() ) != null )
-        {
-            unsafe().sendPacket( packet );
-        }
+        XenonCore.instance.getTaskManager().add(() -> {
+            List<DefinedPacket> batch = new ArrayList<>();
+            DefinedPacket packet;
+            while ((packet = packetQueue.poll()) != null) {
+                batch.add(packet);
+            }
+            batch.forEach(p -> unsafe().sendPacket(p));
+        });
     }
 
     @Deprecated
@@ -230,25 +244,25 @@ public final class UserConnection implements ProxiedPlayer
         connect( target, reason );
     }
 
-    public ServerInfo updateAndGetNextServer(ServerInfo currentTarget)
-    {
-        if ( serverJoinQueue == null )
-        {
-            serverJoinQueue = new LinkedList<>( getPendingConnection().getListener().getServerPriority() );
-        }
-
-        ServerInfo next = null;
-        while ( !serverJoinQueue.isEmpty() )
-        {
-            ServerInfo candidate = ProxyServer.getInstance().getServerInfo( serverJoinQueue.remove() );
-            if ( !Objects.equals( currentTarget, candidate ) )
-            {
-                next = candidate;
-                break;
+    public void updateAndGetNextServer(ServerInfo currentTarget, Callback<ServerInfo> callback) {
+        XenonCore.instance.getTaskManager().add(() -> {
+            if (serverJoinQueue == null) {
+                serverJoinQueue = new LinkedList<>(getPendingConnection().getListener().getServerPriority());
             }
-        }
+            ServerInfo next = null;
+            while (!serverJoinQueue.isEmpty()) {
+                ServerInfo candidate = ProxyServer.getInstance().getServerInfo(serverJoinQueue.remove());
+                if (!Objects.equals(currentTarget, candidate)) {
+                    next = candidate;
+                    break;
+                }
+            }
 
-        return next;
+            if (callback != null) {
+                ServerInfo finalNext = next;
+                XenonCore.instance.getTaskManager().add(() -> callback.done(finalNext, null));
+            }
+        });
     }
 
     public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry)
@@ -271,25 +285,18 @@ public final class UserConnection implements ProxiedPlayer
 
     public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason, final int timeout, boolean sendFeedback)
     {
-        // Waterfall end
-        Preconditions.checkNotNull( info, "info" );
+        XenonCore.instance.getTaskManager().independentTask(() -> {
+            Preconditions.checkNotNull( info, "info" );
 
-        ServerConnectRequest.Builder builder = ServerConnectRequest.builder().retry( retry ).reason( reason ).target( info ).sendFeedback(sendFeedback); // Waterfall - feedback param
-        builder.connectTimeout(timeout); // Waterfall
-        if ( callback != null )
-        {
-            // Convert the Callback<Boolean> to be compatible with Callback<Result> from ServerConnectRequest.
-            builder.callback( new Callback<ServerConnectRequest.Result>()
+            ServerConnectRequest.Builder builder = ServerConnectRequest.builder().retry( retry ).reason( reason ).target( info ).sendFeedback(sendFeedback); // Waterfall - feedback param
+            builder.connectTimeout(timeout); // Waterfall
+            if ( callback != null )
             {
-                @Override
-                public void done(ServerConnectRequest.Result result, Throwable error)
-                {
-                    callback.done( ( result == ServerConnectRequest.Result.SUCCESS ) ? Boolean.TRUE : Boolean.FALSE, error );
-                }
-            } );
-        }
+                builder.callback((result, error) -> callback.done( ( result == ServerConnectRequest.Result.SUCCESS ) ? Boolean.TRUE : Boolean.FALSE, error ));
+            }
 
-        connect( builder.build() );
+            connect( builder.build() );
+        });
     }
 
     @Override
@@ -360,23 +367,30 @@ public final class UserConnection implements ProxiedPlayer
                     callback.done( ( future.isSuccess() ) ? ServerConnectRequest.Result.SUCCESS : ServerConnectRequest.Result.FAIL, future.cause() );
                 }
 
-                if ( !future.isSuccess() )
-                {
+                if (!future.isSuccess()) {
                     future.channel().close();
-                    pendingConnects.remove( target );
+                    pendingConnects.remove(target);
 
-                    ServerInfo def = updateAndGetNextServer( target );
-                    if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
-                    {
-                        if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "fallback_lobby" ) ); // Waterfall
-                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout(), request.isSendFeedback() ); // Waterfall
-                    } else if ( dimensionChange )
-                    {
-                        disconnect( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
-                    } else
-                    {
-                        if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
-                    }
+                    updateAndGetNextServer(target, (nextServer, error) -> {
+                        if (error != null) {
+                            System.err.println("Failed to update and get the next server: " + error.getMessage());
+                            disconnect(bungee.getTranslation("fallback_kick", connectionFailMessage(future.cause())));
+                            return;
+                        }
+
+                        if (request.isRetry() && nextServer != null && (getServer() == null || !nextServer.equals(getServer().getInfo()))) {
+                            if (request.isSendFeedback()) {
+                                sendMessage(bungee.getTranslation("fallback_lobby"));
+                            }
+                            connect(nextServer, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout(), request.isSendFeedback());
+                        } else if (dimensionChange) {
+                            disconnect(bungee.getTranslation("fallback_kick", connectionFailMessage(future.cause())));
+                        } else {
+                            if (request.isSendFeedback()) {
+                                sendMessage(bungee.getTranslation("fallback_kick", connectionFailMessage(future.cause())));
+                            }
+                        }
+                    });
                 }
             }
         };
@@ -423,9 +437,9 @@ public final class UserConnection implements ProxiedPlayer
         if ( !ch.isClosing() )
         {
             bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
-            {
-                getName(), BaseComponent.toLegacyText( reason )
-            } );
+                    {
+                            getName(), BaseComponent.toLegacyText( reason )
+                    } );
 
             ch.close( new Kick( reason ) );
 
