@@ -8,8 +8,13 @@ ingamebrandname: "XenonCord"
 # A gui for proxy server
 # it has performance impact, indeed.
 usegui: true
-guirefreshrate: 200 # GUI will be refreshed every 200 MS
+guirefreshrate: 3000 # GUI will be refreshed every 200 MS
 # what GUIs should we show?
+guicomponents:
+  - "Memory Usage"
+  - "Bound Address"
+  - "Online Players"
+  - "Players List"
 modules:
   # Requires MotdChanger module to be enabled.
   # Changes motd to this.

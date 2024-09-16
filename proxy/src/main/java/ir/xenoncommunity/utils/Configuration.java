@@ -56,6 +56,7 @@ public class Configuration {
     @Setter
     public static class ConfigData{
         private String prefix, loadingmessage, ingamebrandname;
+        private String[] guicomponents;
         private boolean usegui;
         private long guirefreshrate;
         private ModulesData modules;
