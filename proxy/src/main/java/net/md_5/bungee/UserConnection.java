@@ -257,7 +257,7 @@ public final class UserConnection implements ProxiedPlayer
                     break;
                 }
             }
-            if (callback != null)
+            if (callback != null && next != null)
                 XenonCore.instance.getTaskManager().add(() -> callback.done(next.get(), null));
         });
     }
