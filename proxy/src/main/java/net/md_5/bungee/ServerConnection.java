@@ -1,6 +1,7 @@
 package net.md_5.bungee;
 
 import com.google.common.base.Preconditions;
+import ir.xenoncommunity.XenonCore;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,8 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -56,11 +59,14 @@ public class ServerConnection implements Server
 
     public void sendQueuedPackets()
     {
-        DefinedPacket packet;
-        while ( ( packet = packetQueue.poll() ) != null )
-        {
-            unsafe().sendPacket( packet );
-        }
+        XenonCore.instance.getTaskManager().add(() -> {
+            List<DefinedPacket> batch = new ArrayList<>();
+            DefinedPacket packet;
+            while ((packet = packetQueue.poll()) != null) {
+                batch.add(packet);
+            }
+            batch.forEach(p -> unsafe().sendPacket(p));
+        });
     }
 
     @Override

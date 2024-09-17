@@ -10,10 +10,10 @@ public class TaskManager {
     private final ScheduledExecutorService scheduledExecutorService;
 
     public TaskManager() {
-        this.executorService = new ThreadPoolExecutor(8,
+        this.executorService = new ThreadPoolExecutor(5,
                 Runtime.getRuntime().availableProcessors() * 2,
-                0L,
-                TimeUnit.MILLISECONDS,
+                60L,
+                TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>());
         this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
     }

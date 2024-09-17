@@ -177,8 +177,7 @@ public class DownstreamBridge extends PacketHandler
 
 
     @Override
-    public boolean shouldHandle(PacketWrapper packet) throws Exception
-    {
+    public boolean shouldHandle(PacketWrapper packet) {
         return !server.isObsolete();
     }
 
@@ -187,9 +186,7 @@ public class DownstreamBridge extends PacketHandler
     {
         EntityMap rewrite = con.getEntityRewrite();
         if ( rewrite != null && con.getCh().getEncodeProtocol() == Protocol.GAME )
-        {
             rewrite.rewriteClientbound( packet.buf, con.getServerEntityId(), con.getClientEntityId(), con.getPendingConnection().getVersion() );
-        }
         con.sendPacket( packet );
     }
 
@@ -198,9 +195,7 @@ public class DownstreamBridge extends PacketHandler
     {
         int timeout = bungee.getConfig().getTimeout();
         if ( timeout <= 0 || server.getKeepAlives().size() < timeout / 50 ) // Some people disable timeout, otherwise allow a theoretical maximum of 1 keepalive per tick
-        {
             server.getKeepAlives().add( new KeepAliveData( alive.getRandomId(), System.currentTimeMillis() ) );
-        }
     }
 
     @Override
@@ -210,9 +205,7 @@ public class DownstreamBridge extends PacketHandler
         boolean skipRewrites = bungee.getConfig().isDisableTabListRewrite();
         con.getTabListHandler().onUpdate( skipRewrites ? playerList : TabList.rewrite( playerList ) );
         if ( !skipRewrites )
-        {
             throw CancelSendSignal.INSTANCE; // Only throw if profile rewriting is enabled
-        }
         // Waterfall end
     }
 
@@ -281,9 +274,7 @@ public class DownstreamBridge extends PacketHandler
 
         // TODO: Expand score API to handle objective values. Shouldn't matter currently as only used for removing score entries.
         if ( scoreboardScoreReset.getScoreName() == null )
-        {
             serverScoreboard.removeScore( scoreboardScoreReset.getItemName() );
-        }
     }
 
     @Override
@@ -306,9 +297,8 @@ public class DownstreamBridge extends PacketHandler
 
         Team t = (team.getMode() == 0) ? new Team(teamName) : serverScoreboard.getTeam(teamName);
 
-        if (team.getMode() == 0) {
+        if (team.getMode() == 0)
             serverScoreboard.addTeam(t);
-        }
 
         if (t == null) return;
 
@@ -321,14 +311,14 @@ public class DownstreamBridge extends PacketHandler
             t.setCollisionRule(team.getCollisionRule());
             t.setColor(team.getColor());
         }
+
         if (team.getPlayers() == null) return;
 
         Arrays.stream(team.getPlayers()).forEach(s -> {
-            if (team.getMode() == 0 || team.getMode() == 3) {
+            if (team.getMode() == 0 || team.getMode() == 3)
                 t.addPlayer(s);
-            } else if (team.getMode() == 4) {
+            else if (team.getMode() == 4)
                 t.removePlayer(s);
-            }
         });
     }
 
@@ -337,9 +327,9 @@ public class DownstreamBridge extends PacketHandler
     public void handle(PluginMessage pluginMessage) throws Exception {
         final PluginMessageEvent event = new PluginMessageEvent(server, con, pluginMessage.getTag(), pluginMessage.getData().clone());
 
-        if (bungee.getPluginManager().callEvent(event).isCancelled()) {
+        if (bungee.getPluginManager().callEvent(event).isCancelled())
             throw CancelSendSignal.INSTANCE;
-        }
+
         final String tag = pluginMessage.getTag();
         final int protocolVersion = con.getPendingConnection().getVersion();
 
@@ -631,32 +621,27 @@ public class DownstreamBridge extends PacketHandler
     }
 
     @Override
-    public void handle(TabCompleteResponse tabCompleteResponse) throws Exception
-    {
-        List<String> commands = tabCompleteResponse.getCommands();
-        if (commands == null) {
-            commands = tabCompleteResponse.getSuggestions().getList().stream()
-                    .map(Suggestion::getText)
+    public void handle(TabCompleteResponse tabCompleteResponse) throws Exception {
+        List<String> commands = tabCompleteResponse.getCommands() != null
+                ? tabCompleteResponse.getCommands()
+                : tabCompleteResponse.getSuggestions().getList().stream()
+                .map(Suggestion::getText)
+                .collect(Collectors.toList());
+
+        String last = con.getLastCommandTabbed();
+        if (last != null) {
+            String commandName = last.toLowerCase(Locale.ROOT);
+
+            List<String> matchingCommands = bungee.getPluginManager().getCommands().stream()
+                    .filter(entry -> entry.getKey().toLowerCase(Locale.ROOT).startsWith(commandName)
+                            && entry.getValue().hasPermission(con)
+                            && !bungee.getDisabledCommands().contains(entry.getKey().toLowerCase(Locale.ROOT)))
+                    .map(entry -> '/' + entry.getKey())
+                    .sorted()
                     .collect(Collectors.toList());
-        } else {
-            String last = con.getLastCommandTabbed();
-            if (last != null) {
-                String commandName = last.toLowerCase(Locale.ROOT);
 
-                List<String> matchingCommands = bungee.getPluginManager().getCommands().stream()
-                        .filter(entry -> {
-                            String lowerCaseCommand = entry.getKey().toLowerCase(Locale.ROOT);
-                            return lowerCaseCommand.startsWith(commandName) &&
-                                    entry.getValue().hasPermission(con) &&
-                                    !bungee.getDisabledCommands().contains(lowerCaseCommand);
-                        })
-                        .map(entry -> '/' + entry.getKey())
-                        .collect(Collectors.toList());
-
-                commands.addAll(matchingCommands);
-                commands.sort(String::compareTo);
-                con.setLastCommandTabbed(null);
-            }
+            commands.addAll(matchingCommands);
+            con.setLastCommandTabbed(null);
         }
 
         TabCompleteResponseEvent tabCompleteResponseEvent = new TabCompleteResponseEvent(server, con, new ArrayList<>(commands));
@@ -664,9 +649,9 @@ public class DownstreamBridge extends PacketHandler
             List<String> newSuggestions = tabCompleteResponseEvent.getSuggestions();
 
             if (!commands.equals(newSuggestions)) {
-                if (tabCompleteResponse.getCommands() != null)
+                if (tabCompleteResponse.getCommands() != null) {
                     tabCompleteResponse.setCommands(newSuggestions);
-                else {
+                } else {
                     StringRange range = tabCompleteResponse.getSuggestions().getRange();
                     List<Suggestion> suggestions = newSuggestions.stream()
                             .map(input -> new Suggestion(range, input))
@@ -678,9 +663,9 @@ public class DownstreamBridge extends PacketHandler
             con.unsafe().sendPacket(tabCompleteResponse);
         }
 
-
         throw CancelSendSignal.INSTANCE;
     }
+
 
     @Override
     public void handle(BossBar bossBar)
