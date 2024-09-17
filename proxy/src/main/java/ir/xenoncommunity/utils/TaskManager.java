@@ -10,12 +10,15 @@ public class TaskManager {
     private final ScheduledExecutorService scheduledExecutorService;
 
     public TaskManager() {
-        this.executorService = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),
+        this.executorService = new ThreadPoolExecutor(
                 Runtime.getRuntime().availableProcessors() * 2,
+                Runtime.getRuntime().availableProcessors() * 4,
                 60L,
                 TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>());
-        this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
+                new LinkedBlockingQueue<>(),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+
+        this.scheduledExecutorService = Executors.newScheduledThreadPool(4);
     }
 
     public synchronized void add(final Runnable runnableIn) {
@@ -37,7 +40,6 @@ public class TaskManager {
             }
         }, initDelay, delayInMS, timeUnit);
     }
-
     public synchronized void independentTask(final Runnable task) {
         new Thread(() -> {
             try {
