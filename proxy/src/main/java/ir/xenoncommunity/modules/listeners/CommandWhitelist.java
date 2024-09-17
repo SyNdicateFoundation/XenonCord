@@ -2,7 +2,6 @@ package ir.xenoncommunity.modules.listeners;
 
 import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.annotations.ModuleListener;
-import ir.xenoncommunity.modules.ModuleManager;
 import ir.xenoncommunity.utils.Configuration;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -25,22 +24,25 @@ import java.util.stream.Collectors;
             return;
         }
 
-        String rawCommand = e.getMessage().split(" ")[0];
+        String rawCommand = e.getMessage();
         ProxiedPlayer player = (ProxiedPlayer) e.getSender();
         Configuration.CommandWhitelistData whitelistData = XenonCore.instance.getConfigData().getCommandwhitelist();
+
+        String baseCommand = rawCommand.split(" ")[0];
 
         if (whitelistData.getPergroup().entrySet().stream()
                 .filter(entry -> player.hasPermission("xenoncord.commandwhitelist." + entry.getKey()))
                 .map(Map.Entry::getValue)
                 .noneMatch(groupData ->
                         Arrays.asList(groupData.getServers()).contains(player.getServer().getInfo().getName()) &&
-                                Arrays.asList(groupData.getCommands()).contains(rawCommand)
+                                Arrays.asList(groupData.getCommands()).contains(baseCommand)
                 )) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&',
                     whitelistData.getBlockmessage()));
             e.setCancelled(true);
         }
     }
+
     @EventHandler public void onTabComplete(final TabCompleteEvent e) {
         if (!(e.getSender() instanceof ProxiedPlayer)
                 || ((ProxiedPlayer) e.getSender()).hasPermission(XenonCore.instance.getConfigData().getCommandwhitelist().getBypass())) {
