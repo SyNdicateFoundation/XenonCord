@@ -256,8 +256,10 @@ public final class UserConnection implements ProxiedPlayer
                     next.set(candidate);
                     break;
                 }
+                // test
+                if(next == null) next.set(candidate);
             }
-            if (callback != null && next != null)
+            if (callback != null)
                 XenonCore.instance.getTaskManager().add(() -> callback.done(next.get(), null));
         });
     }
