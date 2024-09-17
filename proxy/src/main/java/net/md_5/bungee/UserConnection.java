@@ -248,7 +248,7 @@ public final class UserConnection implements ProxiedPlayer
         if (serverJoinQueue == null) {
             serverJoinQueue = new LinkedList<>(getPendingConnection().getListener().getServerPriority());
         }
-        AtomicReference<ServerInfo> next = null;
+        AtomicReference<ServerInfo> next = new AtomicReference<>();
         XenonCore.instance.getTaskManager().add(() -> {
             while (!serverJoinQueue.isEmpty()) {
                 ServerInfo candidate = ProxyServer.getInstance().getServerInfo(serverJoinQueue.remove());
@@ -256,8 +256,6 @@ public final class UserConnection implements ProxiedPlayer
                     next.set(candidate);
                     break;
                 }
-                // test
-                if(next == null) next.set(candidate);
             }
             if (callback != null)
                 XenonCore.instance.getTaskManager().add(() -> callback.done(next.get(), null));
