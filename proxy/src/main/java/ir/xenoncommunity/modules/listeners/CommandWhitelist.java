@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
             return;
         }
 
-        String rawCommand = e.getMessage();
+        String rawCommand = e.getMessage().split(" ")[0];
         ProxiedPlayer player = (ProxiedPlayer) e.getSender();
         Configuration.CommandWhitelistData whitelistData = XenonCore.instance.getConfigData().getCommandwhitelist();
 
