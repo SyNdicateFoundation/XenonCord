@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
         }
 
         String rawCommand = e.getMessage();
-        String command = rawCommand.substring(1);
         ProxiedPlayer player = (ProxiedPlayer) e.getSender();
         Configuration.CommandWhitelistData whitelistData = XenonCore.instance.getConfigData().getCommandwhitelist();
 
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
                 .map(Map.Entry::getValue)
                 .noneMatch(groupData ->
                         Arrays.asList(groupData.getServers()).contains(player.getServer().getInfo().getName()) &&
-                                Arrays.asList(groupData.getCommands()).contains(command)
+                                Arrays.asList(groupData.getCommands()).contains(rawCommand)
                 )) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&',
                     whitelistData.getBlockmessage()));
@@ -50,10 +49,16 @@ import java.util.stream.Collectors;
 
         ProxiedPlayer player = (ProxiedPlayer) e.getSender();
         String command = e.getCursor().trim();
-        if(command.contains("/") && command.substring(1).isEmpty())
-            e.getSuggestions().clear();
-
         Configuration.CommandWhitelistData whitelistData = XenonCore.instance.getConfigData().getCommandwhitelist();
+
+        if(command.equals("/")) {
+            e.getSuggestions().clear();
+            e.getSuggestions().addAll(whitelistData.getPergroup().entrySet().stream()
+                    .filter(entry -> player.hasPermission("xenoncord.commandwhitelist." + entry.getKey()))
+                    .map(Map.Entry::getValue)
+                    .flatMap(ss -> Arrays.stream(ss.getCommands()))
+                    .collect(Collectors.toList()));
+        }
 
         if (whitelistData.getPergroup().entrySet().stream()
                 .filter(entry -> player.hasPermission("xenoncord.commandwhitelist." + entry.getKey()))
