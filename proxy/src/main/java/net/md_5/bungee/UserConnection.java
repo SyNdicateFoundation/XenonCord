@@ -170,7 +170,7 @@ public final class UserConnection implements ProxiedPlayer
 
     public void sendPacket(PacketWrapper packet)
     {
-        //XenonCore.instance.getTaskManager().add(() -> {
+        //XenonCore.instance.getTaskManager().independentTask(() -> {
         ch.write(packet);
         //});
     }
@@ -186,7 +186,7 @@ public final class UserConnection implements ProxiedPlayer
 
     public void sendQueuedPackets() {
         AtomicReference<DefinedPacket> packet = new AtomicReference<>();
-        XenonCore.instance.getTaskManager().add(() -> {
+        XenonCore.instance.getTaskManager().independentTask(() -> {
             packet.set(packetQueue.poll());
             while (packet.get() != null) {
                 unsafe().sendPacket(packet.get());
@@ -249,7 +249,7 @@ public final class UserConnection implements ProxiedPlayer
             serverJoinQueue = new LinkedList<>(getPendingConnection().getListener().getServerPriority());
         }
         AtomicReference<ServerInfo> next = null;
-        XenonCore.instance.getTaskManager().add(() -> {
+        XenonCore.instance.getTaskManager().independentTask(() -> {
             while (!serverJoinQueue.isEmpty()) {
                 ServerInfo candidate = ProxyServer.getInstance().getServerInfo(serverJoinQueue.remove());
                 if (!Objects.equals(currentTarget, candidate)) {
@@ -258,7 +258,7 @@ public final class UserConnection implements ProxiedPlayer
                 }
             }
             if (callback != null)
-                XenonCore.instance.getTaskManager().add(() -> callback.done(next.get(), null));
+                XenonCore.instance.getTaskManager().independentTask(() -> callback.done(next.get(), null));
         });
     }
 
@@ -294,7 +294,7 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void connect(final ServerConnectRequest request) {
         Preconditions.checkNotNull(request, "request");
-        XenonCore.instance.getTaskManager().add(() -> {
+        XenonCore.instance.getTaskManager().independentTask(() -> {
             final Callback<ServerConnectRequest.Result> callback = request.getCallback();
             final ServerConnectEvent event = new ServerConnectEvent(this, request.getTarget(), request.getReason(), request);
 
@@ -446,7 +446,7 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void sendMessages(String... messages)
     {
-        XenonCore.instance.getTaskManager().add(() -> Arrays.stream(messages).forEach(this::sendMessage));
+        XenonCore.instance.getTaskManager().independentTask(() -> Arrays.stream(messages).forEach(this::sendMessage));
     }
 
     @Override
@@ -539,7 +539,7 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void addGroups(String... groups)
     {
-        XenonCore.instance.getTaskManager().add(() -> Arrays.stream(groups).forEach(group -> {
+        XenonCore.instance.getTaskManager().independentTask(() -> Arrays.stream(groups).forEach(group -> {
             this.groups.add(group);
             bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, true));
         }));
@@ -548,7 +548,7 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void removeGroups(String... groups)
     {
-        XenonCore.instance.getTaskManager().add(() -> Arrays.stream(groups).forEach(group -> {
+        XenonCore.instance.getTaskManager().independentTask(() -> Arrays.stream(groups).forEach(group -> {
             bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, false));
             this.groups.remove(group);
         }));
