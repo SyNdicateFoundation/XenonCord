@@ -44,6 +44,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor
@@ -183,15 +184,14 @@ public final class UserConnection implements ProxiedPlayer
         packetQueue.add(packet);
     }
 
-    public void sendQueuedPackets()
-    {
+    public void sendQueuedPackets() {
+        AtomicReference<DefinedPacket> packet = new AtomicReference<>();
         XenonCore.instance.getTaskManager().add(() -> {
-            List<DefinedPacket> batch = new ArrayList<>();
-            DefinedPacket packet;
-            while ((packet = packetQueue.poll()) != null) {
-                batch.add(packet);
+            packet.set(packetQueue.poll());
+            while (packet.get() != null) {
+                unsafe().sendPacket(packet.get());
+                packet.set(packetQueue.poll());
             }
-            batch.forEach(p -> unsafe().sendPacket(p));
         });
     }
 
@@ -245,23 +245,20 @@ public final class UserConnection implements ProxiedPlayer
     }
 
     public void updateAndGetNextServer(ServerInfo currentTarget, Callback<ServerInfo> callback) {
+        if (serverJoinQueue == null) {
+            serverJoinQueue = new LinkedList<>(getPendingConnection().getListener().getServerPriority());
+        }
+        AtomicReference<ServerInfo> next = null;
         XenonCore.instance.getTaskManager().add(() -> {
-            if (serverJoinQueue == null) {
-                serverJoinQueue = new LinkedList<>(getPendingConnection().getListener().getServerPriority());
-            }
-            ServerInfo next = null;
             while (!serverJoinQueue.isEmpty()) {
                 ServerInfo candidate = ProxyServer.getInstance().getServerInfo(serverJoinQueue.remove());
                 if (!Objects.equals(currentTarget, candidate)) {
-                    next = candidate;
+                    next.set(candidate);
                     break;
                 }
             }
-
-            if (callback != null) {
-                ServerInfo finalNext = next;
-                XenonCore.instance.getTaskManager().add(() -> callback.done(finalNext, null));
-            }
+            if (callback != null)
+                XenonCore.instance.getTaskManager().add(() -> callback.done(next.get(), null));
         });
     }
 
@@ -285,25 +282,19 @@ public final class UserConnection implements ProxiedPlayer
 
     public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason, final int timeout, boolean sendFeedback)
     {
-        XenonCore.instance.getTaskManager().independentTask(() -> {
-            Preconditions.checkNotNull( info, "info" );
+        Preconditions.checkNotNull( info, "info" );
+        ServerConnectRequest.Builder builder = ServerConnectRequest.builder().retry( retry ).reason( reason ).target( info ).sendFeedback(sendFeedback); // Waterfall - feedback param
+        builder.connectTimeout(timeout); // Waterfall
+        if ( callback != null )
+            builder.callback((result, error) -> callback.done( ( result == ServerConnectRequest.Result.SUCCESS ) ? Boolean.TRUE : Boolean.FALSE, error ));
 
-            ServerConnectRequest.Builder builder = ServerConnectRequest.builder().retry( retry ).reason( reason ).target( info ).sendFeedback(sendFeedback); // Waterfall - feedback param
-            builder.connectTimeout(timeout); // Waterfall
-            if ( callback != null )
-            {
-                builder.callback((result, error) -> callback.done( ( result == ServerConnectRequest.Result.SUCCESS ) ? Boolean.TRUE : Boolean.FALSE, error ));
-            }
-
-            connect( builder.build() );
-        });
+        connect( builder.build() );
     }
 
     @Override
     public void connect(final ServerConnectRequest request) {
+        Preconditions.checkNotNull(request, "request");
         XenonCore.instance.getTaskManager().add(() -> {
-            Preconditions.checkNotNull(request, "request");
-
             final Callback<ServerConnectRequest.Result> callback = request.getCallback();
             final ServerConnectEvent event = new ServerConnectEvent(this, request.getTarget(), request.getReason(), request);
 
@@ -336,7 +327,7 @@ public final class UserConnection implements ProxiedPlayer
 
             pendingConnects.add(target);
 
-            ChannelInitializer<Channel> initializer = new ChannelInitializer() {
+            ChannelInitializer initializer = new ChannelInitializer() {
                 @Override
                 protected void initChannel(Channel ch) throws Exception {
                     PipelineUtils.BASE_SERVERSIDE.initChannel(ch);
@@ -548,23 +539,19 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void addGroups(String... groups)
     {
-        XenonCore.instance.getTaskManager().add(() -> {
-            Arrays.stream(groups).forEach(group -> {
-                this.groups.add(group);
-                bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, true));
-            });
-        });
+        XenonCore.instance.getTaskManager().add(() -> Arrays.stream(groups).forEach(group -> {
+            this.groups.add(group);
+            bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, true));
+        }));
     }
 
     @Override
     public void removeGroups(String... groups)
     {
-        XenonCore.instance.getTaskManager().add(() -> {
-            Arrays.stream(groups).forEach(group -> {
-                bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, false));
-                this.groups.remove(group);
-            });
-        });
+        XenonCore.instance.getTaskManager().add(() -> Arrays.stream(groups).forEach(group -> {
+            bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, false));
+            this.groups.remove(group);
+        }));
     }
 
     @Override
@@ -682,11 +669,7 @@ public final class UserConnection implements ProxiedPlayer
     public Map<String, String> getModList()
     {
         if ( forgeClientHandler.getClientModList() == null )
-        {
-            // Return an empty map, rather than a null, if the client hasn't got any mods,
-            // or is yet to complete a handshake.
             return ImmutableMap.of();
-        }
 
         return ImmutableMap.copyOf( forgeClientHandler.getClientModList() );
     }

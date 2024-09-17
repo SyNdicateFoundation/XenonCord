@@ -10,16 +10,14 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.packet.PluginMessage;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 public class ServerConnection implements Server
@@ -57,17 +55,17 @@ public class ServerConnection implements Server
         packetQueue.add( packet );
     }
 
-    public void sendQueuedPackets()
-    {
+    public void sendQueuedPackets() {
+        AtomicReference<DefinedPacket> packet = new AtomicReference<>();
         XenonCore.instance.getTaskManager().add(() -> {
-            List<DefinedPacket> batch = new ArrayList<>();
-            DefinedPacket packet;
-            while ((packet = packetQueue.poll()) != null) {
-                batch.add(packet);
+            packet.set(packetQueue.poll());
+            while (packet.get() != null) {
+                unsafe().sendPacket(packet.get());
+                packet.set(packetQueue.poll());
             }
-            batch.forEach(p -> unsafe().sendPacket(p));
         });
     }
+
 
     @Override
     public void sendData(String channel, byte[] data)
