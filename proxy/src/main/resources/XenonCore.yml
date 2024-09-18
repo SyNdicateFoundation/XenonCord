@@ -1,7 +1,7 @@
 # prefix for messages.
 prefix: "&9&lXenon&bCord"
 # XenonCord will kick players during loading process. this is it's kick messsage.
-# PREFIX: your prefix
+# Placeholders: PREFIX: your prefix
 loadingmessage: "PREFIX\n &r&cstill loading.\n\n &cYou got disconnected to prevent problems."
 # changes ingame brand name (F3)
 ingamebrandname: "XenonCord"
@@ -18,6 +18,7 @@ guicomponents:
 modules:
   # Requires MotdChanger module to be enabled.
   # Changes motd to this.
+  # Placeholders: ONLINE: current online count
   motd: "&b&lA &9&lXenon&bCord server."
   # Requires CommandSpy module to be enabled.
   # exceptions for command spy.
@@ -32,13 +33,13 @@ modules:
   # Spy alert permission
   spyperm: "xenoncord.spy.alerts"
   # Spy message
-  # PREFIX: your prefix, PLAYER: player, COMMAND: executed command.
+  # Placeholders: PREFIX: your prefix, PLAYER: player, COMMAND: executed command.
   spymessage: "PREFIX &r&dPLAYER &b» COMMAND"
   # Requires StaffChat module to be enabled.
   # permission for staffchat
   staffchatperm: "xenoncord.staffchat"
   # Staffchat message format.
-  # PREFIX: your prefix, PLAYER: player, MESSAGE: message.
+  # Placeholders: PREFIX: your prefix, PLAYER: player, MESSAGE: message.
   staffchatmessage: "PREFIX &cStaffChat &8PLAYER» &8MESSAGE"
   # List of enabled modules
   enables:
