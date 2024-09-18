@@ -8,7 +8,7 @@ ingamebrandname: "XenonCord"
 # A gui for proxy server
 # it has performance impact, indeed.
 usegui: true
-guirefreshrate: 3000 # GUI will be refreshed every 200 MS
+guirefreshrate: 3000 # GUI will be refreshed every 3000 MS
 # what GUIs should we show?
 guicomponents:
   - "Memory Usage"
@@ -52,13 +52,17 @@ commandwhitelist:
   bypass: "xenoncord.commandwhitelist.bypass"
   blockmessage: "PREFIX&c» Sorry, this command is blocked."
   pergroup:
-    default:
+    default.auth:
       servers:
         - "auth"
-        - "lobby"
       commands:
         - "/login"
         - "/reg"
         - "/register"
         - "/log"
         - "/l"
+    default.lobby:
+      servers:
+        - "lobby"
+      commands:
+        - "/spawn"

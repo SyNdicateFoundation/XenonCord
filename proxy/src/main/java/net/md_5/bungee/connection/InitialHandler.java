@@ -263,33 +263,23 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         final String motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
         final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
 
-        Callback<ServerPing> pingBack = new Callback<ServerPing>()
-        {
-            @Override
-            public void done(ServerPing result, Throwable error)
+        Callback<ServerPing> pingBack = (result, error) -> {
+            if ( error != null )
             {
-                if ( error != null )
-                {
-                    result = getPingInfo( bungee.getTranslation( "ping_cannot_connect" ), protocol );
-                    bungee.getLogger().log( Level.WARNING, "Error pinging remote server", error );
-                }
-
-                Callback<ProxyPingEvent> callback = new Callback<ProxyPingEvent>()
-                {
-                    @Override
-                    public void done(ProxyPingEvent pingResult, Throwable error)
-                    {
-                        Gson gson = BungeeCord.getInstance().gson;
-                        unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
-                        if ( bungee.getConnectionThrottle() != null )
-                        {
-                            bungee.getConnectionThrottle().unthrottle( getSocketAddress() );
-                        }
-                    }
-                };
-
-                bungee.getPluginManager().callEvent( new ProxyPingEvent( InitialHandler.this, result, callback ) );
+                result = getPingInfo( bungee.getTranslation( "ping_cannot_connect" ), protocol );
+                bungee.getLogger().log( Level.WARNING, "Error pinging remote server", error );
             }
+
+            Callback<ProxyPingEvent> callback = (pingResult, error1) -> {
+                Gson gson = BungeeCord.getInstance().gson;
+                unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
+                if ( bungee.getConnectionThrottle() != null )
+                {
+                    bungee.getConnectionThrottle().unthrottle( getSocketAddress() );
+                }
+            };
+
+            bungee.getPluginManager().callEvent( new ProxyPingEvent( InitialHandler.this, result, callback ) );
         };
 
         if ( forced != null && listener.isPingPassthrough() )
