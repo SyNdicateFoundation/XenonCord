@@ -78,6 +78,6 @@ public class Configuration {
     @Getter
     @Setter
     public static class GroupData {
-        private String[] servers, commands;
+        private String[] commands;
     }
 }

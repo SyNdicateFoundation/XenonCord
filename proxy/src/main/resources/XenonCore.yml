@@ -53,8 +53,6 @@ commandwhitelist:
   blockmessage: "PREFIX&c» Sorry, this command is blocked."
   pergroup:
     default.auth:
-      servers:
-        - "auth"
       commands:
         - "/login"
         - "/reg"
@@ -62,7 +60,5 @@ commandwhitelist:
         - "/log"
         - "/l"
     default.lobby:
-      servers:
-        - "lobby"
       commands:
         - "/spawn"

@@ -30,13 +30,7 @@ import java.util.stream.Collectors;
 
         String baseCommand = rawCommand.split(" ")[0];
 
-        if (whitelistData.getPergroup().entrySet().stream()
-                .filter(entry -> player.hasPermission("xenoncord.commandwhitelist." + entry.getKey()))
-                .map(Map.Entry::getValue)
-                .noneMatch(groupData ->
-                        Arrays.asList(groupData.getServers()).contains(player.getServer().getInfo().getName()) &&
-                                Arrays.asList(groupData.getCommands()).contains(baseCommand)
-                )) {
+        if (isPermitted(player, whitelistData, baseCommand)) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&',
                     whitelistData.getBlockmessage()));
             e.setCancelled(true);
@@ -53,28 +47,29 @@ import java.util.stream.Collectors;
         String command = e.getCursor().trim();
         Configuration.CommandWhitelistData whitelistData = XenonCore.instance.getConfigData().getCommandwhitelist();
 
-        if(command.equals("/")) {
-            e.getSuggestions().clear();
-            e.getSuggestions().addAll(whitelistData.getPergroup().entrySet().stream()
-                    .filter(entry -> player.hasPermission("xenoncord.commandwhitelist." + entry.getKey()))
-                    .map(Map.Entry::getValue)
-                    .flatMap(ss -> Arrays.stream(ss.getCommands()))
-                    .collect(Collectors.toList()));
-        }
+        if(command.equals("/"))
+            clearAndAdd(e, player, whitelistData);
 
-        if (whitelistData.getPergroup().entrySet().stream()
-                .filter(entry -> player.hasPermission("xenoncord.commandwhitelist." + entry.getKey()))
+        if (isPermitted(player, whitelistData, command)) {
+            clearAndAdd(e, player, whitelistData);
+        }
+    }
+
+    private boolean isPermitted(ProxiedPlayer playerIn, Configuration.CommandWhitelistData whitelistData, String command){
+        return whitelistData.getPergroup().entrySet().stream()
+                .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey()) && playerIn.getServer().equals(entry.getKey().split(".")[1]))
                 .map(Map.Entry::getValue)
                 .noneMatch(groupData ->
-                        Arrays.asList(groupData.getServers()).contains(player.getServer().getInfo().getName()) &&
-                                Arrays.asList(groupData.getCommands()).contains(command)
-                )) {
-            e.getSuggestions().clear();
-            e.getSuggestions().addAll(whitelistData.getPergroup().entrySet().stream()
-                    .filter(entry -> player.hasPermission("xenoncord.commandwhitelist." + entry.getKey()))
-                    .map(Map.Entry::getValue)
-                    .flatMap(ss -> Arrays.stream(ss.getCommands()))
-                    .collect(Collectors.toList()));
-        }
+                        Arrays.asList(groupData.getCommands()).contains(command)
+                );
+    }
+
+    private void clearAndAdd(TabCompleteEvent e, ProxiedPlayer player, Configuration.CommandWhitelistData whitelistData) {
+        e.getSuggestions().clear();
+        e.getSuggestions().addAll(whitelistData.getPergroup().entrySet().stream()
+                .filter(entry -> player.hasPermission("xenoncord.commandwhitelist." + entry.getKey())  && player.getServer().equals(entry.getKey().split(".")[1]))
+                .map(Map.Entry::getValue)
+                .flatMap(ss -> Arrays.stream(ss.getCommands()))
+                .collect(Collectors.toList()));
     }
 }
