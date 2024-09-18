@@ -185,14 +185,17 @@ public final class UserConnection implements ProxiedPlayer
     }
 
     public void sendQueuedPackets() {
-        AtomicReference<DefinedPacket> packet = new AtomicReference<>();
+        DefinedPacket packet;
+        while((packet = packetQueue.poll()) != null)
+            unsafe().sendPacket(packet);
+        /*AtomicReference<DefinedPacket> packet = new AtomicReference<>();
         XenonCore.instance.getTaskManager().add(() -> {
             packet.set(packetQueue.poll());
             while (packet.get() != null) {
                 unsafe().sendPacket(packet.get());
                 packet.set(packetQueue.poll());
             }
-        });
+        });*/
     }
 
     @Deprecated
@@ -258,7 +261,7 @@ public final class UserConnection implements ProxiedPlayer
                 }
             }
             if (callback != null)
-                XenonCore.instance.getTaskManager().add(() -> callback.done(next.get(), null));
+                callback.done(next.get(), null);
         });
     }
 
@@ -446,7 +449,8 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void sendMessages(String... messages)
     {
-        XenonCore.instance.getTaskManager().add(() -> Arrays.stream(messages).forEach(this::sendMessage));
+        //XenonCore.instance.getTaskManager().add(() -> Arrays.stream(messages).forEach(this::sendMessage));
+        Arrays.stream(messages).forEach(this::sendMessage);
     }
 
     @Override
@@ -539,19 +543,28 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void addGroups(String... groups)
     {
+        Arrays.stream(groups).forEach(group -> {
+                    this.groups.add(group);
+                    bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, true));
+                });/*
         XenonCore.instance.getTaskManager().add(() -> Arrays.stream(groups).forEach(group -> {
             this.groups.add(group);
             bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, true));
-        }));
+        }));*/
     }
 
     @Override
     public void removeGroups(String... groups)
     {
+        Arrays.stream(groups).forEach(group -> {
+                    bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, false));
+                    this.groups.remove(group);
+                });
+        /*
         XenonCore.instance.getTaskManager().add(() -> Arrays.stream(groups).forEach(group -> {
             bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, false));
             this.groups.remove(group);
-        }));
+        }));*/
     }
 
     @Override

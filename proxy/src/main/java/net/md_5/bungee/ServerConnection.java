@@ -56,14 +56,17 @@ public class ServerConnection implements Server
     }
 
     public void sendQueuedPackets() {
-        AtomicReference<DefinedPacket> packet = new AtomicReference<>();
+        DefinedPacket packet;
+        while((packet = packetQueue.poll()) != null)
+            unsafe().sendPacket(packet);
+        /*AtomicReference<DefinedPacket> packet = new AtomicReference<>();
         XenonCore.instance.getTaskManager().add(() -> {
             packet.set(packetQueue.poll());
             while (packet.get() != null) {
                 unsafe().sendPacket(packet.get());
                 packet.set(packetQueue.poll());
             }
-        });
+        });*/
     }
 
 
