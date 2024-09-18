@@ -11,12 +11,11 @@ public class TaskManager {
 
     public TaskManager() {
         this.executorService = new ThreadPoolExecutor(
-                Runtime.getRuntime().availableProcessors() ,
-                Runtime.getRuntime().availableProcessors() * 2,
+                2 ,
+                4,
                 60L,
                 TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(),
-                new ThreadPoolExecutor.CallerRunsPolicy());
+                new LinkedBlockingQueue<>());
 
         this.scheduledExecutorService = Executors.newScheduledThreadPool(4);
     }
@@ -27,6 +26,8 @@ public class TaskManager {
                 runnableIn.run();
             } catch (final Exception e) {
                 XenonCore.instance.getLogger().error(e.getMessage());
+            } finally {
+                Thread.currentThread().interrupt();
             }
         });
     }
@@ -37,6 +38,8 @@ public class TaskManager {
                 runnableIn.run();
             } catch (final Exception e) {
                 XenonCore.instance.getLogger().error(e.getMessage());
+            } finally {
+                Thread.currentThread().interrupt();
             }
         }, initDelay, delayInMS, timeUnit);
     }
@@ -46,6 +49,8 @@ public class TaskManager {
                 task.run();
             } catch (final Exception e) {
                 XenonCore.instance.getLogger().error(e.getMessage());
+            } finally {
+                Thread.currentThread().interrupt();
             }
         }).start();
     }
