@@ -214,8 +214,6 @@ public class ServerConnector extends PacketHandler
                     login.getPortalCooldown(), login.isSecureProfile());
 
             user.unsafe().sendPacket(modLogin);
-
-            XenonCore.instance.getTaskManager().add(() -> {
                 if (user.getDimension() != null) {
                     user.getTabListHandler().onServerChange();
                     user.getServerSentScoreboard().clear();
@@ -233,7 +231,6 @@ public class ServerConnector extends PacketHandler
                     user.unsafe().sendPacket(new PluginMessage(user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand", brand, handshakeHandler != null && handshakeHandler.isServerForge()));
                     brand.release();
                 }
-            });
         } else {
             user.getServer().setObsolete(true);
             user.getTabListHandler().onServerChange();
