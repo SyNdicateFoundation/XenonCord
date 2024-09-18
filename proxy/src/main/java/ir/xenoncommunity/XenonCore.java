@@ -45,7 +45,7 @@ public class XenonCore {
         configData.getModules().setSpymessage(configData.getModules().getSpymessage().replace("PREFIX", configData.getPrefix()));
         configData.getModules().setStaffchatmessage(configData.getModules().getStaffchatmessage().replace("PREFIX", configData.getPrefix()));
         configData.getCommandwhitelist().setBlockmessage(configData.getCommandwhitelist().getBlockmessage().replace("PREFIX", configData.getPrefix()));
-        getTaskManager().independentTask(() -> {
+        getTaskManager().async(() -> {
             while(!isProxyCompletlyLoaded)
                 bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(ChatColor.translateAlternateColorCodes('&', configData.getLoadingmessage())));
 
