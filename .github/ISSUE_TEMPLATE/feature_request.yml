@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest a feature which bungeecord should include.
+description: Suggest a feature which XenonCord should include.
 body:
   - type: textarea
     id: the-feature

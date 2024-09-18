@@ -1,5 +1,5 @@
-name: Bug inside BungeeCord
-description: Create a bug report about a problem inside BungeeCord.
+name: Bug or Problem inside XenonCord
+description: Create a bug report about a problem inside XenonCord.
 body:
   - type: markdown
     attributes:
