@@ -55,10 +55,8 @@ public class ChannelWrapper {
     }
 
     public void setVersion(int protocol) {
-        XenonCore.instance.getTaskManager().async(() -> {
-            ch.pipeline().get(MinecraftDecoder.class).setProtocolVersion(protocol);
-            ch.pipeline().get(MinecraftEncoder.class).setProtocolVersion(protocol);
-        });
+        ch.pipeline().get(MinecraftDecoder.class).setProtocolVersion(protocol);
+        ch.pipeline().get(MinecraftEncoder.class).setProtocolVersion(protocol);
     }
 
     public int getEncodeVersion() {
@@ -82,7 +80,7 @@ public class ChannelWrapper {
             if (defined != null) {
                 Protocol nextProtocol = defined.nextProtocol();
                 if (nextProtocol != null)
-                    XenonCore.instance.getTaskManager().async(() -> setEncodeProtocol(nextProtocol));
+                    setEncodeProtocol(nextProtocol);
             }
         }
     }
@@ -98,14 +96,12 @@ public class ChannelWrapper {
     public void close(Object packet) {
         if (!closed) {
             closed = closing = true;
-
             if (packet != null && ch.isActive())
-                XenonCore.instance.getTaskManager().async(() -> ch.writeAndFlush(packet).addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE));
-            else
-                XenonCore.instance.getTaskManager().async(() -> {
-                    ch.flush();
-                    ch.close();
-                });
+                ch.writeAndFlush(packet).addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE);
+            else {
+                ch.flush();
+                ch.close();
+            }
         }
     }
 
@@ -113,7 +109,7 @@ public class ChannelWrapper {
         if (!closing) {
             closing = true;
 
-            XenonCore.instance.getTaskManager().async(() -> ch.eventLoop().schedule(() -> close(kick), 250, TimeUnit.MILLISECONDS));
+            ch.eventLoop().schedule(() -> close(kick), 250, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -130,19 +126,17 @@ public class ChannelWrapper {
     }
 
     public void setCompressionThreshold(int compressionThreshold) {
-        XenonCore.instance.getTaskManager().async(() -> {
-            if (compressionThreshold >= 0) {
-                if (ch.pipeline().get(PacketCompressor.class) == null)
-                    addBefore(PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor());
-                ch.pipeline().get(PacketCompressor.class).setThreshold(compressionThreshold);
-            } else
-                ch.pipeline().remove("compress");
+        if (compressionThreshold >= 0) {
+            if (ch.pipeline().get(PacketCompressor.class) == null)
+                addBefore(PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor());
+            ch.pipeline().get(PacketCompressor.class).setThreshold(compressionThreshold);
+        } else
+            ch.pipeline().remove("compress");
 
-            if (ch.pipeline().get(PacketDecompressor.class) == null && compressionThreshold >= 0)
-                addBefore(PipelineUtils.PACKET_DECODER, "decompress", new PacketDecompressor(compressionThreshold));
+        if (ch.pipeline().get(PacketDecompressor.class) == null && compressionThreshold >= 0)
+            addBefore(PipelineUtils.PACKET_DECODER, "decompress", new PacketDecompressor(compressionThreshold));
 
-            if (compressionThreshold < 0)
-                ch.pipeline().remove("decompress");
-        });
+        if (compressionThreshold < 0)
+            ch.pipeline().remove("decompress");
     }
 }
