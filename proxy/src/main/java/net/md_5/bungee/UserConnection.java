@@ -185,17 +185,14 @@ public final class UserConnection implements ProxiedPlayer
     }
 
     public void sendQueuedPackets() {
-        DefinedPacket packet;
-        while((packet = packetQueue.poll()) != null)
-            unsafe().sendPacket(packet);
-        /*AtomicReference<DefinedPacket> packet = new AtomicReference<>();
-        XenonCore.instance.getTaskManager().add(() -> {
+        AtomicReference<DefinedPacket> packet = new AtomicReference<>();
+        XenonCore.instance.getTaskManager().async(() -> {
             packet.set(packetQueue.poll());
             while (packet.get() != null) {
                 unsafe().sendPacket(packet.get());
                 packet.set(packetQueue.poll());
             }
-        });*/
+        });
     }
 
     @Deprecated
@@ -252,7 +249,7 @@ public final class UserConnection implements ProxiedPlayer
             serverJoinQueue = new LinkedList<>(getPendingConnection().getListener().getServerPriority());
         }
         AtomicReference<ServerInfo> next = new AtomicReference<>();
-        XenonCore.instance.getTaskManager().add(() -> {
+        XenonCore.instance.getTaskManager().async(() -> {
             while (!serverJoinQueue.isEmpty()) {
                 ServerInfo candidate = ProxyServer.getInstance().getServerInfo(serverJoinQueue.remove());
                 if (!Objects.equals(currentTarget, candidate)) {
@@ -297,7 +294,7 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void connect(final ServerConnectRequest request) {
         Preconditions.checkNotNull(request, "request");
-        //XenonCore.instance.getTaskManager().add(() -> {
+        XenonCore.instance.getTaskManager().async(() -> {
             final Callback<ServerConnectRequest.Result> callback = request.getCallback();
             final ServerConnectEvent event = new ServerConnectEvent(this, request.getTarget(), request.getReason(), request);
 
@@ -383,7 +380,7 @@ public final class UserConnection implements ProxiedPlayer
             }
 
             bootstrap.connect().addListener(listener);
-      //  });
+        });
     }
 
 
@@ -449,8 +446,7 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void sendMessages(String... messages)
     {
-        //XenonCore.instance.getTaskManager().add(() -> Arrays.stream(messages).forEach(this::sendMessage));
-        Arrays.stream(messages).forEach(this::sendMessage);
+        XenonCore.instance.getTaskManager().async(() -> Arrays.stream(messages).forEach(this::sendMessage));
     }
 
     @Override
@@ -543,28 +539,19 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void addGroups(String... groups)
     {
-        Arrays.stream(groups).forEach(group -> {
-                    this.groups.add(group);
-                    bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, true));
-                });/*
-        XenonCore.instance.getTaskManager().add(() -> Arrays.stream(groups).forEach(group -> {
+        XenonCore.instance.getTaskManager().async(() -> Arrays.stream(groups).forEach(group -> {
             this.groups.add(group);
             bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, true));
-        }));*/
+        }));
     }
 
     @Override
     public void removeGroups(String... groups)
     {
-        Arrays.stream(groups).forEach(group -> {
-                    bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, false));
-                    this.groups.remove(group);
-                });
-        /*
-        XenonCore.instance.getTaskManager().add(() -> Arrays.stream(groups).forEach(group -> {
+        XenonCore.instance.getTaskManager().async(() -> Arrays.stream(groups).forEach(group -> {
             bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, false));
             this.groups.remove(group);
-        }));*/
+        }));
     }
 
     @Override

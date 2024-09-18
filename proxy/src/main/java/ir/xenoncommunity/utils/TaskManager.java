@@ -3,25 +3,29 @@ package ir.xenoncommunity.utils;
 import ir.xenoncommunity.XenonCore;
 
 import java.util.concurrent.*;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public class TaskManager {
+    private final ExecutorService queueExecutorService;
     private final ExecutorService executorService;
-    private final ScheduledExecutorService scheduledExecutorService;
+    private final ExecutorService cachedExecutorService;
+    private final ScheduledExecutorService scheduledExecutor;
 
     public TaskManager() {
-        this.executorService = new ThreadPoolExecutor(
-                2 ,
-                4,
+        this.queueExecutorService = new ThreadPoolExecutor(
+                2,
+                Runtime.getRuntime().availableProcessors(),
                 60L,
                 TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>());
-
-        this.scheduledExecutorService = Executors.newScheduledThreadPool(4);
+        this.executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        this.cachedExecutorService = Executors.newCachedThreadPool();
+        this.scheduledExecutor = Executors.newScheduledThreadPool(4);
     }
 
-    public synchronized void add(final Runnable runnableIn) {
-        executorService.submit(() -> {
+    public void add(final Runnable runnableIn) {
+        queueExecutorService.submit(() -> {
             try {
                 runnableIn.run();
             } catch (final Exception e) {
@@ -32,26 +36,33 @@ public class TaskManager {
         });
     }
 
-    public synchronized void repeatingTask(final Runnable runnableIn, final int initDelay, final int delayInMS, final TimeUnit timeUnit) {
-        scheduledExecutorService.scheduleAtFixedRate(() -> {
+    public void async(final Runnable runnableIn) {
+        executorService.submit(() -> {
             try {
                 runnableIn.run();
             } catch (final Exception e) {
                 XenonCore.instance.getLogger().error(e.getMessage());
-            } finally {
-                Thread.currentThread().interrupt();
             }
-        }, initDelay, delayInMS, timeUnit);
+        });
     }
-    public synchronized void independentTask(final Runnable task) {
-        new Thread(() -> {
+
+    public void cachedAsync(final Runnable runnableIn) {
+        cachedExecutorService.submit(() -> {
             try {
-                task.run();
+                runnableIn.run();
             } catch (final Exception e) {
                 XenonCore.instance.getLogger().error(e.getMessage());
-            } finally {
-                Thread.currentThread().interrupt();
             }
-        }).start();
+        });
+    }
+
+    public ScheduledFuture<?> repeatingTask(Runnable task, long initialDelay, long period, TimeUnit unit) {
+        return scheduledExecutor.scheduleAtFixedRate(task, initialDelay, period, unit);
+    }
+
+    public void shutdown() {
+        executorService.shutdown();
+        cachedExecutorService.shutdown();
+        scheduledExecutor.shutdown();
     }
 }

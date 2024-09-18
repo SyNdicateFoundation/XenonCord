@@ -184,11 +184,11 @@ public class ServerConnector extends PacketHandler
 
         Queue<DefinedPacket> packetQueue = target.getPacketQueue();
         synchronized (packetQueue) {
-            //XenonCore.instance.getTaskManager().add(() -> {
+            XenonCore.instance.getTaskManager().async(() -> {
                 while (!packetQueue.isEmpty()) {
                     ch.write(packetQueue.poll());
                 }
-           // });
+            });
         }
 
         PluginMessage brandMessage = user.getPendingConnection().getBrandMessage();
@@ -236,7 +236,7 @@ public class ServerConnector extends PacketHandler
             user.getTabListHandler().onServerChange();
             Scoreboard serverScoreboard = user.getServerSentScoreboard();
 
-            //XenonCore.instance.getTaskManager().add(() -> {
+            XenonCore.instance.getTaskManager().async(() -> {
                 if (!user.isDisableEntityMetadataRewrite()) {
                     serverScoreboard.getObjectives().forEach(objective -> user.unsafe().sendPacket(new ScoreboardObjective(
                             objective.getName(),
@@ -270,7 +270,7 @@ public class ServerConnector extends PacketHandler
                 user.getSentBossBars().forEach(bossbar -> user.unsafe().sendPacket(new BossBar(bossbar, 1)));
 
                 user.getSentBossBars().clear();
-         //   });
+           });
 
 
 
