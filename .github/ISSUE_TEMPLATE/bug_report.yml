@@ -4,14 +4,14 @@ body:
   - type: markdown
     attributes:
       value: |
-        #### Report a bug inside bungeecord
-        Issues happening with forks of BungeeCord should **not** be reported here.
+        #### Report a bug inside XenonCord
+        Issues happening with XenonCord or Waterfall or BungeeCord can be discussed here.
   - type: input
     id: bungee-version
     attributes:
-      label: Bungeecord version
-      description: The output of the /bungee command (or just the bungee build number) (execute in bungeecord console for easy text copy)
-      placeholder: e.g. git:BungeeCord-Bootstrap:1.xx-SNAPSHOT:xxxxxxx:xxxx
+      label: XenonCord version
+      description: Current version of your XenonCord server
+      placeholder: e.g. 0.0.1
     validations:
       required: true
   - type: input
@@ -29,15 +29,15 @@ body:
   - type: textarea
     id: bungee-plugins
     attributes:
-      label: Bungeecord plugins
-      description: Please list all BungeeCord plugins you are using.
+      label: XenonCord plugins
+      description: Please list all XenonCord plugins you are using.
     validations:
       required: true
   - type: textarea
     id: the-bug
     attributes:
       label: The bug
-      description: Please describe the bug. Include **details** you find neccessary. If you just have a question, please ask it in [SpigotMC Forums](https://www.spigotmc.org) and not here.
+      description: Please describe the bug. Include **details** you find neccessary.
     validations:
       required: true
   - type: textarea
@@ -54,10 +54,9 @@ body:
     attributes:
       label: Checking
       options:
-        - label: I am using BungeeCord and **not a fork**. Issues with forks should not be reported here.
+        - label: This problem is related to XenonCord! not plugins!
           required: true
-        - label: I think this is **not** an issue with a bungeecord plugin.
+        - label: This is a **issue**.
           required: true
-        - label: I have not read these checkboxes and therefore I just ticked them all.
-        - label: This is not a question or plugin creation help request.
+        - label: I did not use this form to request a feature.
           required: true

@@ -31,6 +31,5 @@ body:
           required: true
         - label: This is a **feature or improvement request**.
           required: true
-        - label: I have not read these checkboxes and therefore I just ticked them all.
         - label: I did not use this form to report a bug.
           required: true
