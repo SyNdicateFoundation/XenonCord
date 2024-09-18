@@ -55,7 +55,7 @@ public abstract class TabList {
     }
 
     private static void rewrite(PlayerListItem.Item item) {
-        XenonCore.instance.getTaskManager().add(() -> {
+        //XenonCore.instance.getTaskManager().add(() -> {
             if (item.getUuid() == null) return;
 
             UserConnection player = BungeeCord.getInstance().getPlayerByOfflineUUID(item.getUuid());
@@ -80,6 +80,6 @@ public abstract class TabList {
                 if (item.getGamemode() != null) player.setGamemode(item.getGamemode());
                 if (item.getPing() != null) player.setPing(item.getPing());
             }
-        });
+       // });
     }
 }

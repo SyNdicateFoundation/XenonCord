@@ -68,7 +68,7 @@ public class DownstreamBridge extends PacketHandler
     public void exception(Throwable t) throws Exception {
         if (server.isObsolete()) return;
 
-        XenonCore.instance.getTaskManager().add(() -> {
+        //XenonCore.instance.getTaskManager().add(() -> {
             ServerInfo nextServer;
             try {
                 Future<ServerInfo> future = new CompletableFuture<>();
@@ -111,7 +111,7 @@ public class DownstreamBridge extends PacketHandler
                     con.disconnect0(event.getReason());
                 }
             }
-        });
+       // });
     }
 
 
@@ -129,7 +129,7 @@ public class DownstreamBridge extends PacketHandler
         if (server.isObsolete())
             return;
 
-        XenonCore.instance.getTaskManager().add(() -> {
+      //  XenonCore.instance.getTaskManager().add(() -> {
             ServerInfo nextServer;
             try {
                 Future<ServerInfo> future = new CompletableFuture<>();
@@ -172,7 +172,7 @@ public class DownstreamBridge extends PacketHandler
                     con.disconnect0(event.getReason());
                 }
             }
-        });
+       // });
     }
 
 
@@ -566,7 +566,7 @@ public class DownstreamBridge extends PacketHandler
 
     @Override
     public void handle(Kick kick) throws Exception {
-        XenonCore.instance.getTaskManager().add(() -> {
+      //  XenonCore.instance.getTaskManager().add(() -> {
             ServerInfo nextServer;
             try {
                 Future<ServerInfo> future = new CompletableFuture<>();
@@ -607,7 +607,7 @@ public class DownstreamBridge extends PacketHandler
                 e.printStackTrace();
                 con.disconnect(new BaseComponent[]{kick.getMessage()});
             }
-        });
+       // });
 
         throw CancelSendSignal.INSTANCE;
     }

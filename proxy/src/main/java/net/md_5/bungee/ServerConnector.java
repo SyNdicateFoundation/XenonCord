@@ -184,11 +184,11 @@ public class ServerConnector extends PacketHandler
 
         Queue<DefinedPacket> packetQueue = target.getPacketQueue();
         synchronized (packetQueue) {
-            XenonCore.instance.getTaskManager().add(() -> {
+            //XenonCore.instance.getTaskManager().add(() -> {
                 while (!packetQueue.isEmpty()) {
                     ch.write(packetQueue.poll());
                 }
-            });
+           // });
         }
 
         PluginMessage brandMessage = user.getPendingConnection().getBrandMessage();
@@ -236,7 +236,7 @@ public class ServerConnector extends PacketHandler
             user.getTabListHandler().onServerChange();
             Scoreboard serverScoreboard = user.getServerSentScoreboard();
 
-            XenonCore.instance.getTaskManager().add(() -> {
+            //XenonCore.instance.getTaskManager().add(() -> {
                 if (!user.isDisableEntityMetadataRewrite()) {
                     serverScoreboard.getObjectives().forEach(objective -> user.unsafe().sendPacket(new ScoreboardObjective(
                             objective.getName(),
@@ -270,7 +270,7 @@ public class ServerConnector extends PacketHandler
                 user.getSentBossBars().forEach(bossbar -> user.unsafe().sendPacket(new BossBar(bossbar, 1)));
 
                 user.getSentBossBars().clear();
-            });
+         //   });
 
 
 
@@ -314,11 +314,9 @@ public class ServerConnector extends PacketHandler
 
     private void cutThrough(ServerConnection server)
     {
-        // TODO: Fix this?
         if ( !user.isActive() )
         {
             server.disconnect( "Quitting" );
-            bungee.getLogger().log( Level.WARNING, "[{0}] No client connected for pending server!", user );
             return;
         }
 
@@ -369,7 +367,7 @@ public class ServerConnector extends PacketHandler
 
     @Override
     public void handle(Kick kick) throws Exception {
-        XenonCore.instance.getTaskManager().add(() -> {
+       // XenonCore.instance.getTaskManager().add(() -> {
             ServerInfo nextServer;
             try {
                 final Future<ServerInfo> future = new CompletableFuture<>();
@@ -410,7 +408,7 @@ public class ServerConnector extends PacketHandler
 
 
             throw CancelSendSignal.INSTANCE;
-        });
+   //     });
     }
     @Override
     public void handle(PluginMessage pluginMessage) throws Exception

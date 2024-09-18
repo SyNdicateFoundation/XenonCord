@@ -294,7 +294,7 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void connect(final ServerConnectRequest request) {
         Preconditions.checkNotNull(request, "request");
-        XenonCore.instance.getTaskManager().add(() -> {
+        //XenonCore.instance.getTaskManager().add(() -> {
             final Callback<ServerConnectRequest.Result> callback = request.getCallback();
             final ServerConnectEvent event = new ServerConnectEvent(this, request.getTarget(), request.getReason(), request);
 
@@ -380,7 +380,7 @@ public final class UserConnection implements ProxiedPlayer
             }
 
             bootstrap.connect().addListener(listener);
-        });
+      //  });
     }
 
 
