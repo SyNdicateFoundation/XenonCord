@@ -57,17 +57,17 @@ import java.util.stream.Collectors;
 
     private boolean isPermitted(ProxiedPlayer playerIn, Configuration.CommandWhitelistData whitelistData, String command){
         return whitelistData.getPergroup().entrySet().stream()
-                .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey()) && playerIn.getServer().equals(entry.getKey().split(".")[1]))
+                .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey()) && playerIn.getServer().getInfo().getName().equals(entry.getKey().split("\\.")[1]))
                 .map(Map.Entry::getValue)
                 .noneMatch(groupData ->
                         Arrays.asList(groupData.getCommands()).contains(command)
                 );
     }
 
-    private void clearAndAdd(TabCompleteEvent e, ProxiedPlayer player, Configuration.CommandWhitelistData whitelistData) {
+    private void clearAndAdd(TabCompleteEvent e, ProxiedPlayer playerIn, Configuration.CommandWhitelistData whitelistData) {
         e.getSuggestions().clear();
         e.getSuggestions().addAll(whitelistData.getPergroup().entrySet().stream()
-                .filter(entry -> player.hasPermission("xenoncord.commandwhitelist." + entry.getKey())  && player.getServer().equals(entry.getKey().split(".")[1]))
+                .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey())  && playerIn.getServer().getInfo().getName().equals(entry.getKey().split("\\.")[1]))
                 .map(Map.Entry::getValue)
                 .flatMap(ss -> Arrays.stream(ss.getCommands()))
                 .collect(Collectors.toList()));
