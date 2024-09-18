@@ -495,7 +495,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                 return;
             }
 
-            XenonCore.instance.getTaskManager().async(() -> {
+           // XenonCore.instance.getTaskManager().async(() -> {
                 if (!ch.isClosing()) {
                     userCon = new UserConnection(bungee, ch, getName(), InitialHandler.this);
                     userCon.setCompressionThreshold(BungeeCord.getInstance().config.getCompressionThreshold());
@@ -507,7 +507,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
 
                     finish2();
                 }
-            });
+          //  });
         }, this.getLoginProfile()));
     }
 
