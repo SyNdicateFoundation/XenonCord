@@ -48,13 +48,13 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "rawtypes"})
 public class DownstreamBridge extends PacketHandler
 {
 
     // #3246: Recent versions of MinecraftForge alter Vanilla behaviour and require a command so that the executable flag is set
     // If the flag is not set, then the command will appear and successfully tab complete, but cannot be successfully executed
-    @SuppressWarnings("rawtypes")
+
     private static final com.mojang.brigadier.Command DUMMY_COMMAND = (context) ->
             0;
     //
@@ -67,16 +67,15 @@ public class DownstreamBridge extends PacketHandler
     public void exception(Throwable t) throws Exception {
         if (server.isObsolete()) return;
 
-        //XenonCore.instance.getTaskManager().add(() -> {
         ServerInfo nextServer;
         try {
-            Future<ServerInfo> future = new CompletableFuture<>();
+            CompletableFuture<ServerInfo> future = new CompletableFuture<>();
             con.updateAndGetNextServer(server.getInfo(), (result, error) -> {
                 if (error != null) {
                     System.err.println("Error while updating and getting the next server: " + error.getMessage());
-                    ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
+                    future.completeExceptionally(error);
                 } else {
-                    ((CompletableFuture<ServerInfo>) future).complete(result);
+                    future.complete(result);
                 }
             });
 
@@ -110,7 +109,7 @@ public class DownstreamBridge extends PacketHandler
                 con.disconnect0(event.getReason());
             }
         }
-        // });
+
     }
 
 
@@ -128,16 +127,15 @@ public class DownstreamBridge extends PacketHandler
         if (server.isObsolete())
             return;
 
-        //  XenonCore.instance.getTaskManager().add(() -> {
         ServerInfo nextServer;
         try {
-            Future<ServerInfo> future = new CompletableFuture<>();
+            CompletableFuture<ServerInfo> future = new CompletableFuture<>();
             con.updateAndGetNextServer(server.getInfo(), (result, error) -> {
                 if (error != null) {
                     System.err.println("Error while updating and getting the next server: " + error.getMessage());
-                    ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
+                    future.completeExceptionally(error);
                 } else {
-                    ((CompletableFuture<ServerInfo>) future).complete(result);
+                    future.complete(result);
                 }
             });
 
@@ -171,7 +169,6 @@ public class DownstreamBridge extends PacketHandler
                 con.disconnect0(event.getReason());
             }
         }
-        // });
     }
 
 
@@ -313,27 +310,32 @@ public class DownstreamBridge extends PacketHandler
 
         if (team.getPlayers() == null) return;
 
-        Arrays.stream(team.getPlayers()).forEach(s -> {
-            if (team.getMode() == 0 || team.getMode() == 3)
-                t.addPlayer(s);
-            else if (team.getMode() == 4)
-                t.removePlayer(s);
+        XenonCore.instance.getTaskManager().add(() -> {
+            Arrays.stream(team.getPlayers()).forEach(s -> {
+                if (team.getMode() == 0 || team.getMode() == 3)
+                    t.addPlayer(s);
+                else if (team.getMode() == 4)
+                    t.removePlayer(s);
+            });
         });
     }
 
     @Override
     @SuppressWarnings("checkstyle:avoidnestedblocks")
     public void handle(PluginMessage pluginMessage) throws Exception {
+        final PluginMessageEvent event = new PluginMessageEvent(server, con, pluginMessage.getTag(), pluginMessage.getData().clone());
+        final String tag = pluginMessage.getTag();
+        final int protocolVersion = con.getPendingConnection().getVersion();
+        final DataInput in = pluginMessage.getStream();
+        final ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        final String subChannel = in.readUTF();
+        final String channel = in.readUTF();
+        final short len = in.readShort();
+        final byte[] data = new byte[len];
         XenonCore.instance.getTaskManager().async(() -> {
             try {
-                final PluginMessageEvent event = new PluginMessageEvent(server, con, pluginMessage.getTag(), pluginMessage.getData().clone());
-
-                if (bungee.getPluginManager().callEvent(event).isCancelled()) {
+                if (bungee.getPluginManager().callEvent(event).isCancelled())
                     throw CancelSendSignal.INSTANCE;
-                }
-
-                final String tag = pluginMessage.getTag();
-                final int protocolVersion = con.getPendingConnection().getVersion();
 
                 if (tag.equals(protocolVersion >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand")) {
                     final ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
@@ -344,14 +346,8 @@ public class DownstreamBridge extends PacketHandler
                     throw CancelSendSignal.INSTANCE;
                 }
 
-
                 if (tag.equals("BungeeCord")) {
-                    final DataInput in = pluginMessage.getStream();
-                    final ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                    final String subChannel = in.readUTF();
-                    final String channel = in.readUTF();
-                    final short len = in.readShort();
-                    final byte[] data = new byte[len];
+
                     switch (subChannel) {
                         case "ForwardToPlayer": {
                             ProxiedPlayer target = bungee.getPlayer(in.readUTF());
@@ -715,11 +711,11 @@ public class DownstreamBridge extends PacketHandler
     @Override
     public void handle(Commands commands) throws Exception
     {
+
+        // Waterfall start
+        Map<String, Command> commandMap = new java.util.HashMap<>();
         XenonCore.instance.getTaskManager().async(() -> {
             boolean modified = false;
-
-            // Waterfall start
-            Map<String, Command> commandMap = new java.util.HashMap<>();
 
             bungee.getPluginManager().getCommands().forEach((commandEntry) -> {
                 if (!bungee.getDisabledCommands().contains(commandEntry.getKey())

@@ -14,7 +14,7 @@ public class TaskManager {
 
     public TaskManager() {
         this.queueExecutorService = new ThreadPoolExecutor(
-                2,
+                Runtime.getRuntime().availableProcessors(),
                 Runtime.getRuntime().availableProcessors(),
                 60L,
                 TimeUnit.SECONDS,
