@@ -214,23 +214,23 @@ public class ServerConnector extends PacketHandler
                     login.getPortalCooldown(), login.isSecureProfile());
 
             user.unsafe().sendPacket(modLogin);
-                if (user.getDimension() != null) {
-                    user.getTabListHandler().onServerChange();
-                    user.getServerSentScoreboard().clear();
+            if (user.getDimension() != null) {
+                user.getTabListHandler().onServerChange();
+                user.getServerSentScoreboard().clear();
 
-                    user.getSentBossBars().forEach(bossbar -> user.unsafe().sendPacket(new BossBar(bossbar, 1)));
-                    user.getSentBossBars().clear();
+                user.getSentBossBars().forEach(bossbar -> user.unsafe().sendPacket(new BossBar(bossbar, 1)));
+                user.getSentBossBars().clear();
 
-                    user.unsafe().sendPacket(new Respawn(login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), (byte) 0, login.getDeathLocation(),
-                            login.getPortalCooldown()));
-                } else {
-                    user.unsafe().sendPacket(BungeeCord.getInstance().registerChannels(user.getPendingConnection().getVersion()));
+                user.unsafe().sendPacket(new Respawn(login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), (byte) 0, login.getDeathLocation(),
+                        login.getPortalCooldown()));
+            } else {
+                user.unsafe().sendPacket(BungeeCord.getInstance().registerChannels(user.getPendingConnection().getVersion()));
 
-                    ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
-                    DefinedPacket.writeString(bungee.getName() + " (" + bungee.getVersion() + ")", brand);
-                    user.unsafe().sendPacket(new PluginMessage(user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand", brand, handshakeHandler != null && handshakeHandler.isServerForge()));
-                    brand.release();
-                }
+                ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
+                DefinedPacket.writeString(bungee.getName() + " (" + bungee.getVersion() + ")", brand);
+                user.unsafe().sendPacket(new PluginMessage(user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand", brand, handshakeHandler != null && handshakeHandler.isServerForge()));
+                brand.release();
+            }
         } else {
             user.getServer().setObsolete(true);
             user.getTabListHandler().onServerChange();
@@ -270,7 +270,7 @@ public class ServerConnector extends PacketHandler
                 user.getSentBossBars().forEach(bossbar -> user.unsafe().sendPacket(new BossBar(bossbar, 1)));
 
                 user.getSentBossBars().clear();
-           });
+            });
 
 
 
@@ -367,48 +367,48 @@ public class ServerConnector extends PacketHandler
 
     @Override
     public void handle(Kick kick) throws Exception {
-       // XenonCore.instance.getTaskManager().add(() -> {
-            ServerInfo nextServer;
-            try {
-                final Future<ServerInfo> future = new CompletableFuture<>();
-                user.updateAndGetNextServer(target, (result, error) -> {
-                    if (error != null) {
-                        System.err.println("Error while updating and getting next server: " + error.getMessage());
-                        ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
-                    } else {
-                        ((CompletableFuture<ServerInfo>) future).complete(result);
-                    }
-                });
+        // XenonCore.instance.getTaskManager().add(() -> {
+        ServerInfo nextServer;
+        try {
+            final Future<ServerInfo> future = new CompletableFuture<>();
+            user.updateAndGetNextServer(target, (result, error) -> {
+                if (error != null) {
+                    System.err.println("Error while updating and getting next server: " + error.getMessage());
+                    ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
+                } else {
+                    ((CompletableFuture<ServerInfo>) future).complete(result);
+                }
+            });
 
-                nextServer = future.get();
+            nextServer = future.get();
 
-            } catch (final Exception e) {
-                e.printStackTrace();
-                return;
-            }
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return;
+        }
 
-            ServerKickEvent event = new ServerKickEvent(user, target, new BaseComponent[] { kick.getMessage() }, nextServer, ServerKickEvent.State.CONNECTING, ServerKickEvent.Cause.SERVER);
+        ServerKickEvent event = new ServerKickEvent(user, target, new BaseComponent[] { kick.getMessage() }, nextServer, ServerKickEvent.State.CONNECTING, ServerKickEvent.Cause.SERVER);
 
-            if (event.getKickReason().toLowerCase(Locale.ROOT).contains("outdated") && nextServer != null)
-                event.setCancelled(true);
+        if (event.getKickReason().toLowerCase(Locale.ROOT).contains("outdated") && nextServer != null)
+            event.setCancelled(true);
 
-            bungee.getPluginManager().callEvent(event);
+        bungee.getPluginManager().callEvent(event);
 
-            if (event.isCancelled() && event.getCancelServer() != null) {
-                obsolete = true;
-                user.connect(event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT);
-                throw CancelSendSignal.INSTANCE;
-            }
-
-            final String message = bungee.getTranslation("connect_kick", target.getName(), event.getKickReason());
-            if (user.isDimensionChange())
-                user.disconnect(message);
-            else
-                user.sendMessage(message);
-
-
+        if (event.isCancelled() && event.getCancelServer() != null) {
+            obsolete = true;
+            user.connect(event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT);
             throw CancelSendSignal.INSTANCE;
-   //     });
+        }
+
+        final String message = bungee.getTranslation("connect_kick", target.getName(), event.getKickReason());
+        if (user.isDimensionChange())
+            user.disconnect(message);
+        else
+            user.sendMessage(message);
+
+
+        throw CancelSendSignal.INSTANCE;
+        //     });
     }
     @Override
     public void handle(PluginMessage pluginMessage) throws Exception

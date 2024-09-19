@@ -493,7 +493,7 @@ public final class UserConnection implements ProxiedPlayer
         if (position == ChatMessageType.ACTION_BAR && version < ProtocolConstants.MINECRAFT_1_17) {
             if (version <= ProtocolConstants.MINECRAFT_1_10)
                 message = new TextComponent(BaseComponent.toLegacyText(message));
-         else {
+            else {
                 net.md_5.bungee.protocol.packet.Title title = new net.md_5.bungee.protocol.packet.Title();
                 title.setAction(net.md_5.bungee.protocol.packet.Title.Action.ACTIONBAR);
                 title.setText(message);

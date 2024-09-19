@@ -200,7 +200,7 @@ public class BungeeCord extends ProxyServer
                 }
             });
         });
-        XenonCore.instance.getTaskManager().async(() -> {
+        XenonCore.instance.getTaskManager().cachedAsync(() -> {
             XenonCore.instance.getLogger().info("ASYNC task plugin loader is starting...");
             pluginManager.detectPlugins( pluginsFolder );
             pluginManager.loadPlugins();

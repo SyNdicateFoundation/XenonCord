@@ -17,6 +17,7 @@ import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.http.HttpClient;
+import net.md_5.bungee.jni.cipher.BungeeCipher;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.HandlerBoss;
 import net.md_5.bungee.netty.PacketHandler;
@@ -31,6 +32,7 @@ import net.md_5.bungee.util.QuietException;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import javax.security.auth.x500.X500Principal;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -155,7 +157,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         // Waterfall start
         try {
             this.relayMessage(pluginMessage);
-        } catch (Exception ex) {
+        } catch (IllegalStateException | IllegalArgumentException ex) {
             if (net.md_5.bungee.protocol.MinecraftDecoder.DEBUG) {
                 throw ex;
             } else {
@@ -175,8 +177,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     @Override
     public void handle(LegacyPing ping) throws Exception {
         this.legacy = true;
-
+        final boolean v1_5 = ping.isV1_5();
         ServerInfo forced = AbstractReconnectHandler.getForcedHost(this);
+        final String motd = (forced != null) ? forced.getMotd() : listener.getMotd();
         final int protocol = bungee.getProtocolVersion();
 
         Callback<ServerPing> pingBack = (result, error) -> {
@@ -185,37 +188,28 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                 bungee.getLogger().log(Level.WARNING, "Error pinging remote server", error);
             }
 
-            bungee.getPluginManager().callEvent(new ProxyPingEvent(InitialHandler.this, result, (result1, error1) -> {
-                if (ch.isClosing()) {
-                    return;
-                }
+            Callback<ProxyPingEvent> callback = (result1, error1) -> {
+                if (ch.isClosing()) return;
 
                 ServerPing legacy = result1.getResponse();
-                String kickMessage;
-                String onlinePlayers = (legacy.getPlayers() != null) ? String.valueOf(legacy.getPlayers().getOnline()) : "-1";
-                String maxPlayers = (legacy.getPlayers() != null) ? String.valueOf(legacy.getPlayers().getMax()) : "-1";
-                String description = getFirstLine(legacy.getDescription());
+                ch.close(v1_5
+                        ? ChatColor.DARK_BLUE + "\00" + 127
+                        + '\00' + legacy.getVersion().getName()
+                        + '\00' + getFirstLine(legacy.getDescription())
+                        + '\00' + ((legacy.getPlayers() != null) ? legacy.getPlayers().getOnline() : "-1")
+                        + '\00' + ((legacy.getPlayers() != null) ? legacy.getPlayers().getMax() : "-1")
+                        : ChatColor.stripColor(getFirstLine(legacy.getDescription()))
+                        + '\u00a7' + ((legacy.getPlayers() != null) ? legacy.getPlayers().getOnline() : "-1")
+                        + '\u00a7' + ((legacy.getPlayers() != null) ? legacy.getPlayers().getMax() : "-1"));
+            };
 
-                if (ping.isV1_5()) {
-                    kickMessage = ChatColor.DARK_BLUE + "\00" + 127
-                            + '\00' + legacy.getVersion().getName()
-                            + '\00' + description
-                            + '\00' + onlinePlayers
-                            + '\00' + maxPlayers;
-                } else {
-                    kickMessage = ChatColor.stripColor(description)
-                            + '\u00a7' + onlinePlayers
-                            + '\u00a7' + maxPlayers;
-                }
-
-                ch.close(kickMessage);
-            }));
+            bungee.getPluginManager().callEvent(new ProxyPingEvent(InitialHandler.this, result, callback));
         };
 
         if (forced != null && listener.isPingPassthrough()) {
             ((BungeeServerInfo) forced).ping(pingBack, protocol);
         } else {
-            pingBack.done(getPingInfo((forced != null) ? forced.getMotd() : listener.getMotd(), protocol), null);
+            pingBack.done(getPingInfo(motd, protocol), null);
         }
     }
 
@@ -236,43 +230,40 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     }
 
     @Override
-    public void handle(StatusRequest statusRequest) throws Exception
-    {
-        Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
+    public void handle(StatusRequest statusRequest) throws Exception {
+        Preconditions.checkState(thisState == State.STATUS, "Not expecting STATUS");
 
-        ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
-        final String motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
-        final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
+        ServerInfo forced = AbstractReconnectHandler.getForcedHost(this);
+        final String motd = (forced != null) ? forced.getMotd() : listener.getMotd();
+        final int protocol = (ProtocolConstants.SUPPORTED_VERSION_IDS.contains(handshake.getProtocolVersion()))
+                ? handshake.getProtocolVersion()
+                : bungee.getProtocolVersion();
 
         Callback<ServerPing> pingBack = (result, error) -> {
-            if ( error != null )
-            {
-                result = getPingInfo( bungee.getTranslation( "ping_cannot_connect" ), protocol );
-                bungee.getLogger().log( Level.WARNING, "Error pinging remote server", error );
+            if (error != null) {
+                result = getPingInfo(bungee.getTranslation("ping_cannot_connect"), protocol);
+                bungee.getLogger().log(Level.WARNING, "Error pinging remote server", error);
             }
 
             Callback<ProxyPingEvent> callback = (pingResult, error1) -> {
-                Gson gson = BungeeCord.getInstance().gson;
-                unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
-                if ( bungee.getConnectionThrottle() != null )
-                {
-                    bungee.getConnectionThrottle().unthrottle( getSocketAddress() );
+                unsafe.sendPacket(new StatusResponse(BungeeCord.getInstance().gson.toJson(pingResult.getResponse())));
+                if (bungee.getConnectionThrottle() != null) {
+                    bungee.getConnectionThrottle().unthrottle(getSocketAddress());
                 }
             };
 
-            bungee.getPluginManager().callEvent( new ProxyPingEvent( InitialHandler.this, result, callback ) );
+            bungee.getPluginManager().callEvent(new ProxyPingEvent(InitialHandler.this, result, callback));
         };
 
-        if ( forced != null && listener.isPingPassthrough() )
-        {
-            ( (BungeeServerInfo) forced ).ping( pingBack, handshake.getProtocolVersion() );
-        } else
-        {
-            pingBack.done( getPingInfo( motd, protocol ), null );
+        if (forced != null && listener.isPingPassthrough()) {
+            ((BungeeServerInfo) forced).ping(pingBack, handshake.getProtocolVersion());
+        } else {
+            pingBack.done(getPingInfo(motd, protocol), null);
         }
 
         thisState = State.PING;
     }
+
 
     private static final boolean ACCEPT_INVALID_PACKETS = Boolean.parseBoolean(System.getProperty("waterfall.acceptInvalidPackets", "false"));
 
@@ -293,59 +284,58 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         ch.setVersion(handshake.getProtocolVersion());
         ch.getHandle().pipeline().remove(PipelineUtils.LEGACY_KICKER);
 
-        String host = handshake.getHost();
-        if (host.contains("\0")) {
-            String[] split = host.split("\0", 2);
+        if (handshake.getHost().contains("\0")) {
+            String[] split = handshake.getHost().split("\0", 2);
             handshake.setHost(split[0]);
             extraDataInHandshake = "\0" + split[1];
         }
 
+        String host = handshake.getHost();
         if (host.endsWith(".")) {
             handshake.setHost(host.substring(0, host.length() - 1));
         }
 
         this.virtualHost = InetSocketAddress.createUnresolved(handshake.getHost(), handshake.getPort());
-        bungee.getPluginManager().callEvent(new PlayerHandshakeEvent(InitialHandler.this, handshake));
 
+        bungee.getPluginManager().callEvent(new PlayerHandshakeEvent(InitialHandler.this, handshake));
         if (ch.isClosing()) {
             return;
         }
 
-        int requestedProtocol = handshake.getRequestedProtocol();
-        if (requestedProtocol == 1) {
-            if (bungee.getConfig().isLogPings()) {
-                bungee.getLogger().log(Level.INFO, "{0} has pinged", this);
-            }
-            thisState = State.STATUS;
-            ch.setProtocol(Protocol.STATUS);
-            return;
-        }
-
-        if (requestedProtocol == 2 || requestedProtocol == 3) {
-            transferred = requestedProtocol == 3;
-            if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections()) { // Waterfall
-                bungee.getLogger().log(Level.INFO, "{0} has connected", this);
-            }
-            thisState = State.USERNAME;
-            ch.setProtocol(Protocol.LOGIN);
-
-            if (!ProtocolConstants.SUPPORTED_VERSION_IDS.contains(handshake.getProtocolVersion())) {
-                if (handshake.getProtocolVersion() > bungee.getProtocolVersion()) {
-                    disconnect(bungee.getTranslation("outdated_server", bungee.getGameVersion()));
-                } else {
-                    disconnect(bungee.getTranslation("outdated_client", bungee.getGameVersion()));
+        switch (handshake.getRequestedProtocol()) {
+            case 1:
+                if (bungee.getConfig().isLogPings()) {
+                    bungee.getLogger().log(Level.INFO, "{0} has pinged", this);
                 }
-                return;
-            }
+                thisState = State.STATUS;
+                ch.setProtocol(Protocol.STATUS);
+                break;
+            case 2:
+            case 3:
+                transferred = handshake.getRequestedProtocol() == 3;
+                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections()) {
+                    bungee.getLogger().log(Level.INFO, "{0} has connected", this);
+                }
+                thisState = State.USERNAME;
+                ch.setProtocol(Protocol.LOGIN);
 
-            if (transferred && bungee.config.isRejectTransfers()) {
-                disconnect(bungee.getTranslation("reject_transfer"));
-                return;
-            }
-            return;
+                if (!ProtocolConstants.SUPPORTED_VERSION_IDS.contains(handshake.getProtocolVersion())) {
+                    if (handshake.getProtocolVersion() > bungee.getProtocolVersion()) {
+                        disconnect(bungee.getTranslation("outdated_server", bungee.getGameVersion()));
+                    } else {
+                        disconnect(bungee.getTranslation("outdated_client", bungee.getGameVersion()));
+                    }
+                    return;
+                }
+
+                if (transferred && bungee.config.isRejectTransfers()) {
+                    disconnect(bungee.getTranslation("reject_transfer"));
+                    return;
+                }
+                break;
+            default:
+                throw new QuietException("Cannot request protocol " + handshake.getRequestedProtocol());
         }
-
-        throw new QuietException("Cannot request protocol " + requestedProtocol);
     }
 
 
@@ -363,22 +353,26 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                 disconnect(bungee.getTranslation("secure_profile_unsupported"));
                 return;
             }
-
             PlayerPublicKey publicKey = loginRequest.getPublicKey();
-            if (publicKey == null || Instant.ofEpochMilli(publicKey.getExpiry()).isBefore(Instant.now())) {
-                disconnect(publicKey == null ? bungee.getTranslation("secure_profile_required") : bungee.getTranslation("secure_profile_expired"));
+            if (publicKey == null) {
+                disconnect(bungee.getTranslation("secure_profile_required"));
                 return;
             }
-
-            if (getVersion() < ProtocolConstants.MINECRAFT_1_19_1 && !EncryptionUtil.check(publicKey, null)) {
-                disconnect(bungee.getTranslation("secure_profile_invalid"));
+            if (Instant.ofEpochMilli(publicKey.getExpiry()).isBefore(Instant.now())) {
+                disconnect(bungee.getTranslation("secure_profile_expired"));
                 return;
+            }
+            if (getVersion() < ProtocolConstants.MINECRAFT_1_19_1) {
+                if (!EncryptionUtil.check(publicKey, null)) {
+                    disconnect(bungee.getTranslation("secure_profile_invalid"));
+                    return;
+                }
             }
         }
 
         this.loginRequest = loginRequest;
-        int limit = BungeeCord.getInstance().config.getPlayerLimit();
 
+        int limit = BungeeCord.getInstance().config.getPlayerLimit();
         if (limit > 0 && bungee.getOnlineCount() >= limit) {
             disconnect(bungee.getTranslation("proxy_full"));
             return;
@@ -389,19 +383,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
             return;
         }
 
-        bungee.getPluginManager().callEvent(new PreLoginEvent(InitialHandler.this, (result, error)-> {
+        bungee.getPluginManager().callEvent(new PreLoginEvent(InitialHandler.this, (result, error) -> {
             if (result.isCancelled()) {
-                disconnect(result.getReason() != null ? result.getReason() : TextComponent.fromLegacy(bungee.getTranslation("kick_message")));
+                BaseComponent reason = result.getReason();
+                disconnect((reason != null) ? reason : TextComponent.fromLegacy(bungee.getTranslation("kick_message")));
                 return;
             }
-
-            if (ch.isClosing()) {
-                return;
-            }
-
+            if (ch.isClosing()) return;
             if (onlineMode) {
                 thisState = State.ENCRYPT;
-                unsafe().sendPacket(request = EncryptionUtil.encryptRequest());
+                unsafe().sendPacket(EncryptionUtil.encryptRequest());
             } else {
                 thisState = State.FINISHING;
                 finish();
@@ -409,41 +400,44 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         }));
     }
 
-
-    public void handle(EncryptionResponse encryptResponse) throws Exception {
+    @Override
+    public void handle(final EncryptionResponse encryptResponse) throws Exception {
         Preconditions.checkState(thisState == State.ENCRYPT, "Not expecting ENCRYPT");
         Preconditions.checkState(EncryptionUtil.check(loginRequest.getPublicKey(), encryptResponse, request), "Invalid verification");
 
-        thisState = State.FINISHING;
+        thisState = State.FINISHING; // Move earlier - There is no verification of this later (and this is not API)
+
         SecretKey sharedKey = EncryptionUtil.getSecret(encryptResponse, request);
 
-        // Close connection if the key is invalid
-        if (!(sharedKey instanceof SecretKeySpec) || sharedKey.getEncoded().length != 16) {
+        if (sharedKey instanceof SecretKeySpec && sharedKey.getEncoded().length != 16) {
             ch.close();
             return;
         }
 
-        ch.addBefore(PipelineUtils.FRAME_DECODER, PipelineUtils.DECRYPT_HANDLER, new CipherDecoder(EncryptionUtil.getCipher(false, sharedKey)));
-        ch.addBefore(PipelineUtils.FRAME_PREPENDER, PipelineUtils.ENCRYPT_HANDLER, new CipherEncoder(EncryptionUtil.getCipher(true, sharedKey)));
+        BungeeCipher decrypt = EncryptionUtil.getCipher(false, sharedKey);
+        BungeeCipher encrypt = EncryptionUtil.getCipher(true, sharedKey);
+        ch.addBefore(PipelineUtils.FRAME_DECODER, PipelineUtils.DECRYPT_HANDLER, new CipherDecoder(decrypt));
+        ch.addBefore(PipelineUtils.FRAME_PREPENDER, PipelineUtils.ENCRYPT_HANDLER, new CipherEncoder(encrypt));
+
+        String encName = URLEncoder.encode(InitialHandler.this.getName(), "UTF-8");
 
         MessageDigest sha = MessageDigest.getInstance("SHA-1");
+        XenonCore.instance.getTaskManager().async(() -> {
+            try{
+                for (byte[] bit : new byte[][]{
+                        request.getServerId().getBytes("ISO_8859_1"),
+                        sharedKey.getEncoded(),
+                        EncryptionUtil.keys.getPublic().getEncoded()
+                }) {
+                    sha.update(bit);
+                }
+                String encodedHash = URLEncoder.encode(new BigInteger(sha.digest()).toString(16), "UTF-8");
 
-        for (byte[] bit : new byte[][] {
-                request.getServerId().getBytes("ISO_8859_1"),
-                sharedKey.getEncoded(),
-                EncryptionUtil.keys.getPublic().getEncoded()
-        }) {
-            sha.update(bit);
-        }
-        String encodedHash = URLEncoder.encode(new BigInteger(sha.digest()).toString(16), "UTF-8");
+                String preventProxy = (BungeeCord.getInstance().config.isPreventProxyConnections() && getSocketAddress() instanceof InetSocketAddress)
+                        ? "&ip=" + URLEncoder.encode(getAddress().getAddress().getHostAddress(), "UTF-8")
+                        : "";
+                String authURL = String.format(MOJANG_AUTH_URL, encName, encodedHash, preventProxy);
 
-        String preventProxy = "";
-        if (bungee.getConfig().isPreventProxyConnections() && getSocketAddress() instanceof InetSocketAddress) {
-            preventProxy = "&ip=" + URLEncoder.encode(getAddress().getAddress().getHostAddress(), "UTF-8");
-        }
-        String authURL = String.format(MOJANG_AUTH_URL, URLEncoder.encode(getName(), "UTF-8"), encodedHash, preventProxy);
-
-        XenonCore.instance.getTaskManager().async(() ->
                 HttpClient.get(authURL, ch.getHandle().eventLoop(), (result, error) -> {
                     if (error == null) {
                         LoginResult obj = BungeeCord.getInstance().gson.fromJson(result, LoginResult.class);
@@ -459,56 +453,68 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                         disconnect(bungee.getTranslation("mojang_fail"));
                         bungee.getLogger().log(Level.SEVERE, "Error authenticating " + getName() + " with minecraft.net", error);
                     }
-                })
-        );
+                });
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        });
     }
-
 
     private void finish() {
         offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes(StandardCharsets.UTF_8));
-        uniqueId = (uniqueId == null) ? offlineId : uniqueId;
-        rewriteId = bungee.config.isIpForward() ? uniqueId : offlineId;
+        if (uniqueId == null) {
+            uniqueId = offlineId;
+        }
+        rewriteId = (bungee.config.isIpForward()) ? uniqueId : offlineId;
 
-        if (BungeeCord.getInstance().config.isEnforceSecureProfile() && getVersion() >= ProtocolConstants.MINECRAFT_1_19_1 && getVersion() < ProtocolConstants.MINECRAFT_1_19_3) {
-            try {
-                if (!EncryptionUtil.check(loginRequest.getPublicKey(), uniqueId)) {
-                    disconnect(bungee.getTranslation("secure_profile_invalid"));
+        if (BungeeCord.getInstance().config.isEnforceSecureProfile()) {
+            if (getVersion() >= ProtocolConstants.MINECRAFT_1_19_1 && getVersion() < ProtocolConstants.MINECRAFT_1_19_3) {
+                try {
+                    if (!EncryptionUtil.check(loginRequest.getPublicKey(), uniqueId)) {
+                        disconnect(bungee.getTranslation("secure_profile_invalid"));
+                        return;
+                    }
+                } catch (GeneralSecurityException ignored) {
+                }
+            }
+        }
+
+        if (isOnlineMode()) {
+            if (bungee.getPlayer(getName()) != null || bungee.getPlayer(getUniqueId()) != null) {
+                disconnect(bungee.getTranslation("already_connected_proxy"));
+                return;
+            }
+        } else {
+            if (bungee.getPlayer(getName()) != null) {
+                disconnect(bungee.getTranslation("already_connected_proxy"));
+                return;
+            }
+        }
+
+        bungee.getPluginManager().callEvent(new LoginEvent(InitialHandler.this, new Callback<LoginEvent>() {
+            @Override
+            public void done(LoginEvent result, Throwable error) {
+                if (result.isCancelled()) {
+                    BaseComponent reason = result.getReason();
+                    disconnect((reason != null) ? reason : TextComponent.fromLegacy(bungee.getTranslation("kick_message")));
                     return;
                 }
-            } catch (GeneralSecurityException ignored) {
-            }
-        }
+                if (ch.isClosing()) return;
 
-        ProxiedPlayer oldPlayer = isOnlineMode() ? bungee.getPlayer(getName()) : bungee.getPlayer(getUniqueId());
-        if (oldPlayer != null) {
-            disconnect(bungee.getTranslation("already_connected_proxy"));
-            return;
-        }
+                ch.getHandle().eventLoop().execute(() -> {
+                    if (!ch.isClosing()) {
+                        userCon = new UserConnection(bungee, ch, getName(), InitialHandler.this);
+                        userCon.setCompressionThreshold(BungeeCord.getInstance().config.getCompressionThreshold());
 
-        bungee.getPluginManager().callEvent(new LoginEvent(InitialHandler.this, (result, error) -> {
-            if (result.isCancelled()) {
-                disconnect(result.getReason() != null ? result.getReason() : TextComponent.fromLegacy(bungee.getTranslation("kick_message")));
-                return;
-            }
-
-            if (ch.isClosing()) {
-                return;
-            }
-
-           // XenonCore.instance.getTaskManager().async(() -> {
-                if (!ch.isClosing()) {
-                    userCon = new UserConnection(bungee, ch, getName(), InitialHandler.this);
-                    userCon.setCompressionThreshold(BungeeCord.getInstance().config.getCompressionThreshold());
-
-                    if (getVersion() < ProtocolConstants.MINECRAFT_1_20_2) {
-                        unsafe.sendPacket(new LoginSuccess(getRewriteId(), getName(), (loginProfile == null) ? null : loginProfile.getProperties()));
-                        ch.setProtocol(Protocol.GAME);
+                        if (getVersion() < ProtocolConstants.MINECRAFT_1_20_2) {
+                            unsafe().sendPacket(new LoginSuccess(getRewriteId(), getName(), (loginProfile == null) ? null : loginProfile.getProperties()));
+                            ch.setProtocol(Protocol.GAME);
+                        }
+                        finish2();
                     }
-
-                    finish2();
-                }
-          //  });
-        }, this.getLoginProfile()));
+                });
+            }
+        }, this.getLoginProfile())); // Waterfall: Parse LoginResult object to new constructor of LoginEvent
     }
 
 
@@ -543,32 +549,23 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     }
 
     @Override
-    public void handle(CookieResponse cookieResponse)
-    {
-        // be careful, backend server could also make the client send a cookie response
+    public void handle(CookieResponse cookieResponse) {
         CookieFuture future;
-        synchronized ( requestedCookies )
-        {
+        synchronized (requestedCookies) {
             future = requestedCookies.peek();
-            if ( future != null )
-            {
-                if ( future.cookie.equals( cookieResponse.getCookie() ) )
-                {
-                    Preconditions.checkState( future == requestedCookies.poll(), "requestedCookies queue mismatch" );
-                } else
-                {
-                    future = null;
-                }
+            if (future != null && future.cookie.equals(cookieResponse.getCookie())) {
+                Preconditions.checkState(future == requestedCookies.poll(), "requestedCookies queue mismatch");
+            } else {
+                future = null; // leave for handling by backend
             }
         }
 
-        if ( future != null )
-        {
-            future.getFuture().complete( cookieResponse.getData() );
-
+        if (future != null) {
+            future.getFuture().complete(cookieResponse.getData());
             throw CancelSendSignal.INSTANCE;
         }
     }
+
 
     @Override
     public void disconnect(String reason)
@@ -665,30 +662,32 @@ public class InitialHandler extends PacketHandler implements PendingConnection
 
     public void relayMessage(PluginMessage input) throws Exception
     {
-        if ( input.getTag().equals( "REGISTER" ) || input.getTag().equals( "minecraft:register" ) )
-        {
-            String content = new String( input.getData(), StandardCharsets.UTF_8 );
-
-            for ( String id : content.split( "\0" ) )
+        XenonCore.instance.getTaskManager().async(() -> {
+            if ( input.getTag().equals( "REGISTER" ) || input.getTag().equals( "minecraft:register" ) )
             {
-                // Waterfall start: Add configurable limits for plugin messaging
-                Preconditions.checkState( !(registeredChannels.size() > bungee.getConfig().getPluginChannelLimit()), "Too many registered channels. This limit can be configured in the waterfall.yml" );
-                Preconditions.checkArgument( !(id.length() > bungee.getConfig().getPluginChannelNameLimit()), "Channel name too long. This limit can be configured in the waterfall.yml" );
-                // Waterfall end
-                registeredChannels.add( id );
-            }
-        } else if ( input.getTag().equals( "UNREGISTER" ) || input.getTag().equals( "minecraft:unregister" ) )
-        {
-            String content = new String( input.getData(), StandardCharsets.UTF_8 );
+                String content = new String( input.getData(), StandardCharsets.UTF_8 );
 
-            for ( String id : content.split( "\0" ) )
+                for ( String id : content.split( "\0" ) )
+                {
+                    // Waterfall start: Add configurable limits for plugin messaging
+                    Preconditions.checkState( !(registeredChannels.size() > bungee.getConfig().getPluginChannelLimit()), "Too many registered channels. This limit can be configured in the waterfall.yml" );
+                    Preconditions.checkArgument( !(id.length() > bungee.getConfig().getPluginChannelNameLimit()), "Channel name too long. This limit can be configured in the waterfall.yml" );
+                    // Waterfall end
+                    registeredChannels.add( id );
+                }
+            } else if ( input.getTag().equals( "UNREGISTER" ) || input.getTag().equals( "minecraft:unregister" ) )
             {
-                registeredChannels.remove( id );
+                String content = new String( input.getData(), StandardCharsets.UTF_8 );
+
+                for ( String id : content.split( "\0" ) )
+                {
+                    registeredChannels.remove( id );
+                }
+            } else if ( input.getTag().equals( "MC|Brand" ) || input.getTag().equals( "minecraft:brand" ) )
+            {
+                brandMessage = input;
             }
-        } else if ( input.getTag().equals( "MC|Brand" ) || input.getTag().equals( "minecraft:brand" ) )
-        {
-            brandMessage = input;
-        }
+        });
     }
 
     @Override

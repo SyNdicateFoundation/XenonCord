@@ -68,49 +68,49 @@ public class DownstreamBridge extends PacketHandler
         if (server.isObsolete()) return;
 
         //XenonCore.instance.getTaskManager().add(() -> {
-            ServerInfo nextServer;
-            try {
-                Future<ServerInfo> future = new CompletableFuture<>();
-                con.updateAndGetNextServer(server.getInfo(), (result, error) -> {
-                    if (error != null) {
-                        System.err.println("Error while updating and getting the next server: " + error.getMessage());
-                        ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
-                    } else {
-                        ((CompletableFuture<ServerInfo>) future).complete(result);
-                    }
-                });
-
-                nextServer = future.get();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                nextServer = null;
-            }
-
-            ServerKickEvent event = new ServerKickEvent(
-                    con,
-                    server.getInfo(),
-                    TextComponent.fromLegacyText(bungee.getTranslation("server_went_down")),
-                    nextServer,
-                    ServerKickEvent.State.CONNECTED,
-                    ServerKickEvent.Cause.EXCEPTION
-            );
-
-            bungee.getPluginManager().callEvent(event);
-
-            if (event.isCancelled() && event.getCancelServer() != null) {
-                server.setObsolete(true);
-                con.connectNow(event.getCancelServer(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
-            } else {
-                if (nextServer != null) {
-                    server.setObsolete(true);
-                    con.connectNow(nextServer, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
-                    con.sendMessage(bungee.getTranslation("server_went_down", nextServer.getName()));
+        ServerInfo nextServer;
+        try {
+            Future<ServerInfo> future = new CompletableFuture<>();
+            con.updateAndGetNextServer(server.getInfo(), (result, error) -> {
+                if (error != null) {
+                    System.err.println("Error while updating and getting the next server: " + error.getMessage());
+                    ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
                 } else {
-                    con.disconnect0(event.getReason());
+                    ((CompletableFuture<ServerInfo>) future).complete(result);
                 }
+            });
+
+            nextServer = future.get();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            nextServer = null;
+        }
+
+        ServerKickEvent event = new ServerKickEvent(
+                con,
+                server.getInfo(),
+                TextComponent.fromLegacyText(bungee.getTranslation("server_went_down")),
+                nextServer,
+                ServerKickEvent.State.CONNECTED,
+                ServerKickEvent.Cause.EXCEPTION
+        );
+
+        bungee.getPluginManager().callEvent(event);
+
+        if (event.isCancelled() && event.getCancelServer() != null) {
+            server.setObsolete(true);
+            con.connectNow(event.getCancelServer(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
+        } else {
+            if (nextServer != null) {
+                server.setObsolete(true);
+                con.connectNow(nextServer, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
+                con.sendMessage(bungee.getTranslation("server_went_down", nextServer.getName()));
+            } else {
+                con.disconnect0(event.getReason());
             }
-       // });
+        }
+        // });
     }
 
 
@@ -128,50 +128,50 @@ public class DownstreamBridge extends PacketHandler
         if (server.isObsolete())
             return;
 
-      //  XenonCore.instance.getTaskManager().add(() -> {
-            ServerInfo nextServer;
-            try {
-                Future<ServerInfo> future = new CompletableFuture<>();
-                con.updateAndGetNextServer(server.getInfo(), (result, error) -> {
-                    if (error != null) {
-                        System.err.println("Error while updating and getting the next server: " + error.getMessage());
-                        ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
-                    } else {
-                        ((CompletableFuture<ServerInfo>) future).complete(result);
-                    }
-                });
-
-                nextServer = future.get();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                nextServer = null;
-            }
-
-            ServerKickEvent event = new ServerKickEvent(
-                    con,
-                    server.getInfo(),
-                    TextComponent.fromLegacyText(bungee.getTranslation("lost_connection")),
-                    nextServer,
-                    ServerKickEvent.State.CONNECTED,
-                    ServerKickEvent.Cause.LOST_CONNECTION
-            );
-
-            bungee.getPluginManager().callEvent(event);
-
-            if (event.isCancelled() && event.getCancelServer() != null) {
-                server.setObsolete(true);
-                con.connectNow(event.getCancelServer());
-            } else {
-                if (nextServer != null) {
-                    server.setObsolete(true);
-                    con.connectNow(nextServer, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
-                    con.sendMessage(bungee.getTranslation("server_went_down", nextServer.getName()));
+        //  XenonCore.instance.getTaskManager().add(() -> {
+        ServerInfo nextServer;
+        try {
+            Future<ServerInfo> future = new CompletableFuture<>();
+            con.updateAndGetNextServer(server.getInfo(), (result, error) -> {
+                if (error != null) {
+                    System.err.println("Error while updating and getting the next server: " + error.getMessage());
+                    ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
                 } else {
-                    con.disconnect0(event.getReason());
+                    ((CompletableFuture<ServerInfo>) future).complete(result);
                 }
+            });
+
+            nextServer = future.get();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            nextServer = null;
+        }
+
+        ServerKickEvent event = new ServerKickEvent(
+                con,
+                server.getInfo(),
+                TextComponent.fromLegacyText(bungee.getTranslation("lost_connection")),
+                nextServer,
+                ServerKickEvent.State.CONNECTED,
+                ServerKickEvent.Cause.LOST_CONNECTION
+        );
+
+        bungee.getPluginManager().callEvent(event);
+
+        if (event.isCancelled() && event.getCancelServer() != null) {
+            server.setObsolete(true);
+            con.connectNow(event.getCancelServer());
+        } else {
+            if (nextServer != null) {
+                server.setObsolete(true);
+                con.connectNow(nextServer, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
+                con.sendMessage(bungee.getTranslation("server_went_down", nextServer.getName()));
+            } else {
+                con.disconnect0(event.getReason());
             }
-       // });
+        }
+        // });
     }
 
 
@@ -572,48 +572,48 @@ public class DownstreamBridge extends PacketHandler
 
     @Override
     public void handle(Kick kick) throws Exception {
-      //  XenonCore.instance.getTaskManager().add(() -> {
-            ServerInfo nextServer;
-            try {
-                Future<ServerInfo> future = new CompletableFuture<>();
-                con.updateAndGetNextServer(server.getInfo(), (result, error) -> {
-                    if (error != null) {
-                        System.err.println("Error while updating and getting the next server: " + error.getMessage());
-                        ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
-                    } else {
-                        ((CompletableFuture<ServerInfo>) future).complete(result);
-                    }
-                });
-
-                nextServer = future.get();
-                if (server.getInfo().equals(nextServer)) {
-                    nextServer = null;
-                }
-
-                ServerKickEvent event = new ServerKickEvent(
-                        con,
-                        server.getInfo(),
-                        new BaseComponent[]{kick.getMessage()},
-                        nextServer,
-                        ServerKickEvent.State.CONNECTED,
-                        ServerKickEvent.Cause.SERVER
-                );
-
-                bungee.getPluginManager().callEvent(event);
-
-                if (event.isCancelled() && event.getCancelServer() != null) {
-                    con.connectNow(event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT);
+        //  XenonCore.instance.getTaskManager().add(() -> {
+        ServerInfo nextServer;
+        try {
+            Future<ServerInfo> future = new CompletableFuture<>();
+            con.updateAndGetNextServer(server.getInfo(), (result, error) -> {
+                if (error != null) {
+                    System.err.println("Error while updating and getting the next server: " + error.getMessage());
+                    ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
                 } else {
-                    con.disconnect(event.getKickReasonComponent());
+                    ((CompletableFuture<ServerInfo>) future).complete(result);
                 }
+            });
 
-                server.setObsolete(true);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                con.disconnect(new BaseComponent[]{kick.getMessage()});
+            nextServer = future.get();
+            if (server.getInfo().equals(nextServer)) {
+                nextServer = null;
             }
-       // });
+
+            ServerKickEvent event = new ServerKickEvent(
+                    con,
+                    server.getInfo(),
+                    new BaseComponent[]{kick.getMessage()},
+                    nextServer,
+                    ServerKickEvent.State.CONNECTED,
+                    ServerKickEvent.Cause.SERVER
+            );
+
+            bungee.getPluginManager().callEvent(event);
+
+            if (event.isCancelled() && event.getCancelServer() != null) {
+                con.connectNow(event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT);
+            } else {
+                con.disconnect(event.getKickReasonComponent());
+            }
+
+            server.setObsolete(true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            con.disconnect(new BaseComponent[]{kick.getMessage()});
+        }
+        // });
 
         throw CancelSendSignal.INSTANCE;
     }
