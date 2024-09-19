@@ -418,28 +418,30 @@ public class ServerConnector extends PacketHandler
             if ( pluginMessage.getTag().equals( ForgeConstants.FML_REGISTER ) )
             {
                 Set<String> channels = ForgeUtils.readRegisteredChannels( pluginMessage );
-                boolean isForgeServer = false;
-                for ( String channel : channels )
-                {
-                    if ( channel.equals( ForgeConstants.FML_HANDSHAKE_TAG ) )
+                XenonCore.instance.getTaskManager().async(() -> {
+                    boolean isForgeServer = false;
+                    for ( String channel : channels )
                     {
-                        // If we have a completed handshake and we have been asked to register a FML|HS
-                        // packet, let's send the reset packet now. Then, we can continue the message sending.
-                        // The handshake will not be complete if we reset this earlier.
-                        if ( user.getServer() != null && user.getForgeClientHandler().isHandshakeComplete() )
-                            user.getForgeClientHandler().resetHandshake();
+                        if ( channel.equals( ForgeConstants.FML_HANDSHAKE_TAG ) )
+                        {
+                            // If we have a completed handshake and we have been asked to register a FML|HS
+                            // packet, let's send the reset packet now. Then, we can continue the message sending.
+                            // The handshake will not be complete if we reset this earlier.
+                            if ( user.getServer() != null && user.getForgeClientHandler().isHandshakeComplete() )
+                                user.getForgeClientHandler().resetHandshake();
 
-                        isForgeServer = true;
-                        break;
+                            isForgeServer = true;
+                            break;
+                        }
                     }
-                }
 
-                if ( isForgeServer && !this.handshakeHandler.isServerForge() )
-                {
-                    // We now set the server-side handshake gui for the client to this.
-                    handshakeHandler.setServerAsForgeServer();
-                    user.setForgeServerHandler( handshakeHandler );
-                }
+                    if ( isForgeServer && !this.handshakeHandler.isServerForge() )
+                    {
+                        // We now set the server-side handshake gui for the client to this.
+                        handshakeHandler.setServerAsForgeServer();
+                        user.setForgeServerHandler( handshakeHandler );
+                    }
+                });
             }
 
             if ( pluginMessage.getTag().equals( ForgeConstants.FML_HANDSHAKE_TAG ) || pluginMessage.getTag().equals( ForgeConstants.FORGE_REGISTER ) )

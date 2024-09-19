@@ -15,7 +15,6 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.http.HttpClient;
-import net.md_5.bungee.jni.cipher.BungeeCipher;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.HandlerBoss;
 import net.md_5.bungee.netty.PacketHandler;
@@ -35,7 +34,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.time.Instant;
 import java.util.*;
@@ -380,7 +378,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
 
         thisState = State.FINISHING; // Move earlier - There is no verification of this later (and this is not API)
 
-        SecretKey sharedKey = EncryptionUtil.getSecret(encryptResponse, request);
+        SecretKey sharedKey = EncryptionUtil.getSecret(encryptResponse);
 
         if (sharedKey instanceof SecretKeySpec && sharedKey.getEncoded().length != 16) {
             ch.close();

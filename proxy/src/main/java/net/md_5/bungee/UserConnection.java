@@ -241,7 +241,7 @@ public final class UserConnection implements ProxiedPlayer
             serverJoinQueue = new LinkedList<>(getPendingConnection().getListener().getServerPriority());
         }
         AtomicReference<ServerInfo> next = new AtomicReference<>();
-        XenonCore.instance.getTaskManager().async(() -> {
+        XenonCore.instance.getTaskManager().add(() -> {
             while (!serverJoinQueue.isEmpty()) {
                 ServerInfo candidate = ProxyServer.getInstance().getServerInfo(serverJoinQueue.remove());
                 if (!Objects.equals(currentTarget, candidate)) {
@@ -286,10 +286,9 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void connect(final ServerConnectRequest request) {
         Preconditions.checkNotNull(request, "request");
+        final Callback<ServerConnectRequest.Result> callback = request.getCallback();
+        final ServerConnectEvent event = new ServerConnectEvent(this, request.getTarget(), request.getReason(), request);
         XenonCore.instance.getTaskManager().async(() -> {
-            final Callback<ServerConnectRequest.Result> callback = request.getCallback();
-            final ServerConnectEvent event = new ServerConnectEvent(this, request.getTarget(), request.getReason(), request);
-
             if (bungee.getPluginManager().callEvent(event).isCancelled()) {
                 if (callback != null)
                     callback.done(ServerConnectRequest.Result.EVENT_CANCEL, null);
@@ -531,17 +530,13 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void addGroups(String... groups)
     {
-        XenonCore.instance.getTaskManager().async(() -> Arrays.stream(groups).forEach(group -> {
-            this.groups.add(group);
-        }));
+        XenonCore.instance.getTaskManager().async(() -> Arrays.stream(groups).forEach(group -> this.groups.add(group)));
     }
 
     @Override
     public void removeGroups(String... groups)
     {
-        XenonCore.instance.getTaskManager().async(() -> Arrays.stream(groups).forEach(group -> {
-            this.groups.remove(group);
-        }));
+        XenonCore.instance.getTaskManager().async(() -> Arrays.stream(groups).forEach(group -> this.groups.remove(group)));
     }
 
     @Override

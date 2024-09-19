@@ -21,10 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class EncryptionUtil {
 
@@ -45,7 +42,7 @@ public class EncryptionUtil {
             throw new ExceptionInInitializerError(ex);
         }
         try {
-            MOJANG_KEY = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(ByteStreams.toByteArray(EncryptionUtil.class.getResourceAsStream("/yggdrasil_session_pubkey.der"))));
+            MOJANG_KEY = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(ByteStreams.toByteArray(Objects.requireNonNull(EncryptionUtil.class.getResourceAsStream("/yggdrasil_session_pubkey.der")))));
         } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException ex) {
             throw new ExceptionInInitializerError(ex);
         }
@@ -94,7 +91,7 @@ public class EncryptionUtil {
         }
     }
 
-    public static SecretKey getSecret(EncryptionResponse resp, EncryptionRequest request) throws GeneralSecurityException {
+    public static SecretKey getSecret(EncryptionResponse resp) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.DECRYPT_MODE, keys.getPrivate());
         return new SecretKeySpec(cipher.doFinal(resp.getSharedSecret()), "AES");
@@ -106,17 +103,17 @@ public class EncryptionUtil {
         return cipher;
     }
 
-    public static PublicKey getPubkey(EncryptionRequest request) throws GeneralSecurityException {
+    /*public static PublicKey getPubkey(EncryptionRequest request) throws GeneralSecurityException {
         return getPubkey(request.getPublicKey());
-    }
+    }*/
 
     private static PublicKey getPubkey(byte[] b) throws GeneralSecurityException {
         return KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(b));
     }
 
-    public static byte[] encrypt(Key key, byte[] b) throws GeneralSecurityException {
+    /*public static byte[] encrypt(Key key, byte[] b) throws GeneralSecurityException {
         Cipher hasher = Cipher.getInstance("RSA");
         hasher.init(Cipher.ENCRYPT_MODE, key);
         return hasher.doFinal(b);
-    }
+    }*/
 }
