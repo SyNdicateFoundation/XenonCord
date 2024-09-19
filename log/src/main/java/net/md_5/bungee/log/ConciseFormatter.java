@@ -1,5 +1,8 @@
 package net.md_5.bungee.log;
 
+import lombok.RequiredArgsConstructor;
+import net.md_5.bungee.api.ChatColor;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
@@ -7,8 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import lombok.RequiredArgsConstructor;
-import net.md_5.bungee.api.ChatColor;
 
 @RequiredArgsConstructor
 public class ConciseFormatter extends Formatter

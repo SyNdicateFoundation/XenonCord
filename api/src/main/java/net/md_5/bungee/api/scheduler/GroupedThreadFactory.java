@@ -1,8 +1,9 @@
 package net.md_5.bungee.api.scheduler;
 
-import java.util.concurrent.ThreadFactory;
 import lombok.Data;
 import net.md_5.bungee.api.plugin.Plugin;
+
+import java.util.concurrent.ThreadFactory;
 
 @Data
 @Deprecated

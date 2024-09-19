@@ -1,15 +1,13 @@
 package io.github.waterfallmc.waterfall.event;
 
+import lombok.ToString;
 import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.event.AsyncEvent;
-import net.md_5.bungee.api.event.ClientConnectEvent;
 import net.md_5.bungee.api.plugin.Cancellable;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-
-import lombok.ToString;
 
 /**
  * Represents a brand new connection made to the proxy, allowing for plugins to

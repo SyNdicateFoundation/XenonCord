@@ -1,9 +1,10 @@
 package net.md_5.bungee.api;
 
-import java.util.Collection;
-import java.util.Map;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.config.ServerInfo;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Core configuration adaptor for the proxy api.

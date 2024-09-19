@@ -1,9 +1,11 @@
 package net.md_5.bungee.util;
 
-import static org.junit.jupiter.api.Assertions.*;
-import java.util.UUID;
 import net.md_5.bungee.Util;
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UUIDTest
 {

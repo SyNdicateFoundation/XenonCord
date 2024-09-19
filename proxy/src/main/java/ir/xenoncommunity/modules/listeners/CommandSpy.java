@@ -2,7 +2,6 @@ package ir.xenoncommunity.modules.listeners;
 
 import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.annotations.ModuleListener;
-import ir.xenoncommunity.modules.ModuleManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;

@@ -1,8 +1,10 @@
 package net.md_5.bungee.event;
 
-import static org.junit.jupiter.api.Assertions.*;
-import java.util.concurrent.CountDownLatch;
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.CountDownLatch;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EventPriorityTest
 {

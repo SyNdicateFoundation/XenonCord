@@ -7,31 +7,11 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.Graphs;
 import com.google.common.graph.MutableGraph;
-import java.io.File;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.concurrent.CountDownLatch;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.logging.Level;
-import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent; // Waterfall
-import io.github.waterfallmc.waterfall.exception.ProxyCommandException; // Waterfall
-import io.github.waterfallmc.waterfall.exception.ProxyEventException; // Waterfall
-import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException; // Waterfall
-import io.github.waterfallmc.waterfall.exception.ProxyTabCompleteException; // Waterfall
+import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
+import io.github.waterfallmc.waterfall.exception.ProxyCommandException;
+import io.github.waterfallmc.waterfall.exception.ProxyEventException;
+import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException;
+import io.github.waterfallmc.waterfall.exception.ProxyTabCompleteException;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -39,11 +19,21 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.event.EventBus;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventHandlerMethod;
 import org.yaml.snakeyaml.LoaderOptions;
-import net.md_5.bungee.event.EventHandlerMethod; //Waterfall - Exception event
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
+
+import java.io.File;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.URLClassLoader;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.logging.Level;
 
 /**
  * Class to manage bridging between plugin duties and implementation duties, for

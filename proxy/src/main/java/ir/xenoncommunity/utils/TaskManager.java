@@ -3,7 +3,6 @@ package ir.xenoncommunity.utils;
 import ir.xenoncommunity.XenonCore;
 
 import java.util.concurrent.*;
-import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public class TaskManager {

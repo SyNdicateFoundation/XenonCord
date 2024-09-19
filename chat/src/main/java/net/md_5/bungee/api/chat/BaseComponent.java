@@ -1,14 +1,11 @@
 package net.md_5.bungee.api.chat;
 
-import java.util.ArrayList;
-import java.util.List;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @ToString(exclude = "parent")

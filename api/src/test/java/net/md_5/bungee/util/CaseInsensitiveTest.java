@@ -1,7 +1,8 @@
 package net.md_5.bungee.util;
 
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CaseInsensitiveTest
 {

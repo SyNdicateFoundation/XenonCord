@@ -1,6 +1,5 @@
 package net.md_5.bungee.tab;
 
-import ir.xenoncommunity.XenonCore;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.UserConnection;

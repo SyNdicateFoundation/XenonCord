@@ -1,11 +1,12 @@
 package net.md_5.bungee.api.chat;
 
 import com.google.common.base.Preconditions;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>

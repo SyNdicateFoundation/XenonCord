@@ -1,9 +1,10 @@
 package net.md_5.bungee.log;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class LoggingForwardHandler extends Handler

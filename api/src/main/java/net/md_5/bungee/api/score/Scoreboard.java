@@ -1,12 +1,13 @@
 package net.md_5.bungee.api.score;
 
 import com.google.common.base.Preconditions;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor

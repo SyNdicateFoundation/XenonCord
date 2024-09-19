@@ -1,18 +1,12 @@
 package net.md_5.bungee.chat;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import java.lang.reflect.Type;
-import java.util.Map;
+import com.google.gson.*;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentStyle;
 import net.md_5.bungee.api.chat.ComponentStyleBuilder;
+
+import java.lang.reflect.Type;
+import java.util.Map;
 
 public class ComponentStyleSerializer implements JsonSerializer<ComponentStyle>, JsonDeserializer<ComponentStyle>
 {

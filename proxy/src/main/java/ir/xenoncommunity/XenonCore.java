@@ -1,7 +1,7 @@
 package ir.xenoncommunity;
 
-import ir.xenoncommunity.modules.ModuleManager;
 import ir.xenoncommunity.gui.SwingManager;
+import ir.xenoncommunity.modules.ModuleManager;
 import ir.xenoncommunity.utils.Configuration;
 import ir.xenoncommunity.utils.TaskManager;
 import lombok.Getter;

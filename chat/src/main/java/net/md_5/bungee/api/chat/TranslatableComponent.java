@@ -1,15 +1,12 @@
 package net.md_5.bungee.api.chat;
 
+import lombok.*;
+import net.md_5.bungee.chat.TranslationRegistry;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import net.md_5.bungee.chat.TranslationRegistry;
 
 @Getter
 @Setter

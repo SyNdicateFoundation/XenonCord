@@ -1,15 +1,10 @@
 package net.md_5.bungee.api.chat.hover.content;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
+import net.md_5.bungee.api.chat.BaseComponent;
+
 import java.lang.reflect.Type;
 import java.util.UUID;
-import net.md_5.bungee.api.chat.BaseComponent;
 
 public class EntitySerializer implements JsonSerializer<Entity>, JsonDeserializer<Entity>
 {

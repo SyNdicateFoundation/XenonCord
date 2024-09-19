@@ -1,15 +1,17 @@
 package net.md_5.bungee.util;
 
-import static org.junit.jupiter.api.Assertions.*;
 import io.netty.channel.unix.DomainSocketAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.Util;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RequiredArgsConstructor
 public class AddressParseTest

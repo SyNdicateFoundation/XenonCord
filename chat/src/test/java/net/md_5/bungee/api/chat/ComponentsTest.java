@@ -1,17 +1,15 @@
 package net.md_5.bungee.api.chat;
 
-import static net.md_5.bungee.api.ChatColor.*;
-import static org.junit.jupiter.api.Assertions.*;
-import java.awt.Color;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.ObjIntConsumer;
-import java.util.function.Supplier;
 import net.md_5.bungee.api.chat.hover.content.Entity;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.junit.jupiter.api.Test;
+
+import java.awt.*;
+import java.util.function.*;
+
+import static net.md_5.bungee.api.ChatColor.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ComponentsTest
 {

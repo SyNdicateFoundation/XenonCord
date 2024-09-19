@@ -1,8 +1,9 @@
 package io.github.waterfallmc.waterfall.utils;
-import java.util.UUID;
 
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Longs;
+
+import java.util.UUID;
 
 public class UUIDUtils {
     private UUIDUtils() {}

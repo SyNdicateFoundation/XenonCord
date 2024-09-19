@@ -1,11 +1,12 @@
 package net.md_5.bungee.api.config;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.List;
 import java.util.Map;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 
 /**
  * Class representing the configuration of a server listener. Used for allowing

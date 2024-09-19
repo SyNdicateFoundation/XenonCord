@@ -44,11 +44,10 @@ import java.io.DataInput;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "rawtypes"})
 public class DownstreamBridge extends PacketHandler
 {
 
@@ -70,13 +69,13 @@ public class DownstreamBridge extends PacketHandler
         //XenonCore.instance.getTaskManager().add(() -> {
         ServerInfo nextServer;
         try {
-            Future<ServerInfo> future = new CompletableFuture<>();
+            CompletableFuture<ServerInfo> future = new CompletableFuture<>();
             con.updateAndGetNextServer(server.getInfo(), (result, error) -> {
                 if (error != null) {
                     System.err.println("Error while updating and getting the next server: " + error.getMessage());
-                    ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
+                    future.completeExceptionally(error);
                 } else {
-                    ((CompletableFuture<ServerInfo>) future).complete(result);
+                    future.complete(result);
                 }
             });
 
@@ -131,13 +130,13 @@ public class DownstreamBridge extends PacketHandler
         //  XenonCore.instance.getTaskManager().add(() -> {
         ServerInfo nextServer;
         try {
-            Future<ServerInfo> future = new CompletableFuture<>();
+            CompletableFuture<ServerInfo> future = new CompletableFuture<>();
             con.updateAndGetNextServer(server.getInfo(), (result, error) -> {
                 if (error != null) {
                     System.err.println("Error while updating and getting the next server: " + error.getMessage());
-                    ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
+                    future.completeExceptionally(error);
                 } else {
-                    ((CompletableFuture<ServerInfo>) future).complete(result);
+                    future.complete(result);
                 }
             });
 
@@ -313,11 +312,13 @@ public class DownstreamBridge extends PacketHandler
 
         if (team.getPlayers() == null) return;
 
-        Arrays.stream(team.getPlayers()).forEach(s -> {
-            if (team.getMode() == 0 || team.getMode() == 3)
-                t.addPlayer(s);
-            else if (team.getMode() == 4)
-                t.removePlayer(s);
+        XenonCore.instance.getTaskManager().add(() -> {
+            Arrays.stream(team.getPlayers()).forEach(s -> {
+                if (team.getMode() == 0 || team.getMode() == 3)
+                    t.addPlayer(s);
+                else if (team.getMode() == 4)
+                    t.removePlayer(s);
+            });
         });
     }
 
@@ -575,13 +576,13 @@ public class DownstreamBridge extends PacketHandler
         //  XenonCore.instance.getTaskManager().add(() -> {
         ServerInfo nextServer;
         try {
-            Future<ServerInfo> future = new CompletableFuture<>();
+            CompletableFuture<ServerInfo> future = new CompletableFuture<>();
             con.updateAndGetNextServer(server.getInfo(), (result, error) -> {
                 if (error != null) {
                     System.err.println("Error while updating and getting the next server: " + error.getMessage());
-                    ((CompletableFuture<ServerInfo>) future).completeExceptionally(error);
+                    future.completeExceptionally(error);
                 } else {
-                    ((CompletableFuture<ServerInfo>) future).complete(result);
+                    future.complete(result);
                 }
             });
 

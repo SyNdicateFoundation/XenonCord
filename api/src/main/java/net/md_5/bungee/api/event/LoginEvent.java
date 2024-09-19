@@ -8,7 +8,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.plugin.Cancellable;
-import net.md_5.bungee.connection.LoginResult; // Waterfall: Parse LoginResult object to new constructor of LoginEvent
+import net.md_5.bungee.connection.LoginResult;
 
 /**
  * Event called to represent a player logging in.

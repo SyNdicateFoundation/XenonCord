@@ -1,13 +1,14 @@
 package net.md_5.bungee.api;
 
 import com.google.common.base.Preconditions;
-import java.awt.Color;
+import lombok.Getter;
+
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import lombok.Getter;
 
 /**
  * Simplistic enumeration of all supported color values for chat.

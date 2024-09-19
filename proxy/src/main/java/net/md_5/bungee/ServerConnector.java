@@ -7,7 +7,6 @@ import io.netty.buffer.ByteBufAllocator;
 import ir.xenoncommunity.XenonCore;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -16,10 +15,7 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
-import net.md_5.bungee.api.score.Objective;
-import net.md_5.bungee.api.score.Score;
 import net.md_5.bungee.api.score.Scoreboard;
-import net.md_5.bungee.api.score.Team;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.connection.CancelSendSignal;
 import net.md_5.bungee.connection.DownstreamBridge;
@@ -38,10 +34,12 @@ import net.md_5.bungee.util.QuietException;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 
 @RequiredArgsConstructor
 public class ServerConnector extends PacketHandler
