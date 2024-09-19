@@ -47,13 +47,7 @@ public class YamlConfig implements ConfigurationAdapter
         yaml = new Yaml( options );
     }
 
-    @Override
     public void load()
-    {
-        load(true);
-    }
-
-    public void load(boolean doPermissions)
     {
         try
         {
@@ -81,15 +75,6 @@ public class YamlConfig implements ConfigurationAdapter
         {
             throw new RuntimeException( "Could not load configuration!", ex );
         }
-
-        if(!doPermissions) return; // Waterfall
-        Map<String, Object> permissions = get( "permissions", null );
-        if ( permissions == null )
-        {
-            set( "permissions.default", Arrays.asList("bungeecord.command.server", "bungeecord.command.list") );
-        }
-
-        Map<String, Object> groups = get( "groups", null );
     }
 
     private <T> T get(String path, T def)
@@ -280,31 +265,9 @@ public class YamlConfig implements ConfigurationAdapter
 
         return ret;
     }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Collection<String> getGroups(String player)
-    {
-        // #1270: Do this to support player names with .
-        Map<String, Collection<String>> raw = get( "groups", Collections.emptyMap() );
-        Collection<String> groups = raw.get( player );
-
-        Collection<String> ret = ( groups == null ) ? new HashSet<String>() : new HashSet<>( groups );
-        ret.add( "default" );
-        return ret;
-    }
-
     @Override
     public Collection<?> getList(String path, Collection<?> def)
     {
         return get( path, def );
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Collection<String> getPermissions(String group)
-    {
-        Collection<String> permissions = get( "permissions." + group, null );
-        return ( permissions == null ) ? Collections.EMPTY_SET : permissions;
     }
 }

@@ -146,14 +146,6 @@ public final class UserConnection implements ProxiedPlayer
     };
 
     public boolean init() {
-        final ConfigurationAdapter configAdapter = bungee.getConfigurationAdapter();
-
-        Set<String> nameGroups = new HashSet<>(configAdapter.getGroups(name));
-        Set<String> uuidGroups = new HashSet<>(configAdapter.getGroups(getUniqueId().toString()));
-        nameGroups.addAll(uuidGroups);
-
-        nameGroups.forEach(this::addGroups);
-
         this.entityRewrite = getCachedEntityMap(this.getPendingConnection().getVersion());
 
         this.displayName = name;
@@ -541,7 +533,6 @@ public final class UserConnection implements ProxiedPlayer
     {
         XenonCore.instance.getTaskManager().async(() -> Arrays.stream(groups).forEach(group -> {
             this.groups.add(group);
-            bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, true));
         }));
     }
 
@@ -549,7 +540,6 @@ public final class UserConnection implements ProxiedPlayer
     public void removeGroups(String... groups)
     {
         XenonCore.instance.getTaskManager().async(() -> Arrays.stream(groups).forEach(group -> {
-            bungee.getConfigurationAdapter().getPermissions(group).forEach(perm -> setPermission(perm, false));
             this.groups.remove(group);
         }));
     }
