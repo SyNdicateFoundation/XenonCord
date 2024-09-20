@@ -50,7 +50,7 @@ public class XenonCore {
                 bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(ChatColor.translateAlternateColorCodes('&', configData.getLoadingmessage())));
 
             moduleManager.init();
-            SwingManager.initSwingGui();
+            SwingManager.createAndShowGUI();
         });
         getLogger().info(String.format("Done loading! took %sMS to load!", System.currentTimeMillis() - startTime));
     }
