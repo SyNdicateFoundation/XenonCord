@@ -8,13 +8,18 @@ import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
+@Getter
 public class Configuration {
-    @Getter private File configFile;
+    private final File configFile;
+    private final File sqlDataBase;
     public Configuration(){
         this.configFile = new File("XenonCore.yml");
+        this.sqlDataBase = new File("XenonCore.db");
     }
     public ConfigData init(){
         XenonCore.instance.getLogger().info("Initializing Configuration...");
@@ -55,7 +60,6 @@ public class Configuration {
     @Setter
     public static class ConfigData{
         private String prefix, loadingmessage, ingamebrandname;
-        private String[] guicomponents;
         private boolean usegui;
         private long guirefreshrate;
         private ModulesData modules;

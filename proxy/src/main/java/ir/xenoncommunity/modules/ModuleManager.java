@@ -27,6 +27,7 @@ public class ModuleManager {
                 XenonCore.instance.getLogger().error(e.getMessage());
             }
         }));
+        if(Arrays.asList(XenonCore.instance.getConfigData().getModules().getEnables()).contains("AntiBot")) AntiBotManager.init();
         XenonCore.instance.getLogger().info("Successfully Initialized!");
     }
 }
