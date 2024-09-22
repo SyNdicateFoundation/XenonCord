@@ -329,7 +329,7 @@ public class DownstreamBridge extends PacketHandler
             try {
                 final PluginMessageEvent event = new PluginMessageEvent(server, con, pluginMessage.getTag(), pluginMessage.getData().clone());
 
-                if (bungee.getPluginManager().callEvent(event).isCancelled()) {
+                if (bungee.getPluginManager().callEvent(event).isCancelled() || pluginMessage.getTag().equals("minecraft:register")) {
                     throw CancelSendSignal.INSTANCE;
                 }
 
