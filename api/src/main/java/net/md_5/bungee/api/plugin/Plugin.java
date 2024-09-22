@@ -114,15 +114,18 @@ public class Plugin
     }
 
     //
-    private ExecutorService service;
+    private volatile  ExecutorService service;
 
     public ExecutorService getExecutorService()
     {
         if ( service == null )
         {
-            String name = ( getDescription() == null ) ? "unknown" : getDescription().getName();
-            service = Executors.newCachedThreadPool( new ThreadFactoryBuilder().setNameFormat( name + " Pool Thread #%1$d" )
-                    .setThreadFactory( new GroupedThreadFactory( this, name ) ).build() );
+            synchronized ( this ){
+                String name = ( getDescription() == null ) ? "unknown" : getDescription().getName();
+                service = Executors.newCachedThreadPool( new ThreadFactoryBuilder().setNameFormat( name + " Pool Thread #%1$d" )
+                        .setThreadFactory( new GroupedThreadFactory( this, name ) ).build() );
+
+            }
         }
         return service;
     }
