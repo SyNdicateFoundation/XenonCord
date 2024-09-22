@@ -120,12 +120,12 @@ public final class PluginManager
     public void unregisterCommands(Plugin plugin)
     {
         synchronized ( commandsByPlugin ) {
-        for ( Iterator<Command> it = commandsByPlugin.get( plugin ).iterator(); it.hasNext(); )
-        {
-            Command command = it.next();
-            while ( commandMap.values().remove( command ) );
-            it.remove();
-        }
+            for ( Iterator<Command> it = commandsByPlugin.get( plugin ).iterator(); it.hasNext(); )
+            {
+                Command command = it.next();
+                while ( commandMap.values().remove( command ) );
+                it.remove();
+            }
         }
     }
 
@@ -196,39 +196,39 @@ public final class PluginManager
         }
 
         String[] args = Arrays.copyOfRange( split, 1, split.length );
-            if ( tabResults == null )
-            {
-        try { // Waterfall - split command & tab complete exception handlers for exception event
+        if ( tabResults == null )
+        {
+            try { // Waterfall - split command & tab complete exception handlers for exception event
                 if ( proxy.getConfig().isLogCommands() )
                 {
                     proxy.getLogger().log( Level.INFO, "{0} executed command: /{1}", new Object[]
-                    {
-                        sender.getName(), commandLine
-                    } );
+                            {
+                                    sender.getName(), commandLine
+                            } );
                 }
                 command.execute( sender, args );
-        // Waterfall start - split command & tab complete exception handlers for exception event
-        } catch ( Exception ex ) {
-            sender.sendMessage( ChatColor.RED + "An internal error occurred whilst executing this command, please check the console log for details." );
-            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", ex );
-            this.callEvent( new ProxyExceptionEvent( new ProxyCommandException( ex, command, sender, args ) ) ); //Waterfall - throw error event
-        }
-        // Waterfall end
-            } else if ( commandLine.contains( " " ) && command instanceof TabExecutor )
-            {
-        try { // Waterfall - split command & tab complete exception handlers for exception event
+                // Waterfall start - split command & tab complete exception handlers for exception event
+            } catch ( Exception ex ) {
+                sender.sendMessage( ChatColor.RED + "An internal error occurred whilst executing this command, please check the console log for details." );
+                ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", ex );
+                this.callEvent( new ProxyExceptionEvent( new ProxyCommandException( ex, command, sender, args ) ) ); //Waterfall - throw error event
+            }
+            // Waterfall end
+        } else if ( commandLine.contains( " " ) && command instanceof TabExecutor )
+        {
+            try { // Waterfall - split command & tab complete exception handlers for exception event
                 for ( String s : ( (TabExecutor) command ).onTabComplete( sender, args ) )
                 {
                     tabResults.add( s );
                 }
-        // Waterfall start - split command & tab complete exception handlers for exception event
-        } catch ( Exception ex ) {
-            sender.sendMessage( ChatColor.RED + "An internal error occurred whilst executing this command, please check the console log for details." );
-            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", ex );
-            this.callEvent( new ProxyExceptionEvent( new ProxyTabCompleteException( ex, command, sender, args ) ) ); //Waterfall - throw error event
-        }
-        // Waterfall end
+                // Waterfall start - split command & tab complete exception handlers for exception event
+            } catch ( Exception ex ) {
+                sender.sendMessage( ChatColor.RED + "An internal error occurred whilst executing this command, please check the console log for details." );
+                ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", ex );
+                this.callEvent( new ProxyExceptionEvent( new ProxyTabCompleteException( ex, command, sender, args ) ) ); //Waterfall - throw error event
             }
+            // Waterfall end
+        }
         return true;
     }
 
@@ -380,9 +380,9 @@ public final class PluginManager
             if ( dependStatus == Boolean.FALSE && plugin.getDepends().contains( dependName ) ) // only fail if this wasn't a soft dependency
             {
                 ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} (required by {1}) is unavailable", new Object[]
-                {
-                    String.valueOf( dependName ), plugin.getName()
-                } );
+                        {
+                                String.valueOf( dependName ), plugin.getName()
+                        } );
                 status = false;
             }
 
@@ -405,9 +405,9 @@ public final class PluginManager
                 synchronized ( plugins ) { plugins.put( plugin.getName(), clazz ); }
                 clazz.onLoad();
                 ProxyServer.getInstance().getLogger().log( Level.INFO, "Loaded plugin {0} version {1} by {2}", new Object[]
-                {
-                    plugin.getName(), plugin.getVersion(), plugin.getAuthor()
-                } );
+                        {
+                                plugin.getName(), plugin.getVersion(), plugin.getAuthor()
+                        } );
             } catch ( Throwable t )
             {
                 proxy.getLogger().log( Level.WARNING, "Error loading plugin " + plugin.getName(), t );
@@ -478,9 +478,9 @@ public final class PluginManager
         if ( elapsed > 250000000 )
         {
             ProxyServer.getInstance().getLogger().log( Level.WARNING, "Event {0} took {1}ms to process!", new Object[]
-            {
-                event, elapsed / 1000000
-            } );
+                    {
+                            event, elapsed / 1000000
+                    } );
         }
         return event;
     }
