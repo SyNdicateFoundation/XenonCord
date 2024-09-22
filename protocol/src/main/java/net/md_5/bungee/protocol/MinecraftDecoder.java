@@ -22,6 +22,8 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
     private int protocolVersion;
     @Setter
     private boolean supportsForge = false;
+    @Setter
+    private boolean slice = true;
 
     public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion) {
         this.protocol = protocol;
@@ -35,7 +37,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
             return;
 
         Protocol.DirectionData prot = server ? protocol.TO_SERVER : protocol.TO_CLIENT;
-        ByteBuf slice = in.copy();
+        ByteBuf slice = ( this.slice ? in.retainedSlice() : in.copy() );
         Object packetTypeInfo = null;
 
         try {

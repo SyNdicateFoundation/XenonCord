@@ -150,6 +150,7 @@ public final class UserConnection implements ProxiedPlayer
     public boolean init() {
         this.entityRewrite = getCachedEntityMap(this.getPendingConnection().getVersion());
 
+        ch.getHandle().pipeline().get( MinecraftDecoder.class ).setSlice( isDisableEntityMetadataRewrite() );
         this.displayName = name;
         this.tabListHandler = new ServerUnique(this);
 
