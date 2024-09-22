@@ -38,6 +38,7 @@ public class AntiBotManager {
 
     }
 
+
     public void fail(){
 
     }
