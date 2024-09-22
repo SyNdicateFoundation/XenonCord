@@ -51,7 +51,7 @@ public final class PluginManager
     private final Map<String, Plugin> plugins = new LinkedHashMap<>();
     private final MutableGraph<String> dependencyGraph = GraphBuilder.directed().build();
     private final LibraryLoader libraryLoader;
-    private final Map<String, Command> commandMap = new HashMap<>();
+    private final Map<String, Command> commandMap = new java.util.concurrent.ConcurrentHashMap<>();
     private Map<String, PluginDescription> toLoad = new HashMap<>();
     private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create();
     private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
@@ -90,12 +90,13 @@ public final class PluginManager
      */
     public void registerCommand(Plugin plugin, Command command)
     {
-        commandMap.put( command.getName().toLowerCase( Locale.ROOT ), command );
-        for ( String alias : command.getAliases() )
-        {
-            commandMap.put( alias.toLowerCase( Locale.ROOT ), command );
+        synchronized ( commandsByPlugin ) {
+            commandMap.put(command.getName().toLowerCase(Locale.ROOT), command);
+            for (String alias : command.getAliases()) {
+                commandMap.put(alias.toLowerCase(Locale.ROOT), command);
+            }
+            commandsByPlugin.put(plugin, command);
         }
-        commandsByPlugin.put( plugin, command );
     }
 
     /**
@@ -105,8 +106,10 @@ public final class PluginManager
      */
     public void unregisterCommand(Command command)
     {
-        while ( commandMap.values().remove( command ) );
-        commandsByPlugin.values().remove( command );
+        synchronized ( commandsByPlugin ) {
+            while (commandMap.values().remove(command)) ;
+            commandsByPlugin.values().remove(command);
+        }
     }
 
     /**
@@ -116,11 +119,13 @@ public final class PluginManager
      */
     public void unregisterCommands(Plugin plugin)
     {
+        synchronized ( commandsByPlugin ) {
         for ( Iterator<Command> it = commandsByPlugin.get( plugin ).iterator(); it.hasNext(); )
         {
             Command command = it.next();
             while ( commandMap.values().remove( command ) );
             it.remove();
+        }
         }
     }
 
@@ -280,7 +285,7 @@ public final class PluginManager
      */
     public Plugin getPlugin(String name)
     {
-        return plugins.get( name );
+        synchronized ( plugins ) { return plugins.get( name ); }
     }
 
     public void loadPlugins()
@@ -397,7 +402,7 @@ public final class PluginManager
                 Class<?> main = loader.loadClass( plugin.getMain() );
                 Plugin clazz = (Plugin) main.getDeclaredConstructor().newInstance();
 
-                plugins.put( plugin.getName(), clazz );
+                synchronized ( plugins ) { plugins.put( plugin.getName(), clazz ); }
                 clazz.onLoad();
                 ProxyServer.getInstance().getLogger().log( Level.INFO, "Loaded plugin {0} version {1} by {2}", new Object[]
                 {
@@ -503,8 +508,10 @@ public final class PluginManager
             Preconditions.checkArgument( !method.isAnnotationPresent( Subscribe.class ),
                     "Listener %s has registered using deprecated subscribe annotation! Please update to @EventHandler.", listener );
         }
-        eventBus.register( listener );
-        listenersByPlugin.put( plugin, listener );
+        synchronized ( listenersByPlugin ) {
+            eventBus.register(listener);
+            listenersByPlugin.put(plugin, listener);
+        }
     }
 
     /**
@@ -514,8 +521,10 @@ public final class PluginManager
      */
     public void unregisterListener(Listener listener)
     {
-        eventBus.unregister( listener );
-        listenersByPlugin.values().remove( listener );
+        synchronized ( listenersByPlugin ) {
+            eventBus.unregister(listener);
+            listenersByPlugin.values().remove(listener);
+        }
     }
 
     /**
@@ -525,10 +534,11 @@ public final class PluginManager
      */
     public void unregisterListeners(Plugin plugin)
     {
-        for ( Iterator<Listener> it = listenersByPlugin.get( plugin ).iterator(); it.hasNext(); )
-        {
-            eventBus.unregister( it.next() );
-            it.remove();
+        synchronized ( listenersByPlugin ) {
+            for (Iterator<Listener> it = listenersByPlugin.get(plugin).iterator(); it.hasNext(); ) {
+                eventBus.unregister(it.next());
+                it.remove();
+            }
         }
     }
 
