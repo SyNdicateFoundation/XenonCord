@@ -9,10 +9,9 @@
 
 ### Key Features 🚀
 
-- Lightweight - this project is focused on being clean code, which means our proxy is focused on being optimized.
-- Provided features - this proxy software provides many features by default. eg. staffchat, commandwhitelist, and ...
-- Customizeable: this proxy is designed to be optimized & customieable. means, if you wanted to use these default features, or not, we granted you the ability to remove it, by a simple configuration.
-
+Lightweight - this project is focused on being clean code & optimized.
+Provided features - this proxy software provides many features by default. eg. staffchat, commandwhitelist, and etc.
+C:ustomizable this proxy is designed to be customizable. means, if you wanted to use these default features, or not, we granted you the ability to remove it, by a simple configuration.
 
 ## Getting Started 🚧
 - NOTE: We removed waterfall's patch system, and we're going to add updates manually.
