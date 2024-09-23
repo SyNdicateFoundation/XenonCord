@@ -103,8 +103,11 @@ public class UpstreamBridge extends PacketHandler
     @Override
     public void handle(PacketWrapper packet) throws Exception
     {
+        PacketReceiveEvent event = new PacketReceiveEvent(packet, con, false);
+        bungee.getPluginManager().callEvent(event);
+        if(event.isCancelled()) return;
         ServerConnection server = con.getServer();
-        if ( server != null && server.isConnected() )
+        if ( server != null && server.isConnected())
         {
             Protocol serverEncode = server.getCh().getEncodeProtocol();
             // #3527: May still have old packets from client in game state when switching server to configuration state - discard those

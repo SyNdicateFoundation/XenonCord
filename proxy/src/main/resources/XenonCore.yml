@@ -41,7 +41,12 @@ modules:
     - CommandSpy
     - StaffChat
     - CommandWhitelist
-    #- AntiBot #- EXPERIMENTAL!
+# Requires AntiBot module to be enabled.
+antibot:
+  # what should we send as disconnect reason for blacklisted players/bots
+  # Placeholders: PREFIX: your prefix, TIME: time to remove the blacklist from the player.
+  blacklistmessage: "PREFIX»\n\n &cYou got blacklisted at this moment,\n&cPlease try again in TIME minutes"
+
 # Requires CommandWhiteList module to be enabled.
 # pergroup works with permission. permission is xenoncord.commandwhitelist.example
 commandwhitelist:
@@ -58,4 +63,3 @@ commandwhitelist:
     default.lobby:
       commands:
         - "/spawn"
-#antibot:

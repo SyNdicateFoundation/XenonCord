@@ -3,7 +3,6 @@ package ir.xenoncommunity;
 import ir.xenoncommunity.gui.SwingManager;
 import ir.xenoncommunity.modules.ModuleManager;
 import ir.xenoncommunity.utils.Configuration;
-import ir.xenoncommunity.utils.SQLManager;
 import ir.xenoncommunity.utils.TaskManager;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +25,6 @@ public class XenonCore {
     private final Configuration configuration;
     @Setter private Configuration.ConfigData configData;
     private final ModuleManager moduleManager;
-    private final SQLManager sqlManager;
     /**
      * Initializes all required variables.
      */
@@ -37,7 +35,6 @@ public class XenonCore {
         this.bungeeInstance = BungeeCord.getInstance();
         this.configuration = new Configuration();
         this.moduleManager = new ModuleManager();
-        this.sqlManager = new SQLManager();
     }
     /**
      * Called when proxy is loaded.
@@ -48,12 +45,12 @@ public class XenonCore {
         configData.getModules().setSpymessage(configData.getModules().getSpymessage().replace("PREFIX", configData.getPrefix()));
         configData.getModules().setStaffchatmessage(configData.getModules().getStaffchatmessage().replace("PREFIX", configData.getPrefix()));
         configData.getCommandwhitelist().setBlockmessage(configData.getCommandwhitelist().getBlockmessage().replace("PREFIX", configData.getPrefix()));
+        configData.getAntibot().setBlacklistmessage(configData.getAntibot().getBlacklistmessage().replace("PREFIX", configData.getPrefix()));
         getTaskManager().async(() -> {
             while(!isProxyCompletlyLoaded)
                 bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(ChatColor.translateAlternateColorCodes('&', configData.getLoadingmessage())));
 
             moduleManager.init();
-            sqlManager.init();
             SwingManager.createAndShowGUI();
         });
         getLogger().info(String.format("Done loading! took %sMS to load!", System.currentTimeMillis() - startTime));

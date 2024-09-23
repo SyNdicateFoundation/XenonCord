@@ -63,6 +63,7 @@ public class Configuration {
         private boolean usegui;
         private long guirefreshrate;
         private ModulesData modules;
+        private AntiBot antibot;
         private CommandWhitelistData commandwhitelist;
     }
     @Getter
@@ -82,5 +83,10 @@ public class Configuration {
     @Setter
     public static class GroupData {
         private String[] commands;
+    }
+    @Getter
+    @Setter
+    public static class AntiBot {
+        private String blacklistmessage;
     }
 }
