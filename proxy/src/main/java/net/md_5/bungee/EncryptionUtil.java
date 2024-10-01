@@ -84,15 +84,17 @@ public class EncryptionUtil {
             signature.update(Longs.toByteArray(resp.getEncryptionData().getSalt()));
             return signature.verify(resp.getEncryptionData().getSignature());
         } else {
-            Cipher cipher = Cipher.getInstance("RSA");
-            cipher.init(Cipher.DECRYPT_MODE, keys.getPrivate());
-            byte[] decrypted = cipher.doFinal(resp.getVerifyToken());
-            return Arrays.equals(request.getVerifyToken(), decrypted);
+            Cipher cipher = Cipher.getInstance( "RSA/ECB/PKCS1Padding" );
+            cipher.init( Cipher.DECRYPT_MODE, keys.getPrivate() );
+            byte[] decrypted = cipher.doFinal( resp.getVerifyToken() );
+
+            return MessageDigest.isEqual( request.getVerifyToken(), decrypted );
+
         }
     }
 
     public static SecretKey getSecret(EncryptionResponse resp) throws GeneralSecurityException {
-        Cipher cipher = Cipher.getInstance("RSA");
+        Cipher cipher = Cipher.getInstance( "RSA/ECB/PKCS1Padding" );
         cipher.init(Cipher.DECRYPT_MODE, keys.getPrivate());
         return new SecretKeySpec(cipher.doFinal(resp.getSharedSecret()), "AES");
     }
