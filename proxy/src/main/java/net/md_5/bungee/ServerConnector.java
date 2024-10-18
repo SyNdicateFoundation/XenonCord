@@ -118,6 +118,8 @@ public class ServerConnector extends PacketHandler
     public void disconnected(ChannelWrapper channel) throws Exception
     {
         user.getPendingConnects().remove( target );
+        if ( user.getServer() == null && !obsolete && user.getPendingConnects().isEmpty() && thisState == State.LOGIN_SUCCESS )
+            user.disconnect( "Unexpected disconnect during server login, did you forget to enable BungeeCord / IP forwarding on your server?" );
     }
 
     @Override
