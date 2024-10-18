@@ -111,7 +111,7 @@ public class PipelineUtils
             if (!io_uring && Boolean.parseBoolean(System.getProperty("bungee.epoll", "true"))) {
                 logger.info("Not on Windows, attempting to use enhanced EpollEventLoop");
                 epoll = Epoll.isAvailable();
-                logger.log(epoll ? Level.INFO : Level.WARNING, String.format("Epoll is %s", epoll ? "working, utilising it!" : "not working, falling back to NIO: {0}"), Util.exception(Epoll.unavailabilityCause()));
+                logger.log(epoll ? Level.INFO : Level.WARNING, String.format("Epoll is %s", epoll ? "working, utilising it!" : "not working, falling back to NIO"));
             }
         }
         serverChannelFactory = epoll ? EpollServerSocketChannel::new : NioServerSocketChannel::new;
