@@ -175,6 +175,15 @@ public class ChannelWrapper
         if ( compressionThreshold < 0 )
             ch.pipeline().remove( "decompress" );
     }
+    public void scheduleIfNecessary(Runnable task)
+    {
+        if ( ch.eventLoop().inEventLoop() )
+        {
+            task.run();
+            return;
+        }
 
+        ch.eventLoop().execute( task );
+    }
 }
 

@@ -34,7 +34,7 @@ public class ServerConnection implements Server
     private final boolean forgeServer = false;
     @Getter
     private final Queue<KeepAliveData> keepAlives = new ArrayDeque<>();
-    private final Queue<DefinedPacket> packetQueue = new ConcurrentLinkedQueue<>();
+    private final Queue<DefinedPacket> packetQueue = new ArrayDeque<>();
 
     private final Unsafe unsafe = new Unsafe()
     {
@@ -47,12 +47,20 @@ public class ServerConnection implements Server
 
     public void sendPacketQueued(DefinedPacket packet)
     {
-        if (ch.getEncodeProtocol().TO_SERVER.hasPacket( packet.getClass(), ch.getEncodeVersion() ) )
+        ch.scheduleIfNecessary( () ->
         {
-            unsafe().sendPacket( packet );
-            return;
-        }
-        packetQueue.add( packet );
+            if ( ch.isClosed() )
+            {
+                return;
+            }
+            if ( !ch.getEncodeProtocol().TO_SERVER.hasPacket( packet.getClass(), ch.getEncodeVersion() ) )
+            {
+                packetQueue.add( packet );
+            } else
+            {
+                unsafe().sendPacket( packet );
+            }
+        } );
     }
 
     public void sendQueuedPackets() {

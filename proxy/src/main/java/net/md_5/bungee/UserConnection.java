@@ -132,7 +132,7 @@ public final class UserConnection implements ProxiedPlayer
     private static final Map<Integer, EntityMap> entityMapCache = new ConcurrentHashMap<>();
 
     /*========================================================================*/
-    private final Queue<DefinedPacket> packetQueue = new ConcurrentLinkedQueue<>();
+    private final Queue<DefinedPacket> packetQueue = new ArrayDeque<>();
     private static EntityMap getCachedEntityMap(int version) {
         return entityMapCache.computeIfAbsent(version, EntityMap::getEntityMap);
     }
@@ -171,13 +171,21 @@ public final class UserConnection implements ProxiedPlayer
 
     public void sendPacketQueued(DefinedPacket packet)
     {
-        if ( ch.getEncodeProtocol().TO_CLIENT.hasPacket( packet.getClass(), getPendingConnection().getVersion() ) ) {
-            unsafe().sendPacket( packet );
-            return;
-        }
-        packetQueue.add(packet);
+        ch.scheduleIfNecessary( () ->
+        {
+            if ( ch.isClosed() )
+            {
+                return;
+            }
+            if ( !ch.getEncodeProtocol().TO_CLIENT.hasPacket( packet.getClass(), getPendingConnection().getVersion() ) )
+            {
+                packetQueue.add( packet );
+            } else
+            {
+                unsafe().sendPacket( packet );
+            }
+        } );
     }
-
     public void sendQueuedPackets() {
         AtomicReference<DefinedPacket> packet = new AtomicReference<>();
         XenonCore.instance.getTaskManager().async(() -> {

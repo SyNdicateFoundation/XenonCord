@@ -99,7 +99,11 @@ public class UpstreamBridge extends PacketHandler
     public boolean shouldHandle(PacketWrapper packet) {
         return con.getServer() != null || packet.packet instanceof PluginMessage || packet.packet instanceof CookieResponse;
     }
-
+    @Override
+    public void handle(LoginPayloadResponse loginPayloadResponse) throws Exception
+    {
+        con.getPendingConnection().handle( loginPayloadResponse );
+    }
     @Override
     public void handle(PacketWrapper packet) throws Exception
     {
