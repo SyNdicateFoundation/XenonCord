@@ -69,7 +69,9 @@ public class Configuration {
     @Getter
     @Setter
     public static class ModulesData{
-        private String motd, spybypass, spyperm, spymessage, staffchatperm, staffchatmessage;
+        private String motd, spybypass, spyperm, spymessage,
+                staffchatperm, staffchatmessage, maintenanceperm,
+                maintenancebypassperm, maintenancedisconnectmessage;
         private String[] spyexceptions, enables;
     }
     @Getter

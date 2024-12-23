@@ -3,7 +3,9 @@ package ir.xenoncommunity.modules.listeners;
 import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.annotations.ModuleListener;
 import ir.xenoncommunity.utils.Configuration;
+import ir.xenoncommunity.utils.Message;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.TabCompleteEvent;
@@ -20,9 +22,7 @@ import java.util.stream.Collectors;
     @EventHandler public void onCommandExecution(final ChatEvent e) {
         if (!e.getMessage().startsWith("/")
                 || !(e.getSender() instanceof ProxiedPlayer)
-                || ((ProxiedPlayer) e.getSender()).hasPermission(XenonCore.instance.getConfigData().getCommandwhitelist().getBypass())) {
-            return;
-        }
+                || ((ProxiedPlayer) e.getSender()).hasPermission(XenonCore.instance.getConfigData().getCommandwhitelist().getBypass())) return;
 
         String rawCommand = e.getMessage();
         ProxiedPlayer player = (ProxiedPlayer) e.getSender();
@@ -31,17 +31,15 @@ import java.util.stream.Collectors;
         String baseCommand = rawCommand.split(" ")[0];
 
         if (isPermitted(player, whitelistData, baseCommand)) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    whitelistData.getBlockmessage()));
+            Message.sendNoPermMessage(player);
             e.setCancelled(true);
         }
     }
 
     @EventHandler public void onTabComplete(final TabCompleteEvent e) {
         if (!(e.getSender() instanceof ProxiedPlayer)
-                || ((ProxiedPlayer) e.getSender()).hasPermission(XenonCore.instance.getConfigData().getCommandwhitelist().getBypass())) {
+                || ((ProxiedPlayer) e.getSender()).hasPermission(XenonCore.instance.getConfigData().getCommandwhitelist().getBypass()))
             return;
-        }
 
         ProxiedPlayer player = (ProxiedPlayer) e.getSender();
         String command = e.getCursor().trim();

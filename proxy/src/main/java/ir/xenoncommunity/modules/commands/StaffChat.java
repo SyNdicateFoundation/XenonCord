@@ -1,6 +1,7 @@
 package ir.xenoncommunity.modules.commands;
 
 import ir.xenoncommunity.XenonCore;
+import ir.xenoncommunity.utils.Message;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -26,11 +27,9 @@ import java.util.Arrays;
             XenonCore.instance.getBungeeInstance().getPlayers().stream().filter(
                     proxiedPlayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getModules()
                             .getStaffchatperm())).forEach(
-                                    proxiedPlayer -> proxiedPlayer.sendMessage(ChatColor.translateAlternateColorCodes(
-                                            '&',
-                                            XenonCore.instance.getConfigData().getModules().getStaffchatmessage()
+                                    proxiedPlayer -> Message.send(proxiedPlayer, XenonCore.instance.getConfigData().getModules().getStaffchatmessage()
                                                     .replace("PLAYER", sender.getName())
-                                                    .replace("MESSAGE", message))));
+                                                    .replace("MESSAGE", message), true));
         });
     }
 }
