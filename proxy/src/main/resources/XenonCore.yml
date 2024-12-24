@@ -40,9 +40,29 @@ modules:
   maintenanceperm: "xenoncord.maintenance"
   # permission for maintenance bypass
   maintenancebypassperm: "xenoncord.maintenance.bypass"
-  # Staffchat message format.
+  # Maintenance message format.
   # Placeholders: PREFIX: your prefix
   maintenancedisconnectmessage: "PREFIX\n &cThe server you're trying to connect is on maintenance!\n please try later."
+  # Maintenance motd.
+  # the server will use this motd if the whole server is on maintenance.
+  # Placeholders: ONLINE: current online count
+  maintenancemotd: "&b&lA &9&lXenon&bCord server is on maintenance. "
+  # Requires Ping module to be enabled.
+  # permission for ping
+  pingperm: "xenoncord.ping"
+  # permission for checking ping of others
+  pingothersperm: "xenoncord.ping.others"
+  # ping message for users
+  # Placeholders: PREFIX: your prefix, PING: user's ping
+  pingmessage: "PREFIX &8your ping is &bPING"
+  # ping message to ping others
+  # Placeholders: PREFIX: your prefix, PING: user's ping, USERNAME: other's username
+  pingothersmessage: "PREFIX &aUSERNAME's ping is &bPING"
+  # Requires BPlugins module to be enabled.
+  # permission for BPlugins
+  pluginsperm: "xenoncord.plugins"
+  # permission for BPlugins to toggle plugins
+  pluginstoggleperm: "xenoncord.plugins.toggle"
   # List of enabled modules
   enables:
     - MotdChanger
@@ -50,6 +70,8 @@ modules:
     - StaffChat
     - CommandWhitelist
     - Maintenance
+    - Ping
+    - BPlugins
 # Requires AntiBot module to be enabled.
 # Requires CommandWhiteList module to be enabled.
 # pergroup works with permission. permission is xenoncord.commandwhitelist.example

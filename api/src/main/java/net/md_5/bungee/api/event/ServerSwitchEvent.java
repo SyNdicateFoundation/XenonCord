@@ -1,10 +1,12 @@
 package net.md_5.bungee.api.event;
 
+import com.sun.xml.internal.ws.api.Cancelable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Cancellable;
 import net.md_5.bungee.api.plugin.Event;
 
 /**
@@ -25,4 +27,6 @@ public class ServerSwitchEvent extends Event
      * connection.
      */
     private final ServerInfo from;
+
+    private final ServerInfo target;
 }

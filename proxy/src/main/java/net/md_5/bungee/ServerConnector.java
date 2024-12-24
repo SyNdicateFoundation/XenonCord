@@ -312,11 +312,11 @@ public class ServerConnector extends PacketHandler
     }
 
 
-    private void cutThrough(ServerConnection server)
+    private void cutThrough(ServerConnection target)
     {
         if ( !user.isActive() )
         {
-            server.disconnect( "Quitting" );
+            target.disconnect( "Quitting" );
             return;
         }
 
@@ -343,16 +343,19 @@ public class ServerConnector extends PacketHandler
 
         // Add to new server
         // TODO: Move this to the connected() method of DownstreamBridge
-        target.addPlayer( user );
-        user.getPendingConnects().remove( target );
+        this.target.addPlayer( user );
+        user.getPendingConnects().remove(this.target);
         user.setServerJoinQueue( null );
         user.setDimensionChange( false );
 
-        ServerInfo from = ( user.getServer() == null ) ? null : user.getServer().getInfo();
-        user.setServer( server );
-        ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridge( bungee, user, server ) );
 
-        bungee.getPluginManager().callEvent( new ServerSwitchEvent( user, from ) );
+        ServerInfo from = ( user.getServer() == null ) ? null : user.getServer().getInfo();
+
+        user.setServer(target);
+        ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridge( bungee, user, target ) );
+
+
+        bungee.getPluginManager().callEvent(new ServerSwitchEvent( user, from , target.getInfo()));
 
         thisState = State.FINISHED;
 

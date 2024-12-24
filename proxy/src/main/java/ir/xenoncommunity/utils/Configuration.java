@@ -71,7 +71,9 @@ public class Configuration {
     public static class ModulesData{
         private String motd, spybypass, spyperm, spymessage,
                 staffchatperm, staffchatmessage, maintenanceperm,
-                maintenancebypassperm, maintenancedisconnectmessage;
+                maintenancebypassperm, maintenancedisconnectmessage,
+                maintenancemotd, pingperm, pingothersperm, pingmessage,
+                pingothersmessage, pluginsperm, pluginstoggleperm;
         private String[] spyexceptions, enables;
     }
     @Getter

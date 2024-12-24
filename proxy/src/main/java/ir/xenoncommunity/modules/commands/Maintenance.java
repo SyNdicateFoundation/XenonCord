@@ -5,8 +5,8 @@ import ir.xenoncommunity.utils.Message;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
-import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -14,7 +14,7 @@ import net.md_5.bungee.event.EventHandler;
 import java.util.ArrayList;
 
 @SuppressWarnings("unused") public class Maintenance extends Command implements Listener {
-    public static ArrayList<String> downServers;
+    public static ArrayList<String> downServers = null;
 
 
     public Maintenance() {
@@ -80,7 +80,11 @@ import java.util.ArrayList;
                             .replace("PREFIX",  XenonCore.instance.getConfigData().getPrefix())
                             .replace("SERVER", args[1]), true);
                 break;
-
+            default:
+                Message.send(sender,
+                        "PREFIX &cUnknown option, available: add, remove, blank (to set the whole proxy)"
+                                .replace("PREFIX",  XenonCore.instance.getConfigData().getPrefix()),
+                        false);
         }
 
     }
@@ -97,15 +101,16 @@ import java.util.ArrayList;
         }
     }
     @EventHandler
-    public void onServerSwitch(ServerSwitchEvent e){
-        if(!downServers.contains(e.getPlayer().getServer().getInfo().getName())) return;
+    public void onServerSwitch(ServerConnectEvent e){
+        if(!downServers.contains(e.getTarget().getName())) return;
 
         if(!e.getPlayer().hasPermission(
                 XenonCore.instance.getConfigData().getModules().getMaintenancebypassperm())) {
-            e.getPlayer().connect(e.getFrom(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
+            e.setCancelled(true);
             Message.send(e.getPlayer(), XenonCore.instance.getConfigData().getModules().getMaintenancedisconnectmessage()
                     .replace("PREFIX",
                             XenonCore.instance.getConfigData().getPrefix()), false);
+
         }
     }
 }
