@@ -86,7 +86,7 @@ import java.util.ArrayList;
     }
     @EventHandler
     public void onJoin(PostLoginEvent e){
-        if(!Maintenance.downServers.contains("proxy")) return;
+        if(!(Maintenance.downServers.contains("proxy") || Maintenance.downServers.contains(e.getTarget().getName()))) return;
 
         if(!e.getPlayer().hasPermission(
                 XenonCore.instance.getConfigData().getModules().getMaintenancebypassperm())) {
@@ -99,9 +99,9 @@ import java.util.ArrayList;
     @EventHandler
     public void onServerSwitch(ServerSwitchEvent e){
         if(!downServers.contains(e.getPlayer().getServer().getInfo().getName())) return;
+
         if(!e.getPlayer().hasPermission(
-                XenonCore.instance.getConfigData().getModules().getMaintenancebypassperm())
-        && downServers.contains(e.getPlayer().getServer().getInfo().getName())) {
+                XenonCore.instance.getConfigData().getModules().getMaintenancebypassperm())) {
             e.getPlayer().connect(e.getFrom(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
             Message.send(e.getPlayer(), XenonCore.instance.getConfigData().getModules().getMaintenancedisconnectmessage()
                     .replace("PREFIX",
