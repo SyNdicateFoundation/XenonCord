@@ -16,8 +16,7 @@ import java.util.Arrays;
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if(!(sender instanceof ProxiedPlayer) ||
-        !sender.hasPermission(XenonCore.instance.getConfigData().getModules().getStaffchatperm())) return;
+        if(!sender.hasPermission(XenonCore.instance.getConfigData().getModules().getStaffchatperm())) return;
 
         XenonCore.instance.getTaskManager().add(() -> {
             final StringBuilder stringBuilder = new StringBuilder();

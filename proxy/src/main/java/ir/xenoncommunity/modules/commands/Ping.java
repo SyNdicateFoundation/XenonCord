@@ -6,6 +6,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.command.ConsoleCommandSender;
 
 public class Ping extends Command implements Listener {
     public Ping(){
@@ -15,6 +16,10 @@ public class Ping extends Command implements Listener {
     public void execute(CommandSender sender, String[] args) {
         if(!sender.hasPermission(XenonCore.instance.getConfigData().getModules().getPingperm()))
             return;
+
+        if(sender instanceof ConsoleCommandSender) Message.send(sender,
+                "PREFIX &cCannot execute this command as console."
+                        .replace("PREFIX", XenonCore.instance.getConfigData().getPrefix()), false);
         final ProxiedPlayer player = (ProxiedPlayer) sender;
 
         if(args.length == 0){
