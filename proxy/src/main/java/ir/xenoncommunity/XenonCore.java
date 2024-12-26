@@ -40,19 +40,16 @@ public class XenonCore {
      * Called when proxy is loaded.
      */
     public void init(final long startTime){
-        setConfigData(configuration.init());
-        configData.setLoadingmessage(configData.getLoadingmessage().replace("PREFIX", configData.getPrefix()));
-        configData.getModules().setSpymessage(configData.getModules().getSpymessage().replace("PREFIX", configData.getPrefix()));
-        configData.getModules().setStaffchatmessage(configData.getModules().getStaffchatmessage().replace("PREFIX", configData.getPrefix()));
-        configData.getCommandwhitelist().setBlockmessage(configData.getCommandwhitelist().getBlockmessage().replace("PREFIX", configData.getPrefix()));
+        getLogger().info(String.format("Loading the proxy server itself has been done. took: %sms", System.currentTimeMillis() - startTime));
         getTaskManager().async(() -> {
             while(!isProxyCompletlyLoaded)
                 bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(ChatColor.translateAlternateColorCodes('&', configData.getLoadingmessage())));
 
             moduleManager.init();
             SwingManager.createAndShowGUI();
+            getLogger().info(String.format("Successfully booted! Loading the proxy server with plugins took: %sms", System.currentTimeMillis() - startTime));
         });
-        getLogger().info(String.format("Done loading! took %sMS to load!", System.currentTimeMillis() - startTime));
+
     }
 
     /**
@@ -63,6 +60,18 @@ public class XenonCore {
     public List<String> getPlayerNames(){
         List<String> players = new ArrayList<>();
         bungeeInstance.getPlayers().forEach(player -> players.add(player.getName()));
-        return players;//
+        return players;
+    }
+
+    public String getVersion(){
+        return "0.0.91 BETA";
+    }
+    public void logdebuginfo(final String msg){
+        if(configData.isDebug())
+            logger.info(msg);
+    }
+    public void logdebugerror(final String msg){
+        if(configData.isDebug())
+            logger.error(msg);
     }
 }

@@ -5,11 +5,10 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
@@ -17,20 +16,10 @@ import java.util.Objects;
 public class Configuration {
     private final File configFile;
     private final File sqlDataBase;
+    private final Logger logger = XenonCore.instance.getLogger();
     public Configuration(){
         this.configFile = new File("XenonCore.yml");
         this.sqlDataBase = new File("XenonCore.db");
-    }
-    public ConfigData init(){
-        XenonCore.instance.getLogger().info("Initializing Configuration...");
-        try {
-            if (!configFile.exists()) copyConfig();
-            XenonCore.instance.getLogger().info("Successfully Initialized!");
-            return getConfig();
-        } catch (final Exception e) {
-            XenonCore.instance.getLogger().error(e.getMessage());
-        }
-        return null;
     }
     private void copyConfig() {
         try {
@@ -44,15 +33,32 @@ public class Configuration {
                 writer.newLine();
             }
         } catch (final Exception e) {
-            XenonCore.instance.getLogger().error(e.getMessage());
+            logger.error(e.getMessage());
         }
+    }
+    public ConfigData init(){
+        logger.info("Initializing Configuration...");
+        try {
+            if (!configFile.exists()) copyConfig();
+            final ConfigData configData = getConfig();
+            final String prefix = configData.prefix;
+            configData.setLoadingmessage(configData.getLoadingmessage().replace("PREFIX", prefix));
+            configData.getModules().setSpymessage(configData.getModules().getSpymessage().replace("PREFIX", prefix));
+            configData.getModules().setStaffchatmessage(configData.getModules().getStaffchatmessage().replace("PREFIX", prefix));
+            configData.getCommandwhitelist().setBlockmessage(configData.getCommandwhitelist().getBlockmessage().replace("PREFIX", prefix));
+            logger.info("Successfully Initialized!");
+            return configData;
+        } catch (final Exception e) {
+            logger.error(e.getMessage());
+        }
+        return null;
     }
     public ConfigData getConfig() {
         try {
             @Cleanup final FileInputStream is = new FileInputStream(configFile);
             return new Yaml().loadAs(is, ConfigData.class);
         } catch (final Exception e) {
-            XenonCore.instance.getLogger().error(e.getMessage());
+            logger.error(e.getMessage());
             return null;
         }
     }
@@ -61,7 +67,7 @@ public class Configuration {
     @Setter
     public static class ConfigData{
         private String prefix, loadingmessage, ingamebrandname;
-        private boolean usegui;
+        private boolean debug, usegui;
         private long guirefreshrate;
         private ModulesData modules;
         private CommandWhitelistData commandwhitelist;

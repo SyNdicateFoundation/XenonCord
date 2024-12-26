@@ -28,20 +28,7 @@ import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.text.Format;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -162,6 +149,9 @@ public class BungeeCord extends ProxyServer
     // Waterfall end
     @Getter
     private final Logger logger;
+
+    @Getter
+    private final XenonCore xenonInstance;
     public final Gson gson = new GsonBuilder()
             .registerTypeAdapter( BaseComponent.class, new ComponentSerializer() )
             .registerTypeAdapter( TextComponent.class, new TextComponentSerializer() )
@@ -174,12 +164,7 @@ public class BungeeCord extends ProxyServer
             .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
     @Getter
     private ConnectionThrottle connectionThrottle;
-    private final ModuleManager moduleManager = new ModuleManager();
 
-    {
-        // TODO: Proper fallback when we interface the manager
-        registerChannel( "BungeeCord" );
-    }
 
     public static BungeeCord getInstance()
     {
@@ -187,73 +172,36 @@ public class BungeeCord extends ProxyServer
     }
 
     @SuppressFBWarnings("DM_DEFAULT_ENCODING")
-    public BungeeCord() throws IOException
-    {
+    public BungeeCord() throws IOException {
+        ProxyServer.setInstance(this);
+        this.xenonInstance = new XenonCore();
         // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
-        Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Waterfall in directory with ! in path." );
+        Preconditions.checkState(new File(".").getAbsolutePath().indexOf('!') == -1, "Cannot use Waterfall in directory with ! in path.");
 
         reloadMessages();
 
-        // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
-        // When jansi attempts to extract its natives, by default it tries to extract a specific version,
-        // using the loading class's implementation version. Normally this works completely fine,
-        // however when on Windows certain characters such as - and : can trigger special behaviour.
-        // Furthermore this behaviour only occurs in specific combinations due to the parsing done by jansi.
-        // For example test-test works fine, but test-test-test does not! In order to avoid this all together but
-        // still keep our versions the same as they were, we set the override property to the essentially garbage version
-        // BungeeCord. This version is only used when extracting the libraries to their temp folder.
-        System.setProperty( "library.jansi.version", "BungeeCord" );
+        System.setProperty("library.jansi.version", "BungeeCord");
 
-        // Waterfall start - Use TerminalConsoleAppender and Log4J
-        /*
-        AnsiConsole.systemInstall();
-        consoleReader = new ConsoleReader();
-        consoleReader.setExpandEvents( false );
-        consoleReader.addCompleter( new ConsoleCommandCompleter( this ) );
-
-        logger = new BungeeLogger( "BungeeCord", "proxy.log", consoleReader );
-        JDK14LoggerFactory.LOGGER = logger;
-
-        // Before we can set the Err and Out streams to our LoggingOutputStream we also have to remove
-        // the default ConsoleHandler from the root logger, which writes to the err stream.
-        // But we still want to log these records, so we add our own handler which forwards the LogRecord to the BungeeLogger.
-        // This way we skip the err stream and the problem of only getting a string without context, and can handle the LogRecord itself.
-        // Thus improving the default bahavior for projects that log on other Logger instances not created by BungeeCord.
-        Logger rootLogger = Logger.getLogger( "" );
-        for ( Handler handler : rootLogger.getHandlers() )
-        {
-            rootLogger.removeHandler( handler );
-        }
-        rootLogger.addHandler( new LoggingForwardHandler( logger ) );
-
-        // We want everything that reaches these output streams to be handled by our logger
-        // since it applies a nice looking format and also writes to the logfile.
-        System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
-        System.setOut( new PrintStream( new LoggingOutputStream( logger, Level.INFO ), true ) );
-        */
         logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
         // Waterfall end
 
-        pluginManager = new PluginManager( this );
+        pluginManager = new PluginManager(this);
 
-        if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
-        {
-            if ( EncryptionUtil.nativeFactory.load() )
-            {
-                logger.info( "Using mbed TLS based native cipher." );
-            } else
-            {
-                logger.info( "Using standard Java JCE cipher." );
-            }
-            if ( CompressFactory.zlib.load() )
-            {
-                logger.info( "Using zlib based native compressor." );
-            } else
-            {
-                logger.info( "Using standard Java compressor." );
-            }
+        xenonInstance.setConfigData(xenonInstance.getConfiguration().init());
+
+        Preconditions.checkState(xenonInstance.getConfigData() != null, "Config data should not be null!");
+
+        if (Boolean.getBoolean("net.md_5.bungee.native.disable")) return;
+
+        if (xenonInstance.getConfigData().isDebug()) {
+            logger.info("Using " + (EncryptionUtil.nativeFactory.load() ? "mbed TLS based native" : "standard Java JCE") + " cipher.");
+            logger.info("Using " + (CompressFactory.zlib.load() ? "zlib based native" : "standard Java") + " compressor.");
+        } else {
+            EncryptionUtil.nativeFactory.load();
+            CompressFactory.zlib.load();
         }
     }
+    
 
     /**
      * Start this proxy instance by loading the configuration, plugins and
@@ -265,45 +213,52 @@ public class BungeeCord extends ProxyServer
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void start(final long startTime) throws Exception
     {
-        getLogger().info( "Enabled XenonCord!");
-        ProxyServer.setInstance(this);
-        // Initialize all variables
-        new XenonCore();
+
+        xenonInstance.getLogger().info(String.format("Enabled XenonCord %s", XenonCore.instance.getVersion()));
 
         System.setProperty( "io.netty.selectorAutoRebuildThreshold", "0" ); // Seems to cause Bungee to stop accepting connections
+
         if ( System.getProperty( "io.netty.leakDetectionLevel" ) == null && System.getProperty( "io.netty.leakDetection.level" ) == null )
             ResourceLeakDetector.setLevel( ResourceLeakDetector.Level.DISABLED ); // Eats performance
 
-        bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
-        workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
+        bossEventLoopGroup = PipelineUtils.newEventLoopGroup(
+                0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
+        workerEventLoopGroup = PipelineUtils.newEventLoopGroup(
+                0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
+
+        xenonInstance.logdebuginfo("Loading bungee config and checking plugins folder...");
 
         pluginsFolder.mkdir();
         config.load();
 
+        xenonInstance.logdebuginfo("Registering channels...");
+        registerChannel( "BungeeCord" );
         registerChannel( ForgeConstants.FML_TAG );
         registerChannel( ForgeConstants.FML_HANDSHAKE_TAG );
         registerChannel( ForgeConstants.FORGE_REGISTER );
 
         isRunning = true;
 
-        XenonCore.instance.getTaskManager().add(() ->{
-            XenonCore.instance.getLogger().info("ASYNC task command registerer is starting...");
+        XenonCore.instance.getTaskManager().cachedAsync(() ->{
+            xenonInstance.logdebuginfo("ASYNC task command registerer is starting...");
             new Reflections("ir.xenoncommunity.commands").getSubTypesOf(Command.class).stream().filter(
                     command -> !command.getSimpleName().toLowerCase().contains("playercommand")).forEach(command -> {
                 try {
-                    XenonCore.instance.getLogger().info(String.format("Command %s registered.", command.getSimpleName()));
                     this.getPluginManager().registerCommand(null, command.newInstance());
                 } catch (Exception e) {
                     XenonCore.instance.getLogger().error(e.getMessage());
                 }
             });
+            xenonInstance.logdebuginfo("Commands are loaded!");
+            xenonInstance.logdebuginfo("ASYNC task command registerer is shutting down...");
         });
         XenonCore.instance.getTaskManager().cachedAsync(() -> {
-            XenonCore.instance.getLogger().info("ASYNC task plugin loader is starting...");
+            xenonInstance.logdebuginfo("ASYNC task plugin loader is starting...");
             pluginManager.detectPlugins( pluginsFolder );
             pluginManager.loadPlugins();
-            XenonCore.instance.setProxyCompletlyLoaded(true);
-            XenonCore.instance.getLogger().info("Plugins are loaded!");
+            XenonCore.instance.setProxyCompletlyLoaded(pluginManager.enablePlugins());
+            xenonInstance.logdebuginfo("Plugins are loaded!");
+            xenonInstance.logdebuginfo("ASYNC task plugin loader is shutting down...");
         });
 
 
@@ -323,81 +278,75 @@ public class BungeeCord extends ProxyServer
                 }
             }
         }, 0, TimeUnit.MINUTES.toMillis( 5 ) );
-        //metricsThread.scheduleAtFixedRate( new Metrics(), 0, TimeUnit.MINUTES.toMillis( Metrics.PING_INTERVAL ) ); // Waterfall: Disable Metrics
 
+        xenonInstance.logdebuginfo("Adding shutdown hook...");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> independentThreadStop( getTranslation( "restart" ), false )));
 
         XenonCore.instance.init(startTime);
     }
 
-    public void startListeners()
-    {
-        for ( final ListenerInfo info : config.getListeners() )
-        {
-            if ( info.isProxyProtocol() )
-            {
-                getLogger().log( Level.WARNING, "Using PROXY protocol for listener {0}, please ensure this listener is adequately firewalled.", info.getSocketAddress() );
 
-                if ( connectionThrottle != null )
-                {
-                    connectionThrottle = null;
-                    getLogger().log( Level.WARNING, "Since PROXY protocol is in use, internal connection throttle has been disabled." );
-                }
-            }
+    public void startListeners() {
+        xenonInstance.getTaskManager().add(() -> {
+            xenonInstance.logdebuginfo("ASYNC task start listeners is starting...");
+            config.getListeners().forEach(info -> {
+                if (info.isProxyProtocol()) {
+                    xenonInstance.logdebuginfo(String.format("Using PROXY protocol for listener %s, please ensure this listener is adequately firewalled.", info.getSocketAddress().toString()));
 
-            ChannelFutureListener listener = new ChannelFutureListener()
-            {
-                @Override
-                public void operationComplete(ChannelFuture future) throws Exception
-                {
-                    if ( future.isSuccess() )
-                    {
-                        listeners.add( future.channel() );
-                        getLogger().log( Level.INFO, "Listening on {0}", info.getSocketAddress() );
-                    } else
-                    {
-                        getLogger().log( Level.WARNING, "Could not bind to host " + info.getSocketAddress(), future.cause() );
+                    if (connectionThrottle != null) {
+                        connectionThrottle = null;
+                        xenonInstance.logdebuginfo("Since PROXY protocol is in use, internal connection throttle has been disabled.");
                     }
                 }
-            };
-            new ServerBootstrap()
-                    .channelFactory( PipelineUtils.getServerChannelFactory( info.getSocketAddress() ) ) // Waterfall - netty reflection -> factory
-                    .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!
-                    .childAttr( PipelineUtils.LISTENER, info )
-                    .childHandler( PipelineUtils.SERVER_CHILD )
-                    .group( bossEventLoopGroup, workerEventLoopGroup )
-                    .localAddress( info.getSocketAddress() )
-                    .bind().addListener( listener );
 
-            if ( info.isQueryEnabled() )
-            {
-                Preconditions.checkArgument( info.getSocketAddress() instanceof InetSocketAddress, "Can only create query listener on UDP address" );
-
-                ChannelFutureListener bindListener = new ChannelFutureListener()
-                {
-                    @Override
-                    public void operationComplete(ChannelFuture future) throws Exception
-                    {
-                        if ( future.isSuccess() )
-                        {
-                            listeners.add( future.channel() );
-                            getLogger().log( Level.INFO, "Started query on {0}", future.channel().localAddress() );
-                        } else
-                        {
-                            getLogger().log( Level.WARNING, "Could not bind to host " + info.getSocketAddress(), future.cause() );
-                        }
+                final ChannelFutureListener listener = future -> {
+                    if (future.isSuccess()) {
+                        listeners.add(future.channel());
+                        xenonInstance.logdebuginfo(String.format("Listening on %s", info.getSocketAddress()));
+                    } else {
+                        xenonInstance.logdebuginfo("Could not bind to host " + info.getSocketAddress());
                     }
                 };
-                new RemoteQuery( this, info ).start( PipelineUtils.getDatagramChannel(), new InetSocketAddress( info.getHost().getAddress(), info.getQueryPort() ), workerEventLoopGroup, bindListener );
-            }
-        }
+
+                new ServerBootstrap()
+                        .channelFactory(PipelineUtils.getServerChannelFactory(info.getSocketAddress()))
+                        .option(ChannelOption.SO_REUSEADDR, true)
+                        .childAttr(PipelineUtils.LISTENER, info)
+                        .childHandler(PipelineUtils.SERVER_CHILD)
+                        .group(bossEventLoopGroup, workerEventLoopGroup)
+                        .localAddress(info.getSocketAddress())
+                        .bind().addListener(listener);
+
+                if (!info.isQueryEnabled()) return;
+
+                Preconditions.checkArgument(info.getSocketAddress() instanceof InetSocketAddress, "Can only create query listener on UDP address");
+
+                final ChannelFutureListener bindListener = future -> {
+                    if (future.isSuccess()) {
+                        listeners.add(future.channel());
+                        getLogger().log(Level.INFO, "Started query on {0}", future.channel().localAddress());
+                    } else {
+                        getLogger().log(Level.WARNING, "Could not bind to host " + info.getSocketAddress(), future.cause());
+                    }
+                };
+
+                new RemoteQuery(this, info).start(
+                        PipelineUtils.getDatagramChannel(),
+                        new InetSocketAddress(info.getHost().getAddress(), info.getQueryPort()),
+                        workerEventLoopGroup,
+                        bindListener
+                );
+            });
+            xenonInstance.logdebuginfo("ASYNC task start listeners is shutting down...");
+        });
     }
+
 
     public void stopListeners()
     {
-        for ( Channel listener : listeners )
-        {
-            getLogger().log( Level.INFO, "Closing listener {0}", listener );
+        xenonInstance.logdebuginfo("Closing listeners...");
+        listeners.forEach(listener -> {
+            xenonInstance.logdebuginfo(String.format("Closing listener %s", listener ));
             try
             {
                 listener.close().syncUninterruptibly();
@@ -405,7 +354,7 @@ public class BungeeCord extends ProxyServer
             {
                 getLogger().severe( "Could not close listen thread" );
             }
-        }
+        });
         listeners.clear();
     }
 
@@ -433,85 +382,65 @@ public class BungeeCord extends ProxyServer
     @SuppressWarnings("TooBroadCatch")
     private void independentThreadStop(final String reason, boolean callSystemExit)
     {
-        // Acquire the shutdown lock
-        // This needs to actually block here, otherwise running 'end' and then ctrl+c will cause the thread to terminate prematurely
+        xenonInstance.shutdown();
+
         shutdownLock.lock();
 
         // Acquired the shutdown lock
         if ( !isRunning )
         {
-            // Server is already shutting down - nothing to do
             shutdownLock.unlock();
             return;
         }
         isRunning = false;
 
         stopListeners();
-        getLogger().info( "Closing pending connections" );
+        xenonInstance.logdebuginfo( "Closing pending connections" );
 
         connectionLock.readLock().lock();
         try
         {
             getLogger().log( Level.INFO, "Disconnecting {0} connections", connections.size() );
-            for ( UserConnection user : connections.values() )
-            {
-                user.disconnect( reason );
-            }
+            connections.values().forEach(user -> user.disconnect(reason));
         } finally
         {
             connectionLock.readLock().unlock();
         }
 
-        try
-        {
-            Thread.sleep( 500 );
-        } catch ( InterruptedException ex )
-        {
-        }
-
         if ( reconnectHandler != null )
         {
-            getLogger().info( "Saving reconnect locations" );
+            xenonInstance.logdebuginfo( "Saving reconnect locations" );
             reconnectHandler.save();
             reconnectHandler.close();
         }
         saveThread.cancel();
-        //metricsThread.cancel(); // Waterfall: Disable Metrics
 
         getLogger().info( "Disabling plugins" );
-        for ( Plugin plugin : Lists.reverse( new ArrayList<>( pluginManager.getPlugins() ) ) )
-        {
+        Lists.reverse( new ArrayList<>( pluginManager.getPlugins() ) ).forEach(plugin -> {
             try
             {
                 plugin.onDisable();
-                for ( Handler handler : plugin.getLogger().getHandlers() )
-                {
-                    handler.close();
-                }
+                Arrays.stream(plugin.getLogger().getHandlers()).forEach(Handler::close);
             } catch ( Throwable t )
             {
-                // Waterfall start - throw exception event
-                String msg = "Exception disabling plugin " + plugin.getDescription().getName();
+                final String msg = "Exception disabling plugin " + plugin.getDescription().getName();
                 getLogger().log( Level.SEVERE, msg, t );
                 pluginManager.callEvent( new ProxyExceptionEvent( new ProxyPluginEnableDisableException( msg, t, plugin) ) );
-                // Waterfall end
             }
             getScheduler().cancel( plugin );
             plugin.getExecutorService().shutdownNow();
-        }
+        });
 
         getLogger().info( "Closing IO threads" );
-                bossEventLoopGroup.shutdownGracefully();
-                workerEventLoopGroup.shutdownGracefully();
-                while (true) {
-                    try {
-                        bossEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-                        workerEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-                        break;
-                    } catch (InterruptedException ignored) {}
-        }
+        bossEventLoopGroup.shutdownGracefully();
+        workerEventLoopGroup.shutdownGracefully();
+        try {
+            bossEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            workerEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException ignored) {}
 
-        getLogger().info( "Thank you and goodbye" );
+
+        getLogger().info( "Thank you for using XenonCord!" );
         // Need to close loggers after last message!
         org.apache.logging.log4j.LogManager.shutdown(); // Waterfall
 
@@ -535,10 +464,9 @@ public class BungeeCord extends ProxyServer
         connectionLock.readLock().lock();
         try
         {
-            for ( UserConnection con : connections.values() )
-            {
+            connections.values().forEach(con -> {
                 con.unsafe().sendPacket( packet );
-            }
+            });
         } finally
         {
             connectionLock.readLock().unlock();
@@ -548,20 +476,20 @@ public class BungeeCord extends ProxyServer
     @Override
     public String getName()
     {
-        return "Waterfall";
+        return "XenonCord";
     }
 
     @Override
     public String getVersion()
     {
-        return ( BungeeCord.class.getPackage().getImplementationVersion() == null ) ? "unknown" : BungeeCord.class.getPackage().getImplementationVersion();
+        return xenonInstance.getVersion();
     }
 
     public final void reloadMessages()
     {
-        Map<String, Format> cachedFormats = new HashMap<>();
+        final Map<String, Format> cachedFormats = new HashMap<>();
+        final File file = new File( "messages.properties" );
 
-        File file = new File( "messages.properties" );
         if ( file.isFile() )
         {
             try ( FileReader rd = new FileReader( file ) )
@@ -588,7 +516,7 @@ public class BungeeCord extends ProxyServer
 
     private void cacheResourceBundle(Map<String, Format> map, ResourceBundle resourceBundle)
     {
-        Enumeration<String> keys = resourceBundle.getKeys();
+        final Enumeration<String> keys = resourceBundle.getKeys();
         while ( keys.hasMoreElements() )
         {
             map.computeIfAbsent( keys.nextElement(), (key) -> new MessageFormat( resourceBundle.getString( key ) ) );
@@ -598,7 +526,7 @@ public class BungeeCord extends ProxyServer
     @Override
     public String getTranslation(String name, Object... args)
     {
-        Format format = messageFormats.get( name );
+        final Format format = messageFormats.get( name );
         return ( format != null ) ? format.format( args ) : "<translation '" + name + "' missing>";
     }
 
@@ -755,37 +683,31 @@ public class BungeeCord extends ProxyServer
     public void broadcast(BaseComponent... message)
     {
         getConsole().sendMessage( message );
-        for ( ProxiedPlayer player : getPlayers() )
-        {
-            player.sendMessage( message );
-        }
+        getPlayers().forEach(player -> player.sendMessage( message ));
     }
 
     @Override
     public void broadcast(BaseComponent message)
     {
         getConsole().sendMessage( message );
-        for ( ProxiedPlayer player : getPlayers() )
-        {
-            player.sendMessage( message );
-        }
+        getPlayers().forEach(player -> player.sendMessage( message ));
     }
 
     public boolean addConnection(UserConnection con)
     {
         UUID offlineId = con.getPendingConnection().getOfflineId();
         if ( offlineId != null && offlineId.version() != 3 )
-        {
             throw new IllegalArgumentException( "Offline UUID must be a name-based UUID" );
-        }
+
+        final String name = con.getName();
+
         connectionLock.writeLock().lock();
         try
         {
-            if ( connections.containsKey( con.getName() ) || connectionsByUUID.containsKey( con.getUniqueId() ) || connectionsByOfflineUUID.containsKey( offlineId ) )
-            {
+            if ( connections.containsKey( name ) || connectionsByUUID.containsKey( con.getUniqueId() ) || connectionsByOfflineUUID.containsKey( offlineId ) )
                 return false;
-            }
-            connections.put( con.getName(), con );
+
+            connections.put( name, con );
             connectionsByUUID.put( con.getUniqueId(), con );
             connectionsByOfflineUUID.put( offlineId, con );
         } finally
@@ -823,22 +745,9 @@ public class BungeeCord extends ProxyServer
     public Collection<ProxiedPlayer> matchPlayer(final String partialName)
     {
         Preconditions.checkNotNull( partialName, "partialName" );
+        final ProxiedPlayer exactMatch = getPlayer( partialName );
 
-        ProxiedPlayer exactMatch = getPlayer( partialName );
-        if ( exactMatch != null )
-        {
-            return Collections.singleton( exactMatch );
-        }
-
-        return Sets.newHashSet( Iterables.filter( getPlayers(), new Predicate<ProxiedPlayer>()
-        {
-
-            @Override
-            public boolean apply(ProxiedPlayer input)
-            {
-                return ( input == null ) ? false : input.getName().toLowerCase( Locale.ROOT ).startsWith( partialName.toLowerCase( Locale.ROOT ) );
-            }
-        } ) );
+        return exactMatch != null ? Collections.singleton( exactMatch ) : Sets.newHashSet( Iterables.filter( getPlayers(), input -> input != null && input.getName().toLowerCase(Locale.ROOT).startsWith(partialName.toLowerCase(Locale.ROOT))) );
     }
 
     @Override
