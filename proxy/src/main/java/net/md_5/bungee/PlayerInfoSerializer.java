@@ -17,9 +17,10 @@ public class PlayerInfoSerializer implements JsonSerializer<ServerPing.PlayerInf
     @Override
     public ServerPing.PlayerInfo deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
-        JsonObject js = json.getAsJsonObject();
-        ServerPing.PlayerInfo info = new ServerPing.PlayerInfo( js.get( "name" ).getAsString(), (UUID) null );
-        String id = js.get( "id" ).getAsString();
+        final JsonObject js = json.getAsJsonObject();
+        final ServerPing.PlayerInfo info = new ServerPing.PlayerInfo( js.get( "name" ).getAsString(), (UUID) null );
+        final String id = js.get( "id" ).getAsString();
+
         if ( !id.contains( "-" ) )
         {
             info.setId( id );
@@ -33,7 +34,7 @@ public class PlayerInfoSerializer implements JsonSerializer<ServerPing.PlayerInf
     @Override
     public JsonElement serialize(ServerPing.PlayerInfo src, Type typeOfSrc, JsonSerializationContext context)
     {
-        JsonObject out = new JsonObject();
+        final JsonObject out = new JsonObject();
         out.addProperty( "name", src.getName() );
         out.addProperty( "id", src.getUniqueId().toString() );
         return out;

@@ -134,11 +134,10 @@ public class BungeeServerInfo implements ServerInfo
 
     public void cachePing(ServerPing serverPing)
     {
-        if ( ProxyServer.getInstance().getConfig().getRemotePingCache() > 0 )
-        {
-            this.cachedPing = serverPing;
-            this.lastPing = System.currentTimeMillis();
-        }
+        if ( !(ProxyServer.getInstance().getConfig().getRemotePingCache() > 0) ) return;
+
+        this.cachedPing = serverPing;
+        this.lastPing = System.currentTimeMillis();
     }
 
     @Override
@@ -169,18 +168,13 @@ public class BungeeServerInfo implements ServerInfo
             return;
         }
 
-        ChannelFutureListener listener = new ChannelFutureListener()
-        {
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception
+        ChannelFutureListener listener = future -> {
+            if ( future.isSuccess() )
             {
-                if ( future.isSuccess() )
-                {
-                    future.channel().pipeline().get( HandlerBoss.class ).setHandler( new PingHandler( BungeeServerInfo.this, callback, protocolVersion ) );
-                } else
-                {
-                    callback.done( null, future.cause() );
-                }
+                future.channel().pipeline().get( HandlerBoss.class ).setHandler( new PingHandler( BungeeServerInfo.this, callback, protocolVersion ) );
+            } else
+            {
+                callback.done( null, future.cause() );
             }
         };
         new Bootstrap()

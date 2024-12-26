@@ -5,22 +5,15 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import java.net.SocketAddress;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import lombok.Getter;
 import lombok.Setter;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.compress.PacketCompressor;
 import net.md_5.bungee.compress.PacketDecompressor;
-import net.md_5.bungee.netty.cipher.CipherEncoder;
-import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.MinecraftDecoder;
-import net.md_5.bungee.protocol.MinecraftEncoder;
-import net.md_5.bungee.protocol.PacketWrapper;
-import net.md_5.bungee.protocol.Protocol;
-import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
+import net.md_5.bungee.protocol.*;
 import net.md_5.bungee.protocol.packet.Kick;
+
+import java.net.SocketAddress;
+import java.util.concurrent.TimeUnit;
 
 public class ChannelWrapper
 {
@@ -42,22 +35,23 @@ public class ChannelWrapper
 
     public Protocol getDecodeProtocol()
     {
-        return getMinecraftDecoder().getProtocol();
+        return ch.pipeline().get( MinecraftDecoder.class ).getProtocol();
     }
 
     public void setDecodeProtocol(Protocol protocol)
     {
-        getMinecraftDecoder().setProtocol( protocol );
+        ch.pipeline().get( MinecraftDecoder.class ).setProtocol( protocol );
     }
 
     public Protocol getEncodeProtocol()
     {
-        return getMinecraftEncoder().getProtocol();
+        return ch.pipeline().get( MinecraftEncoder.class ).getProtocol();
+
     }
 
     public void setEncodeProtocol(Protocol protocol)
     {
-        getMinecraftEncoder().setProtocol( protocol );
+        ch.pipeline().get( MinecraftEncoder.class ).setProtocol( protocol );
     }
 
     public void setProtocol(Protocol protocol)
@@ -68,23 +62,13 @@ public class ChannelWrapper
 
     public void setVersion(int protocol)
     {
-        getMinecraftDecoder().setProtocolVersion( protocol );
-        getMinecraftEncoder().setProtocolVersion( protocol );
-    }
-
-    public MinecraftDecoder getMinecraftDecoder()
-    {
-        return ch.pipeline().get( MinecraftDecoder.class );
-    }
-
-    public MinecraftEncoder getMinecraftEncoder()
-    {
-        return ch.pipeline().get( MinecraftEncoder.class );
+        ch.pipeline().get( MinecraftDecoder.class ).setProtocolVersion( protocol );
+        ch.pipeline().get( MinecraftEncoder.class ).setProtocolVersion( protocol );
     }
 
     public int getEncodeVersion()
     {
-        return getMinecraftEncoder().getProtocolVersion();
+        return ch.pipeline().get( MinecraftEncoder.class ).getProtocolVersion();
     }
 
     public void write(Object packet)
@@ -168,7 +152,7 @@ public class ChannelWrapper
 
     public void addBefore(String baseName, String name, ChannelHandler handler)
     {
-        Preconditions.checkState( ch.eventLoop().inEventLoop(), "cannot add handler outside of event loop" );
+        Preconditions.checkState( ch.eventLoop().inEventLoop(), "cannot add gui outside of event loop" );
         ch.pipeline().flush();
         ch.pipeline().addBefore( baseName, name, handler );
     }
@@ -177,62 +161,20 @@ public class ChannelWrapper
     {
         return ch;
     }
-
     public void setCompressionThreshold(int compressionThreshold)
     {
-        if ( ch.pipeline().get( PacketCompressor.class ) == null && compressionThreshold >= 0 )
-        {
-            addBefore( PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor() );
-        }
         if ( compressionThreshold >= 0 )
         {
+            if(ch.pipeline().get( PacketCompressor.class ) == null) addBefore( PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor() );
             ch.pipeline().get( PacketCompressor.class ).setThreshold( compressionThreshold );
         } else
-        {
             ch.pipeline().remove( "compress" );
-        }
 
         if ( ch.pipeline().get( PacketDecompressor.class ) == null && compressionThreshold >= 0 )
-        {
             addBefore( PipelineUtils.PACKET_DECODER, "decompress", new PacketDecompressor(compressionThreshold) );
-        }
         if ( compressionThreshold < 0 )
-        {
             ch.pipeline().remove( "decompress" );
-        }
-        // disable use of composite buffers if we use natives
-        updateComposite();
     }
-
-    /*
-     * Should be called on encryption add and on compressor add or remove
-     */
-    public void updateComposite()
-    {
-        CipherEncoder cipherEncoder = ch.pipeline().get( CipherEncoder.class );
-        PacketCompressor packetCompressor = ch.pipeline().get( PacketCompressor.class );
-        Varint21LengthFieldPrepender prepender = ch.pipeline().get( Varint21LengthFieldPrepender.class );
-        boolean compressorCompose = cipherEncoder == null || cipherEncoder.getCipher().allowComposite();
-        boolean prependerCompose = compressorCompose && ( packetCompressor == null || packetCompressor.getZlib().allowComposite() );
-
-        if ( prepender != null )
-        {
-            ProxyServer.getInstance().getLogger().log( Level.FINE, "set prepender compose to {0} for {1}", new Object[]
-            {
-                prependerCompose, ch
-            } );
-            prepender.setCompose( prependerCompose );
-        }
-        if ( packetCompressor != null )
-        {
-            ProxyServer.getInstance().getLogger().log( Level.FINE, "set packetCompressor compose to {0} for {1}", new Object[]
-            {
-                compressorCompose, ch
-            } );
-            packetCompressor.setCompose( compressorCompose );
-        }
-    }
-
     public void scheduleIfNecessary(Runnable task)
     {
         if ( ch.eventLoop().inEventLoop() )
@@ -244,3 +186,4 @@ public class ChannelWrapper
         ch.eventLoop().execute( task );
     }
 }
+

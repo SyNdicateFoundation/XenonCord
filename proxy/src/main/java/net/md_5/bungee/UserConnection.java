@@ -13,18 +13,11 @@ import io.netty.channel.ChannelOption;
 import io.netty.util.internal.PlatformDependent;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
+
+import ir.xenoncommunity.XenonCore;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -167,18 +160,14 @@ public final class UserConnection implements ProxiedPlayer
         this.entityRewrite = EntityMap.getEntityMap( getPendingConnection().getVersion() );
 
         this.displayName = name;
-
         tabListHandler = new ServerUnique( this );
 
 
         forgeClientHandler = new ForgeClientHandler( this );
 
-        // No-config FML handshake marker.
-        // Set whether the connection has a 1.8 FML marker in the handshake.
         if (this.getPendingConnection().getExtraDataInHandshake().contains( ForgeConstants.FML_HANDSHAKE_TOKEN ))
-        {
             forgeClientHandler.setFmlTokenInHandshake( true );
-        }
+
         return BungeeCord.getInstance().addConnection( this );
     }
 
@@ -195,8 +184,8 @@ public final class UserConnection implements ProxiedPlayer
             {
                 return;
             }
-            Protocol encodeProtocol = ch.getEncodeProtocol();
-            if ( !encodeProtocol.TO_CLIENT.hasPacket( packet.getClass(), getPendingConnection().getVersion() ) )
+
+            if ( !ch.getEncodeProtocol().TO_CLIENT.hasPacket( packet.getClass(), getPendingConnection().getVersion() ) )
             {
                 packetQueue.add( packet );
             } else
@@ -274,22 +263,16 @@ public final class UserConnection implements ProxiedPlayer
     public ServerInfo updateAndGetNextServer(ServerInfo currentTarget)
     {
         if ( serverJoinQueue == null )
-        {
             serverJoinQueue = new LinkedList<>( getPendingConnection().getListener().getServerPriority() );
-        }
 
-        ServerInfo next = null;
         while ( !serverJoinQueue.isEmpty() )
         {
-            ServerInfo candidate = ProxyServer.getInstance().getServerInfo( serverJoinQueue.remove() );
+            final ServerInfo candidate = ProxyServer.getInstance().getServerInfo( serverJoinQueue.remove() );
             if ( !Objects.equals( currentTarget, candidate ) )
-            {
-                next = candidate;
-                break;
-            }
+                return candidate;
         }
 
-        return next;
+        return null;
     }
 
     public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry)
@@ -315,20 +298,10 @@ public final class UserConnection implements ProxiedPlayer
         // Waterfall end
         Preconditions.checkNotNull( info, "info" );
 
-        ServerConnectRequest.Builder builder = ServerConnectRequest.builder().retry( retry ).reason( reason ).target( info ).sendFeedback(sendFeedback); // Waterfall - feedback param
+        final ServerConnectRequest.Builder builder = ServerConnectRequest.builder().retry( retry ).reason( reason ).target( info ).sendFeedback(sendFeedback); // Waterfall - feedback param
         builder.connectTimeout(timeout); // Waterfall
         if ( callback != null )
-        {
-            // Convert the Callback<Boolean> to be compatible with Callback<Result> from ServerConnectRequest.
-            builder.callback( new Callback<ServerConnectRequest.Result>()
-            {
-                @Override
-                public void done(ServerConnectRequest.Result result, Throwable error)
-                {
-                    callback.done( ( result == ServerConnectRequest.Result.SUCCESS ) ? Boolean.TRUE : Boolean.FALSE, error );
-                }
-            } );
-        }
+            builder.callback((result, error) -> callback.done( ( result == ServerConnectRequest.Result.SUCCESS ) ? Boolean.TRUE : Boolean.FALSE, error ));
 
         connect( builder.build() );
     }
@@ -344,14 +317,12 @@ public final class UserConnection implements ProxiedPlayer
     private void connect0(final ServerConnectRequest request)
     {
         final Callback<ServerConnectRequest.Result> callback = request.getCallback();
-        ServerConnectEvent event = new ServerConnectEvent( this, request.getTarget(), request.getReason(), request );
+        final ServerConnectEvent event = new ServerConnectEvent( this, request.getTarget(), request.getReason(), request );
+
         if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
         {
             if ( callback != null )
-            {
                 callback.done( ServerConnectRequest.Result.EVENT_CANCEL, null );
-            }
-
             return;
         }
 
@@ -360,9 +331,7 @@ public final class UserConnection implements ProxiedPlayer
         if ( getServer() != null && Objects.equals( getServer().getInfo(), target ) )
         {
             if ( callback != null )
-            {
                 callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
-            }
 
             if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "already_connected" ) ); // Waterfall
             return;
@@ -370,9 +339,7 @@ public final class UserConnection implements ProxiedPlayer
         if ( pendingConnects.contains( target ) )
         {
             if ( callback != null )
-            {
                 callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
-            }
 
             if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "already_connecting" ) ); // Waterfall
             return;
@@ -391,38 +358,27 @@ public final class UserConnection implements ProxiedPlayer
                 ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
             }
         };
-        ChannelFutureListener listener = new ChannelFutureListener()
-        {
-            @Override
-            @SuppressWarnings("ThrowableResultIgnored")
-            public void operationComplete(ChannelFuture future) throws Exception
+        ChannelFutureListener listener = future -> {
+            if ( callback != null )
+                callback.done( ( future.isSuccess() ) ? ServerConnectRequest.Result.SUCCESS : ServerConnectRequest.Result.FAIL, future.cause() );
+
+            if ( !future.isSuccess() )
             {
-                if ( callback != null )
-                {
-                    callback.done( ( future.isSuccess() ) ? ServerConnectRequest.Result.SUCCESS : ServerConnectRequest.Result.FAIL, future.cause() );
-                }
+                future.channel().close();
+                pendingConnects.remove( target );
 
-                if ( !future.isSuccess() )
-                {
-                    future.channel().close();
-                    pendingConnects.remove( target );
-
-                    ServerInfo def = updateAndGetNextServer( target );
-                    if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
-                    {
-                        if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "fallback_lobby" ) ); // Waterfall
-                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout(), request.isSendFeedback() ); // Waterfall
-                    } else if ( dimensionChange )
-                    {
-                        disconnect( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
-                    } else
-                    {
-                        if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "fallback_kick", connectionFailMessage( future.cause() ) ) );
-                    }
+                final ServerInfo def = updateAndGetNextServer( target );
+                if (request.isRetry() && def != null && (getServer() == null || !def.equals(getServer().getInfo()))) {
+                    if (request.isSendFeedback()) sendMessage(bungee.getTranslation("fallback_lobby"));
+                    connect(def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout(), request.isSendFeedback());
+                } else if (dimensionChange) {
+                    disconnect(bungee.getTranslation("fallback_kick", connectionFailMessage(future.cause())));
+                } else {
+                    if (request.isSendFeedback()) sendMessage(bungee.getTranslation("fallback_kick", connectionFailMessage(future.cause())));
                 }
             }
         };
-        Bootstrap b = new Bootstrap()
+        final Bootstrap b = new Bootstrap()
                 .channelFactory( PipelineUtils.getChannelFactory( target.getAddress() ) ) // Waterfall - netty reflection -> factory
                 .group( ch.getHandle().eventLoop() )
                 .handler( initializer )
@@ -462,19 +418,19 @@ public final class UserConnection implements ProxiedPlayer
 
     public void disconnect0(final BaseComponent reason)
     {
-        if ( !ch.isClosing() )
+        if ( ch.isClosing() ) return;
+
+        bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
+                {
+                        getName(), BaseComponent.toLegacyText( reason )
+                } );
+
+        ch.close( new Kick( reason ) );
+
+        if ( server != null )
         {
-            bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
-            {
-                getName(), BaseComponent.toLegacyText( reason )
-            } );
-
-            ch.close( new Kick( reason ) );
-
-            if ( server != null )
-            {
-                server.disconnect( "Quitting" );
-            }
+            server.setObsolete( true );
+            server.disconnect( "Quitting" );
         }
     }
 
@@ -498,10 +454,7 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void sendMessages(String... messages)
     {
-        for ( String message : messages )
-        {
-            sendMessage( message );
-        }
+        XenonCore.instance.getTaskManager().async(() -> Arrays.stream(messages).forEach(this::sendMessage));
     }
 
     @Override
@@ -540,43 +493,31 @@ public final class UserConnection implements ProxiedPlayer
         sendMessage( ChatMessageType.CHAT, sender, message );
     }
 
-    private void sendMessage(ChatMessageType position, UUID sender, BaseComponent message)
-    {
-        // transform score components
-        message = ChatComponentTransformer.getInstance().transform( this, true, message );
+    private void sendMessage(ChatMessageType position, UUID sender, BaseComponent message) {
+        message = ChatComponentTransformer.getInstance().transform(this, true, message);
 
-        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() < ProtocolConstants.MINECRAFT_1_17 )
-        {
-            // Versions older than 1.11 cannot send the Action bar with the new JSON formattings
-            // Fix by converting to a legacy message, see https://bugs.mojang.com/browse/MC-119145
-            if ( getPendingConnection().getVersion() <= ProtocolConstants.MINECRAFT_1_10 )
-            {
-                message = new TextComponent( BaseComponent.toLegacyText( message ) );
-            } else
-            {
+        final int version = getPendingConnection().getVersion();
+
+        if (position == ChatMessageType.ACTION_BAR && version < ProtocolConstants.MINECRAFT_1_17) {
+            if (version <= ProtocolConstants.MINECRAFT_1_10)
+                message = new TextComponent(BaseComponent.toLegacyText(message));
+            else {
                 net.md_5.bungee.protocol.packet.Title title = new net.md_5.bungee.protocol.packet.Title();
-                title.setAction( net.md_5.bungee.protocol.packet.Title.Action.ACTIONBAR );
-                title.setText( message );
-                sendPacketQueued( title );
+                title.setAction(net.md_5.bungee.protocol.packet.Title.Action.ACTIONBAR);
+                title.setText(message);
+                sendPacketQueued(title);
                 return;
             }
         }
 
-        if ( getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_19 )
-        {
-            // Align with Spigot and remove client side formatting for now
-            if ( position == ChatMessageType.CHAT )
-            {
+        if (version >= ProtocolConstants.MINECRAFT_1_19) {
+            if (position == ChatMessageType.CHAT)
                 position = ChatMessageType.SYSTEM;
-            }
-
-            sendPacketQueued( new SystemChat( message, position.ordinal() ) );
-        } else
-        {
-            sendPacketQueued( new Chat( ComponentSerializer.toString( message ), (byte) position.ordinal(), sender ) );
+            sendPacketQueued(new SystemChat(message, position.ordinal()));
+        } else {
+            sendPacketQueued(new Chat(ComponentSerializer.toString(message), (byte) position.ordinal(), sender));
         }
     }
-
     @Override
     public void sendData(String channel, byte[] data)
     {
@@ -604,19 +545,13 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void addGroups(String... groups)
     {
-        for ( String group : groups )
-        {
-            this.groups.add( group );
-        }
+        XenonCore.instance.getTaskManager().async(() -> this.groups.addAll(Arrays.asList(groups)));
     }
 
     @Override
     public void removeGroups(String... groups)
     {
-        for ( String group : groups )
-        {
-            this.groups.remove( group );
-        }
+        XenonCore.instance.getTaskManager().async(() -> this.groups.removeAll(Arrays.asList(groups)));
     }
 
     @Override

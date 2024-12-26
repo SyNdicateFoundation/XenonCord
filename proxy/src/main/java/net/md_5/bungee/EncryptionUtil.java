@@ -47,7 +47,7 @@ public class EncryptionUtil
     {
         try
         {
-            KeyPairGenerator generator = KeyPairGenerator.getInstance( "RSA" );
+            final KeyPairGenerator generator = KeyPairGenerator.getInstance( "RSA" );
             generator.initialize( 1024 );
             keys = generator.generateKeyPair();
         } catch ( NoSuchAlgorithmException ex )
@@ -66,66 +66,58 @@ public class EncryptionUtil
 
     public static EncryptionRequest encryptRequest()
     {
-        String hash = Long.toString( random.nextLong(), 16 );
-        byte[] pubKey = keys.getPublic().getEncoded();
         byte[] verify = new byte[ 4 ];
         random.nextBytes( verify );
-        // always auth for now
-        return new EncryptionRequest( hash, pubKey, verify, true );
+        return new EncryptionRequest( Long.toString( random.nextLong(), 16 ), keys.getPublic().getEncoded(), verify, true );
     }
 
-    public static boolean check(PlayerPublicKey publicKey, UUID uuid) throws GeneralSecurityException
-    {
-        Signature signature = Signature.getInstance( "SHA1withRSA" );
-        signature.initVerify( MOJANG_KEY );
+    public static boolean check(PlayerPublicKey publicKey, UUID uuid) throws GeneralSecurityException {
+        Signature signature = Signature.getInstance("SHA1withRSA");
+        signature.initVerify(MOJANG_KEY);
 
         byte[] check;
-        if ( uuid != null )
-        {
-            byte[] encoded = getPubkey( publicKey.getKey() ).getEncoded();
-            check = new byte[ 24 + encoded.length ];
-
-            ByteBuffer.wrap( check ).order( ByteOrder.BIG_ENDIAN ).putLong( uuid.getMostSignificantBits() ).putLong( uuid.getLeastSignificantBits() ).putLong( publicKey.getExpiry() ).put( encoded );
-        } else
-        {
-            check = ( publicKey.getExpiry() + "-----BEGIN RSA PUBLIC KEY-----\n" + MIME_ENCODER.encodeToString( getPubkey( publicKey.getKey() ).getEncoded() ) + "\n-----END RSA PUBLIC KEY-----\n" ).getBytes( StandardCharsets.US_ASCII );
+        if (uuid != null) {
+            byte[] encoded = getPubkey(publicKey.getKey()).getEncoded();
+            check = new byte[24 + encoded.length];
+            ByteBuffer.wrap(check).order(ByteOrder.BIG_ENDIAN)
+                    .putLong(uuid.getMostSignificantBits())
+                    .putLong(uuid.getLeastSignificantBits())
+                    .putLong(publicKey.getExpiry())
+                    .put(encoded);
+        } else {
+            check = (publicKey.getExpiry() + "-----BEGIN RSA PUBLIC KEY-----\n" + MIME_ENCODER.encodeToString(getPubkey(publicKey.getKey()).getEncoded()) + "\n-----END RSA PUBLIC KEY-----\n").getBytes(StandardCharsets.US_ASCII);
         }
-        signature.update( check );
-
-        return signature.verify( publicKey.getSignature() );
+        signature.update(check);
+        return signature.verify(publicKey.getSignature());
     }
 
-    public static boolean check(PlayerPublicKey publicKey, EncryptionResponse resp, EncryptionRequest request) throws GeneralSecurityException
-    {
-        if ( publicKey != null )
-        {
-            Signature signature = Signature.getInstance( "SHA256withRSA" );
-            signature.initVerify( getPubkey( publicKey.getKey() ) );
-
-            signature.update( request.getVerifyToken() );
-            signature.update( Longs.toByteArray( resp.getEncryptionData().getSalt() ) );
-
-            return signature.verify( resp.getEncryptionData().getSignature() );
-        } else
-        {
+    public static boolean check(PlayerPublicKey publicKey, EncryptionResponse resp, EncryptionRequest request) throws GeneralSecurityException {
+        if (publicKey != null) {
+            Signature signature = Signature.getInstance("SHA256withRSA");
+            signature.initVerify(getPubkey(publicKey.getKey()));
+            signature.update(request.getVerifyToken());
+            signature.update(Longs.toByteArray(resp.getEncryptionData().getSalt()));
+            return signature.verify(resp.getEncryptionData().getSignature());
+        } else {
             Cipher cipher = Cipher.getInstance( "RSA/ECB/PKCS1Padding" );
             cipher.init( Cipher.DECRYPT_MODE, keys.getPrivate() );
             byte[] decrypted = cipher.doFinal( resp.getVerifyToken() );
 
             return MessageDigest.isEqual( request.getVerifyToken(), decrypted );
+
         }
     }
 
     public static SecretKey getSecret(EncryptionResponse resp, EncryptionRequest request) throws GeneralSecurityException
     {
-        Cipher cipher = Cipher.getInstance( "RSA/ECB/PKCS1Padding" );
+        final Cipher cipher = Cipher.getInstance( "RSA/ECB/PKCS1Padding" );
         cipher.init( Cipher.DECRYPT_MODE, keys.getPrivate() );
         return new SecretKeySpec( cipher.doFinal( resp.getSharedSecret() ), "AES" );
     }
 
     public static BungeeCipher getCipher(boolean forEncryption, SecretKey shared) throws GeneralSecurityException
     {
-        BungeeCipher cipher = nativeFactory.newInstance();
+        final BungeeCipher cipher = nativeFactory.newInstance();
 
         cipher.init( forEncryption, shared );
         return cipher;
@@ -143,7 +135,7 @@ public class EncryptionUtil
 
     public static byte[] encrypt(Key key, byte[] b) throws GeneralSecurityException
     {
-        Cipher hasher = Cipher.getInstance( "RSA/ECB/PKCS1Padding" );
+        final Cipher hasher = Cipher.getInstance( "RSA/ECB/PKCS1Padding" );
         hasher.init( Cipher.ENCRYPT_MODE, key );
         return hasher.doFinal( b );
     }

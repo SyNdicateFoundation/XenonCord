@@ -125,6 +125,4 @@ public interface PendingConnection extends Connection
      * @throws IllegalStateException if the player's version is not at least
      * 1.13
      */
-    @ApiStatus.Experimental
-    CompletableFuture<byte[]> sendData(String channel, byte[] data);
 }

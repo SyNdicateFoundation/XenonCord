@@ -1,6 +1,5 @@
 package net.md_5.bungee.connection;
 
-import com.google.gson.Gson;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.BungeeCord;
@@ -65,8 +64,7 @@ public class PingHandler extends PacketHandler
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
     public void handle(StatusResponse statusResponse) throws Exception
     {
-        Gson gson = BungeeCord.getInstance().gson;
-        ServerPing serverPing = gson.fromJson( statusResponse.getResponse(), ServerPing.class );
+        ServerPing serverPing = BungeeCord.getInstance().gson.fromJson( statusResponse.getResponse(), ServerPing.class );
         ( (BungeeServerInfo) target ).cachePing( serverPing );
         callback.done( serverPing, null );
         channel.close();

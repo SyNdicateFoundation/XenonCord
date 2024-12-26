@@ -1,10 +1,7 @@
 package net.md_5.bungee;
 
 import com.google.common.base.Preconditions;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.ArrayDeque;
-import java.util.Queue;
+import ir.xenoncommunity.XenonCore;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +10,14 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.packet.PluginMessage;
+
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 public class ServerConnection implements Server
@@ -50,8 +53,7 @@ public class ServerConnection implements Server
             {
                 return;
             }
-            Protocol encodeProtocol = ch.getEncodeProtocol();
-            if ( !encodeProtocol.TO_SERVER.hasPacket( packet.getClass(), ch.getEncodeVersion() ) )
+            if ( !ch.getEncodeProtocol().TO_SERVER.hasPacket( packet.getClass(), ch.getEncodeVersion() ) )
             {
                 packetQueue.add( packet );
             } else
@@ -61,21 +63,17 @@ public class ServerConnection implements Server
         } );
     }
 
-    public void sendQueuedPackets()
-    {
-        ch.scheduleIfNecessary( () ->
-        {
-            if ( ch.isClosed() )
-            {
-                return;
+    public void sendQueuedPackets() {
+        AtomicReference<DefinedPacket> packet = new AtomicReference<>();
+        XenonCore.instance.getTaskManager().async(() -> {
+            packet.set(packetQueue.poll());
+            while (packet.get() != null) {
+                unsafe().sendPacket(packet.get());
+                packet.set(packetQueue.poll());
             }
-            DefinedPacket packet;
-            while ( ( packet = packetQueue.poll() ) != null )
-            {
-                unsafe().sendPacket( packet );
-            }
-        } );
+        });
     }
+
 
     @Override
     public void sendData(String channel, byte[] data)
@@ -94,7 +92,6 @@ public class ServerConnection implements Server
     {
         Preconditions.checkArgument( reason.length == 0, "Server cannot have disconnect reason" );
 
-        isObsolete = true;
         ch.close();
     }
 

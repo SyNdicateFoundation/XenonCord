@@ -5,6 +5,8 @@ import com.google.common.base.Ticker;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import org.jetbrains.annotations.NotNull;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -32,9 +34,9 @@ public class ConnectionThrottle
                 .expireAfterWrite( throttleTime, TimeUnit.MILLISECONDS )
                 .build( new CacheLoader<InetAddress, AtomicInteger>()
                 {
+                    @NotNull
                     @Override
-                    public AtomicInteger load(InetAddress key) throws Exception
-                    {
+                    public AtomicInteger load(InetAddress key) {
                         return new AtomicInteger();
                     }
                 } );
@@ -48,12 +50,9 @@ public class ConnectionThrottle
             return;
         }
 
-        InetAddress address = ( (InetSocketAddress) socketAddress ).getAddress();
-        AtomicInteger throttleCount = throttle.getIfPresent( address );
+        AtomicInteger throttleCount = throttle.getIfPresent( ( (InetSocketAddress) socketAddress ).getAddress() );
         if ( throttleCount != null )
-        {
             throttleCount.decrementAndGet();
-        }
     }
 
     public boolean throttle(SocketAddress socketAddress)
@@ -63,8 +62,7 @@ public class ConnectionThrottle
             return false;
         }
 
-        InetAddress address = ( (InetSocketAddress) socketAddress ).getAddress();
-        int throttleCount = throttle.getUnchecked( address ).incrementAndGet();
+        int throttleCount = throttle.getUnchecked(  ( (InetSocketAddress) socketAddress ).getAddress() ).incrementAndGet();
 
         return throttleCount > throttleLimit;
     }

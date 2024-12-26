@@ -31,7 +31,7 @@ public class BungeeTitle implements Title
 
     private static TitlePacketHolder<TitleTimes> createAnimationPacket()
     {
-        TitlePacketHolder<TitleTimes> title = new TitlePacketHolder<>( new net.md_5.bungee.protocol.packet.Title( Action.TIMES ), new TitleTimes() );
+        final TitlePacketHolder<TitleTimes> title = new TitlePacketHolder<>( new net.md_5.bungee.protocol.packet.Title( Action.TIMES ), new TitleTimes() );
 
         title.oldPacket.setFadeIn( 20 );
         title.oldPacket.setStay( 60 );
@@ -152,16 +152,16 @@ public class BungeeTitle implements Title
 
     private static void sendPacket(ProxiedPlayer player, TitlePacketHolder packet)
     {
-        if ( packet != null )
+        if ( packet == null ) return;
+
+        if ( player.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_17 )
         {
-            if ( player.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_17 )
-            {
-                ( (UserConnection) player ).sendPacketQueued( packet.newPacket );
-            } else
-            {
-                player.unsafe().sendPacket( packet.oldPacket );
-            }
+            ( (UserConnection) player ).sendPacketQueued( packet.newPacket );
+        } else
+        {
+            player.unsafe().sendPacket( packet.oldPacket );
         }
+
     }
 
     @Override

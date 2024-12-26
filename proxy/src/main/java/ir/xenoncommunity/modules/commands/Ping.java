@@ -34,7 +34,6 @@ public class Ping extends Command implements Listener {
 
         if(!sender.hasPermission(XenonCore.instance.getConfigData().getModules().getPingothersperm())) return;
 
-        System.out.println(args[0]);
         Message.send(sender,
                 XenonCore.instance.getConfigData().getModules().getPingothersmessage()
                         .replace("PREFIX", XenonCore.instance.getConfigData().getPrefix())

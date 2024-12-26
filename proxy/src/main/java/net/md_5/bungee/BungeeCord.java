@@ -1,7 +1,6 @@
 package net.md_5.bungee;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -15,7 +14,6 @@ import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableExcepti
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelException;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -55,11 +53,9 @@ import net.md_5.bungee.api.chat.SelectorComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.api.config.ConfigurationAdapter;
-import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
-import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.chat.ComponentStyleSerializer;
@@ -73,7 +69,6 @@ import net.md_5.bungee.compress.CompressFactory;
 import net.md_5.bungee.conf.Configuration;
 import net.md_5.bungee.conf.YamlConfig;
 import net.md_5.bungee.forge.ForgeConstants;
-import net.md_5.bungee.module.ModuleManager;
 import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.ProtocolConstants;
@@ -407,12 +402,20 @@ public class BungeeCord extends ProxyServer
             connectionLock.readLock().unlock();
         }
 
+        try
+        {
+            Thread.sleep( 500 );
+        } catch ( InterruptedException ignored)
+        {
+        }
+
         if ( reconnectHandler != null )
         {
             xenonInstance.logdebuginfo( "Saving reconnect locations" );
             reconnectHandler.save();
             reconnectHandler.close();
         }
+
         saveThread.cancel();
 
         getLogger().info( "Disabling plugins" );
@@ -434,11 +437,14 @@ public class BungeeCord extends ProxyServer
         getLogger().info( "Closing IO threads" );
         bossEventLoopGroup.shutdownGracefully();
         workerEventLoopGroup.shutdownGracefully();
-        try {
-            bossEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-            workerEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException ignored) {}
-
+        while(true) {
+            try {
+                bossEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+                workerEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+                break;
+            } catch (InterruptedException ignored) {
+            }
+        }
 
         getLogger().info( "Thank you for using XenonCord!" );
         // Need to close loggers after last message!
