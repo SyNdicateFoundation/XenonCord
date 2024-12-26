@@ -1,6 +1,26 @@
 package net.md_5.bungee.conf;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.SocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.logging.Level;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.ChatColor;
@@ -13,12 +33,6 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
-import java.io.*;
-import java.net.SocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.logging.Level;
-
 public class YamlConfig implements ConfigurationAdapter
 {
 
@@ -29,7 +43,7 @@ public class YamlConfig implements ConfigurationAdapter
     private enum DefaultTabList
     {
 
-        GLOBAL(), GLOBAL_PING(), SERVER()
+        GLOBAL(), GLOBAL_PING(), SERVER();
     }
     private final Yaml yaml;
     private Map<String, Object> config;
@@ -47,7 +61,13 @@ public class YamlConfig implements ConfigurationAdapter
         yaml = new Yaml( options );
     }
 
+    @Override
     public void load()
+    {
+        load(true);
+    }
+
+    public void load(boolean doPermissions)
     {
         try
         {
@@ -57,7 +77,7 @@ public class YamlConfig implements ConfigurationAdapter
             {
                 try
                 {
-                    config = yaml.load( is );
+                    config = (Map) yaml.load( is );
                 } catch ( YAMLException ex )
                 {
                     throw new RuntimeException( "Invalid configuration encountered - this is a configuration error and NOT a bug! Please attempt to fix the error or see https://www.spigotmc.org/ for help.", ex );
@@ -99,7 +119,7 @@ public class YamlConfig implements ConfigurationAdapter
         } else
         {
             String first = path.substring( 0, index );
-            String second = path.substring( index + 1);
+            String second = path.substring( index + 1, path.length() );
             Map sub = (Map) submap.get( first );
             if ( sub == null )
             {
@@ -132,7 +152,7 @@ public class YamlConfig implements ConfigurationAdapter
         } else
         {
             String first = path.substring( 0, index );
-            String second = path.substring( index + 1);
+            String second = path.substring( index + 1, path.length() );
             Map sub = (Map) submap.get( first );
             if ( sub == null )
             {
@@ -270,4 +290,5 @@ public class YamlConfig implements ConfigurationAdapter
     {
         return get( path, def );
     }
+
 }

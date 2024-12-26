@@ -8,20 +8,22 @@ import lombok.Getter;
 import lombok.Setter;
 
 @AllArgsConstructor
-public class MinecraftEncoder extends MessageToByteEncoder<DefinedPacket> {
+public class MinecraftEncoder extends MessageToByteEncoder<DefinedPacket>
+{
 
     @Getter
     @Setter
     private Protocol protocol;
-    private final boolean server;
+    private boolean server;
     @Getter
     @Setter
     private int protocolVersion;
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, DefinedPacket msg, ByteBuf out) {
-        Protocol.DirectionData prot = server ? protocol.TO_CLIENT : protocol.TO_SERVER;
-        DefinedPacket.writeVarInt(prot.getId(msg.getClass(), protocolVersion), out);
-        msg.write(out, protocol, prot.getDirection(), protocolVersion);
+    protected void encode(ChannelHandlerContext ctx, DefinedPacket msg, ByteBuf out) throws Exception
+    {
+        Protocol.DirectionData prot = ( server ) ? protocol.TO_CLIENT : protocol.TO_SERVER;
+        DefinedPacket.writeVarInt( prot.getId( msg.getClass(), protocolVersion ), out );
+        msg.write( out, protocol, prot.getDirection(), protocolVersion );
     }
 }

@@ -3,14 +3,13 @@ package net.md_5.bungee.forge;
 import com.google.common.collect.ImmutableSet;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.packet.PluginMessage;
-
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
+import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.packet.PluginMessage;
 
 public class ForgeUtils
 {

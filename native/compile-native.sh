@@ -2,23 +2,28 @@
 
 set -eu
 
+CWD=$(pwd)
+
 echo "Compiling mbedtls"
-(cd mbedtls && make no_test)
+(cd mbedtls && CFLAGS="-fPIC -I$CWD/src/main/c -DMBEDTLS_USER_CONFIG_FILE='<mbedtls_custom_config.h>'" make no_test)
 
 echo "Compiling zlib"
-(cd zlib && CFLAGS=-fPIC ./configure --static && make)
+(cd zlib && CFLAGS="-fPIC -DNO_GZIP" ./configure --static && make)
 
-CXX="gcc -shared -fPIC -O3 -Wall -Werror -I$JAVA_HOME/include/ -I$JAVA_HOME/include/linux/"
-# Waterfall - rewrite below to extend platform support
+CC="gcc"
+CFLAGS="-c -fPIC -O3 -Wall -Werror -I$JAVA_HOME/include/ -I$JAVA_HOME/include/linux/"
+LDFLAGS="-shared"
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  PREFIX="osx-"
-  CXX_ARGS="-I$JAVA_HOME/include/ -I$JAVA_HOME/include/darwin/"
-else
-  CXX_ARGS="-I$JAVA_HOME/include/ -I$JAVA_HOME/include/linux/ -Wl,--wrap=memcpy"
-fi
+echo "Compiling bungee"
+$CC $CFLAGS -o shared.o src/main/c/shared.c 
+$CC $CFLAGS -Imbedtls/include -o NativeCipherImpl.o src/main/c/NativeCipherImpl.c
+$CC $CFLAGS -Izlib -o NativeCompressImpl.o src/main/c/NativeCompressImpl.c
 
-CXX="gcc -shared -fPIC -O3 -Wall -Werror"
+echo "Linking native-cipher.so"
+$CC $LDFLAGS -o src/main/resources/native-cipher.so shared.o NativeCipherImpl.o mbedtls/library/libmbedcrypto.a
 
-$CXX -Imbedtls/include src/main/c/NativeCipherImpl.cpp -o src/main/resources/${PREFIX:-}native-cipher.so mbedtls/library/libmbedcrypto.a $CXX_ARGS
-$CXX -Izlib src/main/c/NativeCompressImpl.cpp -o src/main/resources/${PREFIX:-}native-compress.so zlib/libz.a $CXX_ARGS
+echo "Linking native-compress.so"
+$CC $LDFLAGS -o src/main/resources/native-compress.so shared.o NativeCompressImpl.o zlib/libz.a
+
+echo "Cleaning up"
+rm shared.o NativeCipherImpl.o NativeCompressImpl.o

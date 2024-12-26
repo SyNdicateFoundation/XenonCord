@@ -1,18 +1,16 @@
 package net.md_5.bungee.config;
 
-import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
+import static org.junit.jupiter.api.Assertions.*;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.*;
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @RequiredArgsConstructor
 public class CompoundConfigurationTest
@@ -25,7 +23,8 @@ public class CompoundConfigurationTest
                         // provider
                         YamlConfiguration.class,
                         // testDocument
-                        "receipt:     Oz-Ware Purchase Invoice\n"
+                        ""
+                        + "receipt:     Oz-Ware Purchase Invoice\n"
                         + "date:        2012-08-06\n"
                         + "customer:\n"
                         + "    given:   Dorothy\n"
@@ -58,13 +57,15 @@ public class CompoundConfigurationTest
                         + "    Pay no attention to the\n"
                         + "    man behind the curtain.",
                         // numberTest
-                        "someKey:\n"
+                        ""
+                        + "someKey:\n"
                         + "    1: 1\n"
                         + "    2: 2\n"
                         + "    3: 3\n"
                         + "    4: 4",
                         // nullTest
-                        "null:\n"
+                        ""
+                        + "null:\n"
                         + "    null: object\n"
                         + "    object: null\n"
                 ),
@@ -72,7 +73,8 @@ public class CompoundConfigurationTest
                         // provider
                         JsonConfiguration.class,
                         // testDocument
-                        "{\n"
+                        ""
+                        + "{\n"
                         + "  \"customer\": {\n"
                         + "    \"given\": \"Dorothy\", \n"
                         + "    \"family\": \"Gale\"\n"
@@ -107,7 +109,8 @@ public class CompoundConfigurationTest
                         + "  \"specialDelivery\": \"Follow the Yellow Brick Road to the Emerald City. Pay no attention to the man behind the curtain.\"\n"
                         + "}",
                         // numberTest
-                        "{\n"
+                        ""
+                        + "{\n"
                         + "  \"someKey\": {\n"
                         + "    \"1\": 1, \n"
                         + "    \"2\": 2, \n"
@@ -116,7 +119,8 @@ public class CompoundConfigurationTest
                         + "  }\n"
                         + "}",
                         // nullTest
-                        "{\n"
+                        ""
+                        + "{\n"
                         + "  \"null\": {\n"
                         + "    \"null\": \"object\", \n"
                         + "    \"object\": null\n"
@@ -158,7 +162,7 @@ public class CompoundConfigurationTest
         assertEquals( "A4786", item.get( "part_no" ), "items[0].part_no" );
 
         conf.set( "receipt", null );
-        assertNull(conf.get("receipt"));
+        assertEquals( null, conf.get( "receipt" ) );
         assertEquals( "foo", conf.get( "receipt", "foo" ) );
 
         Configuration newSection = conf.getSection( "new.section" );
@@ -197,7 +201,7 @@ public class CompoundConfigurationTest
         assertEquals( "object", conf.get( "null.null" ) );
         assertEquals( "object", conf.getSection( "null" ).get( "null" ) );
 
-        assertNull(conf.get("null.object"));
+        assertEquals( null, conf.get( "null.object" ) );
         assertEquals( "", conf.getString( "null.object" ) );
     }
 
@@ -213,6 +217,6 @@ public class CompoundConfigurationTest
         assertEquals( "bar", conf.getSection( "addition" ).getString( "foo" ) );
         assertEquals( "bar", conf.getString( "addition.foo" ) );
 
-        assertInstanceOf(Configuration.class, conf.get("addition"));
+        assertTrue( conf.get( "addition" ) instanceof Configuration );
     }
 }

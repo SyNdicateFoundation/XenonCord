@@ -1,14 +1,13 @@
 package net.md_5.bungee.api;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
-
-import java.awt.*;
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import lombok.Getter;
 
 /**
  * Simplistic enumeration of all supported color values for chat.
@@ -25,7 +24,7 @@ public final class ChatColor
     /**
      * Pattern to remove all colour codes.
      */
-    public static final Pattern STRIP_COLOR_PATTERN = Pattern.compile( "(?i)" + COLOR_CHAR + "[0-9A-FK-ORX]" );
+    public static final Pattern STRIP_COLOR_PATTERN = Pattern.compile( "(?i)" + String.valueOf( COLOR_CHAR ) + "[0-9A-FK-ORX]" );
     /**
      * Colour instances keyed by their active character.
      */

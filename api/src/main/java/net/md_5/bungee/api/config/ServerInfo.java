@@ -1,13 +1,12 @@
 package net.md_5.bungee.api.config;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.Collection;
 import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.Collection;
 
 /**
  * Class used to represent a server to connect to.

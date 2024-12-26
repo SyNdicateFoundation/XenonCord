@@ -11,7 +11,7 @@ public @interface EventHandler
 {
 
     /**
-     * Define the priority of the event gui.
+     * Define the priority of the event handler.
      * <p>
      * Event handlers are called in order of priority:
      * <ol>
@@ -22,7 +22,7 @@ public @interface EventHandler
      * <li>HIGHEST</li>
      * </ol>
      *
-     * @return gui priority
+     * @return handler priority
      */
     byte priority() default EventPriority.NORMAL;
 }

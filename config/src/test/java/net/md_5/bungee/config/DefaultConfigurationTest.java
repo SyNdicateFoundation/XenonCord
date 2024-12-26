@@ -1,8 +1,7 @@
 package net.md_5.bungee.config;
 
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DefaultConfigurationTest
 {

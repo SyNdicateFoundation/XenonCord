@@ -1,6 +1,13 @@
 package net.md_5.bungee.api;
 
 import com.google.common.base.Preconditions;
+import java.io.File;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.Collection;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Logger;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.config.ConfigurationAdapter;
@@ -10,15 +17,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 
-import java.io.File;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Logger;
-
-@SuppressWarnings({"unused", "deprecation"}) public abstract class ProxyServer
+public abstract class ProxyServer
 {
 
     @Getter
@@ -102,6 +101,7 @@ import java.util.logging.Logger;
      *             and may be modified concurrently by the proxy.
      *             The safe alternative is {@link #getServersCopy()}.
      */
+    @Deprecated // Waterfall
     public abstract Map<String, ServerInfo> getServers();
 
     // Waterfall begin - Cloned servers map
@@ -148,16 +148,16 @@ import java.util.logging.Logger;
     public abstract void setConfigurationAdapter(ConfigurationAdapter adapter);
 
     /**
-     * Get the currently in use reconnect gui.
+     * Get the currently in use reconnect handler.
      *
-     * @return the in use reconnect gui
+     * @return the in use reconnect handler
      */
     public abstract ReconnectHandler getReconnectHandler();
 
     /**
-     * Sets the reconnect gui to be used for subsequent connections.
+     * Sets the reconnect handler to be used for subsequent connections.
      *
-     * @param handler the new gui
+     * @param handler the new handler
      */
     public abstract void setReconnectHandler(ReconnectHandler handler);
 
@@ -200,6 +200,7 @@ import java.util.logging.Logger;
      *
      * @return the supported Minecraft version
      */
+    @Deprecated
     public abstract String getGameVersion();
 
     /**
@@ -207,6 +208,7 @@ import java.util.logging.Logger;
      *
      * @return the Minecraft protocol version
      */
+    @Deprecated
     public abstract int getProtocolVersion();
 
     /**
@@ -304,6 +306,7 @@ import java.util.logging.Logger;
     /**
      * Attempts to match any players with the given name, and returns a list of
      * all possible matches.
+     *
      * The exact algorithm to use to match players is implementation specific,
      * but in general you can expect this method to return player's whose names
      * begin with the specified prefix.

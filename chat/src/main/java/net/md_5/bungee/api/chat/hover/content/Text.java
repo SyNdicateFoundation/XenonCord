@@ -1,11 +1,10 @@
 package net.md_5.bungee.api.chat.hover.content;
 
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.ToString;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
-
-import java.util.Arrays;
 
 @Getter
 @ToString

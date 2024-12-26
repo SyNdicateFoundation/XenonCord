@@ -1,10 +1,8 @@
 package net.md_5.bungee.event;
 
-import org.junit.jupiter.api.Test;
-
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.concurrent.CountDownLatch;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class SubclassTest extends EventBusTest
 {

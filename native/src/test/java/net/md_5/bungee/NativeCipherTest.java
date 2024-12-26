@@ -131,7 +131,7 @@ public class NativeCipherTest
             cipher.cipher( nativePlain, nativeCiphered );
             nativePlain.readerIndex( 0 );
         }
-        System.out.printf("Encryption Iteration: %d, Elapsed: %d ms%n", BENCHMARK_COUNT, System.currentTimeMillis() - start );
+        System.out.println( String.format( "Encryption Iteration: %d, Elapsed: %d ms", BENCHMARK_COUNT, System.currentTimeMillis() - start ) );
 
         // Create output buf
         ByteBuf out = Unpooled.directBuffer( plainBytes.length );
@@ -145,6 +145,6 @@ public class NativeCipherTest
             nativeCiphered.readerIndex( 0 );
             out.clear();
         }
-        System.out.printf("Decryption Iteration: %d, Elapsed: %d ms%n", BENCHMARK_COUNT, System.currentTimeMillis() - start );
+        System.out.println( String.format( "Decryption Iteration: %d, Elapsed: %d ms", BENCHMARK_COUNT, System.currentTimeMillis() - start ) );
     }
 }

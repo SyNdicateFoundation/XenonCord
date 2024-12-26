@@ -4,11 +4,10 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoopGroup;
+import java.net.InetSocketAddress;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ListenerInfo;
-
-import java.net.InetSocketAddress;
 
 @RequiredArgsConstructor
 public class RemoteQuery

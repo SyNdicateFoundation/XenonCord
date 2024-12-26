@@ -278,7 +278,7 @@ public abstract class AbstractPacketHandler
     public void handle(ServerLinks serverLinks) throws Exception
     {
     }
-    
+
     // Waterfall start
     public void handle(net.md_5.bungee.protocol.packet.EntityEffect entityEffect) throws Exception
     {

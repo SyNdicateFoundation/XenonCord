@@ -2,11 +2,14 @@ package net.md_5.bungee.http;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpObject;
+import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.LastHttpContent;
+import java.nio.charset.Charset;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.Callback;
-
-import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 public class HttpHandler extends SimpleChannelInboundHandler<HttpObject>
@@ -50,7 +53,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<HttpObject>
         if ( msg instanceof HttpContent )
         {
             HttpContent content = (HttpContent) msg;
-            buffer.append( content.content().toString(StandardCharsets.UTF_8) );
+            buffer.append( content.content().toString( Charset.forName( "UTF-8" ) ) );
 
             if ( msg instanceof LastHttpContent )
             {

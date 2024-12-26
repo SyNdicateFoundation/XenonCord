@@ -1,14 +1,14 @@
 package net.md_5.bungee.compress;
 
+import lombok.*;
+
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 import net.md_5.bungee.jni.zlib.BungeeZlib;
 import net.md_5.bungee.protocol.DefinedPacket;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>

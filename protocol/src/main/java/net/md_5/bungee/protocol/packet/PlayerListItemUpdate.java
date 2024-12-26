@@ -61,6 +61,12 @@ public class PlayerListItemUpdate extends DefinedPacket
                             item.displayName = DefinedPacket.readBaseComponent( buf, protocolVersion );
                         }
                         break;
+                    case UPDATE_LIST_ORDER:
+                        item.listOrder = DefinedPacket.readVarInt( buf );
+                        break;
+                    case UPDATE_HAT:
+                        item.showHat = buf.readBoolean();
+                        break;
                 }
             }
         }
@@ -109,6 +115,12 @@ public class PlayerListItemUpdate extends DefinedPacket
                             DefinedPacket.writeBaseComponent( item.displayName, buf, protocolVersion );
                         }
                         break;
+                    case UPDATE_LIST_ORDER:
+                        DefinedPacket.writeVarInt( item.listOrder, buf );
+                        break;
+                    case UPDATE_HAT:
+                        buf.writeBoolean( item.showHat );
+                        break;
                 }
             }
         }
@@ -120,7 +132,7 @@ public class PlayerListItemUpdate extends DefinedPacket
         handler.handle( this );
     }
 
-    public enum Action
+    public static enum Action
     {
 
         ADD_PLAYER,
@@ -128,6 +140,8 @@ public class PlayerListItemUpdate extends DefinedPacket
         UPDATE_GAMEMODE,
         UPDATE_LISTED,
         UPDATE_LATENCY,
-        UPDATE_DISPLAY_NAME
+        UPDATE_DISPLAY_NAME,
+        UPDATE_LIST_ORDER,
+        UPDATE_HAT;
     }
 }

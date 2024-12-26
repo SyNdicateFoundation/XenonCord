@@ -2,16 +2,15 @@ package net.md_5.bungee.api.plugin;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import lombok.Getter;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.config.ConfigurationAdapter;
-import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
-
 import java.io.File;
 import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+import lombok.Getter;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ConfigurationAdapter;
+import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 
 /**
  * Represents any Plugin that may be loaded at runtime to enhance existing
@@ -114,18 +113,16 @@ public class Plugin
     }
 
     //
-    private volatile  ExecutorService service;
+    private ExecutorService service;
 
+    @Deprecated
     public ExecutorService getExecutorService()
     {
         if ( service == null )
         {
-            synchronized ( this ){
-                String name = ( getDescription() == null ) ? "unknown" : getDescription().getName();
-                service = Executors.newCachedThreadPool( new ThreadFactoryBuilder().setNameFormat( name + " Pool Thread #%1$d" )
-                        .setThreadFactory( new GroupedThreadFactory( this, name ) ).build() );
-
-            }
+            String name = ( getDescription() == null ) ? "unknown" : getDescription().getName();
+            service = Executors.newCachedThreadPool( new ThreadFactoryBuilder().setNameFormat( name + " Pool Thread #%1$d" )
+                    .setThreadFactory( new GroupedThreadFactory( this, name ) ).build() );
         }
         return service;
     }

@@ -1,15 +1,13 @@
 package net.md_5.bungee.api;
 
+import static org.junit.jupiter.api.Assertions.*;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.Collection;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import org.junit.jupiter.api.Test;
-
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.Collection;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ServerConnectRequestTest
 {

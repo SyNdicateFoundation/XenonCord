@@ -1,8 +1,7 @@
 package net.md_5.bungee.util;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 public class CaseInsensitiveTest
 {
@@ -15,7 +14,7 @@ public class CaseInsensitiveTest
 
         map.put( "FOO", obj );
         assertTrue( map.contains( "foo" ) ); // Assert that contains is case insensitive
-        assertEquals("FOO", map.entrySet().iterator().next().getKey()); // Assert that case is preserved
+        assertTrue( map.entrySet().iterator().next().getKey().equals( "FOO" ) ); // Assert that case is preserved
 
         // Assert that remove is case insensitive
         map.remove( "FoO" );

@@ -1,11 +1,15 @@
 package net.md_5.bungee.event;
 
 import com.google.common.collect.ImmutableSet;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -30,7 +34,7 @@ public class EventBus
         this.logger = ( logger == null ) ? Logger.getLogger( Logger.GLOBAL_LOGGER_NAME ) : logger;
     }
 
-    // Waterfall - Add generic to signature so we don't have to cast in exception gui
+    // Waterfall - Add generic to signature so we don't have to cast in exception handler
     public <T> void post(T event, EventExceptionHandler<T> exceptionHandler)
     {
         EventHandlerMethod[] handlers = byEventBaked.get( event.getClass() );
@@ -54,7 +58,7 @@ public class EventBus
                 {
                     String msg = MessageFormat.format( "Error dispatching event {0} to listener {1}", event, method.getListener() );
                     logger.log( Level.WARNING, msg, ex.getCause() );
-                    if( exceptionHandler != null ) exceptionHandler.handleEventException( msg, event, method, ex ); //Waterfall - call passed exception gui
+                    if( exceptionHandler != null ) exceptionHandler.handleEventException( msg, event, method, ex ); //Waterfall - call passed exception handler
                 }
 
                 long elapsed = System.nanoTime() - start;

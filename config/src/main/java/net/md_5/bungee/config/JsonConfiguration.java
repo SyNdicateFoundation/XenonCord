@@ -1,14 +1,25 @@
 package net.md_5.bungee.config;
 
-import com.google.gson.*;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.io.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class JsonConfiguration extends ConfigurationProvider
@@ -19,7 +30,7 @@ public class JsonConfiguration extends ConfigurationProvider
         @Override
         public JsonElement serialize(Configuration src, Type typeOfSrc, JsonSerializationContext context)
         {
-            return context.serialize( src.self );
+            return context.serialize( ( (Configuration) src ).self );
         }
     } ).create();
 

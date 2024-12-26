@@ -1,10 +1,8 @@
 package net.md_5.bungee.event;
 
-import org.junit.jupiter.api.Test;
-
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.concurrent.CountDownLatch;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class EventPriorityTest
 {
@@ -17,7 +15,7 @@ public class EventPriorityTest
     {
         bus.register( this );
         bus.register( new EventPriorityListenerPartner() );
-        bus.post( new PriorityTestEvent(), null ); // Waterfall - We dont need an exception gui here
+        bus.post( new PriorityTestEvent(), null ); // Waterfall - We dont need an exception handler here
         assertEquals( 0, latch.getCount() );
     }
 

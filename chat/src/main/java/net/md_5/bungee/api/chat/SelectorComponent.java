@@ -1,6 +1,10 @@
 package net.md_5.bungee.api.chat;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * This component processes a target selector into a pre-formatted set of

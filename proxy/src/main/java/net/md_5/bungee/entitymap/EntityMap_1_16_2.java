@@ -2,14 +2,13 @@ package net.md_5.bungee.entitymap;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.DefinedPacket;
-
-import java.util.UUID;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 class EntityMap_1_16_2 extends EntityMap
@@ -26,6 +25,7 @@ class EntityMap_1_16_2 extends EntityMap
     static final EntityMap_1_16_2 INSTANCE_1_20_5 = new EntityMap_1_16_2( -1, 0x37 );
     static final EntityMap_1_16_2 INSTANCE_1_21_2 = new EntityMap_1_16_2( -1, 0x39 );
     static final EntityMap_1_16_2 INSTANCE_1_21_4 = new EntityMap_1_16_2( -1, 0x3B );
+    //
     private final int spawnPlayerId;
     private final int spectateId;
 
@@ -33,6 +33,10 @@ class EntityMap_1_16_2 extends EntityMap
     @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
     public void rewriteClientbound(ByteBuf packet, int oldId, int newId, int protocolVersion)
     {
+        if ( spawnPlayerId == -1 )
+        {
+            return;
+        }
         // Special cases
         int readerIndex = packet.readerIndex();
         int packetId = DefinedPacket.readVarInt( packet );

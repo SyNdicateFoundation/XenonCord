@@ -307,23 +307,23 @@ public final class PluginManager
 
     public boolean enablePlugins()
     {
-       // final CountDownLatch countDown = new CountDownLatch(plugins.size());
+        // final CountDownLatch countDown = new CountDownLatch(plugins.size());
 
         plugins.values().forEach(plugin -> {// new Thread(() -> {
-                    try {
-                        plugin.onEnable();
-                        ProxyServer.getInstance().getLogger().log(Level.INFO, "Enabled plugin {0} version {1} by {2}", new Object[]
-                                {
-                                        plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getAuthor()
-                                });
-                    } catch (Throwable t) {
-                        String msg = "Exception encountered when loading plugin: " + plugin.getDescription().getName();
-                        ProxyServer.getInstance().getLogger().log(Level.WARNING, msg, t);
-                        this.callEvent(new ProxyExceptionEvent(new ProxyPluginEnableDisableException(msg, t, plugin)));
-                    } finally {
-                       // countDown.countDown();
-                    }
-                });
+            try {
+                plugin.onEnable();
+                ProxyServer.getInstance().getLogger().log(Level.INFO, "Enabled plugin {0} version {1} by {2}", new Object[]
+                        {
+                                plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getAuthor()
+                        });
+            } catch (Throwable t) {
+                String msg = "Exception encountered when loading plugin: " + plugin.getDescription().getName();
+                ProxyServer.getInstance().getLogger().log(Level.WARNING, msg, t);
+                this.callEvent(new ProxyExceptionEvent(new ProxyPluginEnableDisableException(msg, t, plugin)));
+            } finally {
+                // countDown.countDown();
+            }
+        });
         //}).start());
         /*try
         {

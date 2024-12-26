@@ -3,8 +3,21 @@ package net.md_5.bungee.netty;
 import com.google.common.base.Preconditions;
 import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.*;
-import io.netty.channel.epoll.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelException;
+import io.netty.channel.ChannelFactory;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.ServerChannel;
+import io.netty.channel.WriteBufferWaterMark;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollDatagramChannel;
+import io.netty.channel.epoll.EpollDomainSocketChannel;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerDomainSocketChannel;
+import io.netty.channel.epoll.EpollServerSocketChannel;
+import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
@@ -13,9 +26,17 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.channel.unix.DomainSocketAddress;
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder;
 import io.netty.handler.timeout.ReadTimeoutHandler;
-import io.netty.incubator.channel.uring.*;
+import io.netty.incubator.channel.uring.IOUring;
+import io.netty.incubator.channel.uring.IOUringDatagramChannel;
+import io.netty.incubator.channel.uring.IOUringEventLoopGroup;
+import io.netty.incubator.channel.uring.IOUringServerSocketChannel;
+import io.netty.incubator.channel.uring.IOUringSocketChannel;
 import io.netty.util.AttributeKey;
 import io.netty.util.internal.PlatformDependent;
+import java.net.SocketAddress;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import net.md_5.bungee.BungeeCord;
@@ -24,13 +45,14 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.event.ClientConnectEvent;
 import net.md_5.bungee.connection.InitialHandler;
-import net.md_5.bungee.protocol.*;
-
-import java.net.SocketAddress;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import net.md_5.bungee.protocol.KickStringWriter;
+import net.md_5.bungee.protocol.LegacyDecoder;
+import net.md_5.bungee.protocol.MinecraftDecoder;
+import net.md_5.bungee.protocol.MinecraftEncoder;
+import net.md_5.bungee.protocol.Protocol;
+import net.md_5.bungee.protocol.Varint21FrameDecoder;
+import net.md_5.bungee.protocol.Varint21LengthFieldExtraBufPrepender;
+import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
 
 public class PipelineUtils
 {
@@ -39,22 +61,33 @@ public class PipelineUtils
     public static final ChannelInitializer<Channel> SERVER_CHILD = new ChannelInitializer<Channel>()
     {
         @Override
-        protected void initChannel(Channel ch) {
+        protected void initChannel(Channel ch) throws Exception
+        {
             SocketAddress remoteAddress = ( ch.remoteAddress() == null ) ? ch.parent().localAddress() : ch.remoteAddress();
-            ListenerInfo listener = ch.attr( LISTENER ).get();
-            ConnectionInitEvent connectionInitEvent = new ConnectionInitEvent(ch.remoteAddress(), listener, (result, throwable) -> { // Waterfall
 
-           if (
-           (BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ))
-           || ( BungeeCord.getInstance().getPluginManager().callEvent( new ClientConnectEvent( remoteAddress, listener ) ).isCancelled() )
-           || (result.isCancelled()))
+            if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
+            {
+                ch.close();
+                return;
+            }
+            ListenerInfo listener = ch.attr( LISTENER ).get();
+
+            if ( BungeeCord.getInstance().getPluginManager().callEvent( new ClientConnectEvent( remoteAddress, listener ) ).isCancelled() )
             {
                 ch.close();
                 return;
             }
 
+            ConnectionInitEvent connectionInitEvent = new ConnectionInitEvent(ch.remoteAddress(), listener, (result, throwable) -> { // Waterfall
+
+            if (result.isCancelled()) {
+                ch.close();
+                return;
+            }
+
+
             try {
-                BASE.initChannel( ch );
+            BASE.initChannel( ch );
             } catch (Exception e) {
                 e.printStackTrace();
                 ch.close();
@@ -67,8 +100,10 @@ public class PipelineUtils
             ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( BungeeCord.getInstance(), listener ) );
 
             if ( listener.isProxyProtocol() )
+            {
                 ch.pipeline().addFirst( new HAProxyMessageDecoder() );
-            });
+            }
+            }); // Waterfall
 
             BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
         }
@@ -76,7 +111,6 @@ public class PipelineUtils
     public static final Base BASE = new Base( false );
     public static final Base BASE_SERVERSIDE = new Base( true );
     private static final KickStringWriter legacyKicker = new KickStringWriter();
-    private static final Varint21LengthFieldPrepender framePrepender = new Varint21LengthFieldPrepender();
     private static final Varint21LengthFieldExtraBufPrepender serverFramePrepender = new Varint21LengthFieldExtraBufPrepender();
     public static final String TIMEOUT_HANDLER = "timeout";
     public static final String PACKET_DECODER = "packet-decoder";
@@ -98,28 +132,42 @@ public class PipelineUtils
     private static final ChannelFactory<? extends Channel> channelDomainFactory;
     // Waterfall end
 
-    static {
-        final Logger logger = ProxyServer.getInstance().getLogger();
-
-        if (!PlatformDependent.isWindows()) {
-
-            if (Boolean.parseBoolean(System.getProperty("bungee.io_uring", "false"))) {
-                logger.info("Not on Windows, attempting to use enhanced IOUringEventLoopGroup");
-                io_uring = IOUring.isAvailable();
-                logger.log(io_uring ? Level.WARNING : Level.INFO, String.format("io_uring is %s", io_uring ? "enabled and working, utilising it! (experimental feature)." : "not working: {0}"), Util.exception(IOUring.unavailabilityCause()));
+    static
+    {
+        if ( !PlatformDependent.isWindows() )
+        {
+            // disable by default (experimental)
+            if ( Boolean.parseBoolean( System.getProperty( "bungee.io_uring", "false" ) ) )
+            {
+                ProxyServer.getInstance().getLogger().info( "Not on Windows, attempting to use enhanced IOUringEventLoopGroup" );
+                if ( io_uring = IOUring.isAvailable() )
+                {
+                    ProxyServer.getInstance().getLogger().log( Level.WARNING, "io_uring is enabled and working, utilising it! (experimental feature)" );
+                } else
+                {
+                    ProxyServer.getInstance().getLogger().log( Level.WARNING, "io_uring is not working: {0}", Util.exception( IOUring.unavailabilityCause() ) );
+                }
             }
-            if (!io_uring && Boolean.parseBoolean(System.getProperty("bungee.epoll", "true"))) {
-                logger.info("Not on Windows, attempting to use enhanced EpollEventLoop");
-                epoll = Epoll.isAvailable();
-                logger.log(epoll ? Level.INFO : Level.WARNING, String.format("Epoll is %s", epoll ? "working, utilising it!" : "not working, falling back to NIO"));
+
+            if ( !io_uring && Boolean.parseBoolean( System.getProperty( "bungee.epoll", "true" ) ) )
+            {
+                ProxyServer.getInstance().getLogger().info( "Not on Windows, attempting to use enhanced EpollEventLoop" );
+                if ( epoll = Epoll.isAvailable() )
+                {
+                    ProxyServer.getInstance().getLogger().info( "Epoll is working, utilising it!" );
+                } else
+                {
+                    ProxyServer.getInstance().getLogger().log( Level.WARNING, "Epoll is not working, falling back to NIO: {0}", Util.exception( Epoll.unavailabilityCause() ) );
+                }
             }
         }
-        serverChannelFactory = epoll ? EpollServerSocketChannel::new : NioServerSocketChannel::new;
-        serverChannelDomainFactory = epoll ? EpollServerDomainSocketChannel::new : null;
-        channelFactory = epoll ? EpollSocketChannel::new : NioSocketChannel::new;
-        channelDomainFactory = epoll ? EpollDomainSocketChannel::new : null;
+        // Waterfall start: netty reflection -> factory
+        serverChannelFactory = io_uring ? IOUringServerSocketChannel::new : epoll ? EpollServerSocketChannel::new : NioServerSocketChannel::new;
+        serverChannelDomainFactory = io_uring ? IOUringServerSocketChannel::new : epoll ? EpollServerDomainSocketChannel::new : null;
+        channelFactory = io_uring ? IOUringSocketChannel::new : epoll ? EpollSocketChannel::new : NioSocketChannel::new;
+        channelDomainFactory = io_uring ? IOUringSocketChannel::new : epoll ? EpollDomainSocketChannel::new : null;
+        // Waterfall end
     }
-
 
     public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory)
     {
@@ -212,7 +260,7 @@ public class PipelineUtils
             ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
             // No encryption bungee -> server, therefore use extra buffer to avoid copying everything for length prepending
             // Not used bungee -> client as header would need to be encrypted separately through expensive JNI call
-            ch.pipeline().addLast( FRAME_PREPENDER, ( toServer ) ? serverFramePrepender : framePrepender );
+            ch.pipeline().addLast( FRAME_PREPENDER, ( toServer ) ? serverFramePrepender : new Varint21LengthFieldPrepender() );
 
             ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
         }

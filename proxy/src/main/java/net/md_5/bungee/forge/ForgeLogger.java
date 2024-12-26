@@ -1,11 +1,10 @@
 package net.md_5.bungee.forge;
 
+import java.util.logging.Level;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.protocol.packet.PluginMessage;
-
-import java.util.logging.Level;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class ForgeLogger

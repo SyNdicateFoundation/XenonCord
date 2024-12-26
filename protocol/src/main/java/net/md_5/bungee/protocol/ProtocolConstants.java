@@ -118,7 +118,7 @@ public class ProtocolConstants
         if ( SNAPSHOT_SUPPORT )
         {
             // supportedVersions.add( "1.21.x" );
-            // supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_21 );
+            // supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_21_4 );
         }
 
         SUPPORTED_VERSIONS = supportedVersions.build();
@@ -138,6 +138,6 @@ public class ProtocolConstants
     public enum Direction
     {
 
-        TO_CLIENT, TO_SERVER
+        TO_CLIENT, TO_SERVER;
     }
 }

@@ -1,7 +1,6 @@
 package net.md_5.bungee.util;
 
 import gnu.trove.strategy.HashingStrategy;
-
 import java.util.Locale;
 
 class CaseInsensitiveHashingStrategy implements HashingStrategy

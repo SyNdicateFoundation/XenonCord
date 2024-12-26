@@ -9,12 +9,6 @@ import io.netty.channel.AddressedEnvelope;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.config.ListenerInfo;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-
 import java.net.InetAddress;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,6 +17,11 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ListenerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 @RequiredArgsConstructor
 public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
@@ -33,7 +32,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
     /*========================================================================*/
     private final Random random = new Random();
     private final Cache<InetAddress, QuerySession> sessions = CacheBuilder.newBuilder().expireAfterWrite( 30, TimeUnit.SECONDS ).build();
-    private static final io.github.waterfallmc.waterfall.utils.FastException cachedNoSessionException = new io.github.waterfallmc.waterfall.utils.FastException("No Session!");
+    private static io.github.waterfallmc.waterfall.utils.FastException cachedNoSessionException = new io.github.waterfallmc.waterfall.utils.FastException("No Session!");
 
     private void writeShort(ByteBuf buf, int s)
     {

@@ -15,15 +15,24 @@ public final class NativeCode<T>
     private final String name;
     private final Supplier<? extends T> javaImpl;
     private final Supplier<? extends T> nativeImpl;
+    private final boolean enableNativeFlag;
+    private final boolean extendedSupportCheck;
     //
     private boolean loaded;
 
     public NativeCode(String name, Supplier<? extends T> javaImpl, Supplier<? extends T> nativeImpl)
     {
+        this( name, javaImpl, nativeImpl, false );
+    }
+
+    public NativeCode(String name, Supplier<? extends T> javaImpl, Supplier<? extends T> nativeImpl, boolean extendedSupportCheck)
+    {
         if ("Mac OS X".equals( System.getProperty( "os.name" ))) name = "osx-" + name; // Waterfall
         this.name = name;
         this.javaImpl = javaImpl;
         this.nativeImpl = nativeImpl;
+        this.enableNativeFlag = Boolean.parseBoolean( System.getProperty( "net.md_5.bungee.jni." + name + ".enable", "true" ) );
+        this.extendedSupportCheck = extendedSupportCheck;
     }
 
     public T newInstance()
@@ -33,8 +42,9 @@ public final class NativeCode<T>
 
     public boolean load()
     {
-        if ( !loaded && isSupported() )
+        if ( enableNativeFlag && !loaded && isSupported() )
         {
+            String name = this.name + ( isAarch64() ? "-arm" : "" );
             String fullName = "bungeecord-" + name;
 
             try
@@ -60,6 +70,13 @@ public final class NativeCode<T>
                     }
 
                     System.load( temp.getPath() );
+
+                    if ( extendedSupportCheck )
+                    {
+                        // Should throw NativeCodeException if incompatible
+                        nativeImpl.get();
+                    }
+
                     loaded = true;
                 } catch ( IOException ex )
                 {
@@ -67,6 +84,9 @@ public final class NativeCode<T>
                 } catch ( UnsatisfiedLinkError ex )
                 {
                     System.out.println( "Could not load native library: " + ex.getMessage() );
+                } catch ( NativeCodeException ex )
+                {
+                    System.out.println( "Native library " + name + " is incompatible: " + ex.getMessage() );
                 }
             }
         }
@@ -76,6 +96,16 @@ public final class NativeCode<T>
 
     public static boolean isSupported()
     {
-        return ("Linux".equals( System.getProperty( "os.name" ) ) || "Mac OS X".equals( System.getProperty( "os.name" ) )) && ("amd64".equals( System.getProperty( "os.arch" ) ) || "x86_64".equals( System.getProperty( "os.arch" )) ); // Waterfall
+        return ("Linux".equals( System.getProperty( "os.name" ) ) && ( isAmd64() || isAarch64() )) || ("Mac OS X".equals( System.getProperty( "os.name" ) ) && "aarch64".equals( System.getProperty( "os.arch" ) )); // Waterfall
+    }
+
+    private static boolean isAmd64()
+    {
+        return "amd64".equals( System.getProperty( "os.arch" ) );
+    }
+
+    private static boolean isAarch64()
+    {
+        return "aarch64".equals( System.getProperty( "os.arch" ) );
     }
 }

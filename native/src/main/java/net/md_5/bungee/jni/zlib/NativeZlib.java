@@ -15,6 +15,14 @@ public class NativeZlib implements BungeeZlib
     private boolean compress;
     private long ctx;
 
+    public NativeZlib()
+    {
+        if ( !nativeCompress.checkSupported() )
+        {
+            throw new NativeCodeException( "This CPU does not support the required SSE 4.2 and/or PCLMUL extensions!" );
+        }
+    }
+
     @Override
     public void init(boolean compress, int level)
     {
@@ -40,11 +48,14 @@ public class NativeZlib implements BungeeZlib
     @Override
     public void process(ByteBuf in, ByteBuf out) throws DataFormatException
     {
+        // Smoke tests
+        in.memoryAddress();
+        out.memoryAddress();
         Preconditions.checkState( ctx != 0, "Invalid pointer to compress!" );
 
         while ( !nativeCompress.finished && ( compress || in.isReadable() ) )
         {
-            out.ensureWritable( 8192 );
+            out.ensureWritable( OUTPUT_BUFFER_SIZE );
 
             int processed;
             try
@@ -63,6 +74,7 @@ public class NativeZlib implements BungeeZlib
         nativeCompress.consumed = 0;
         nativeCompress.finished = false;
     }
+
     @Override
     public boolean allowComposite()
     {

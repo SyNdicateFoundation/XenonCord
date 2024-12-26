@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.waterfallmc</groupId>
         <artifactId>waterfall-parent</artifactId>
-    <version>1.21-R0.1-SNAPSHOT</version>
+        <version>1.21-R0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

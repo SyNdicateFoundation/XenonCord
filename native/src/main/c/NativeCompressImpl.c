@@ -3,15 +3,10 @@
 
 #include <zlib.h>
 #include "shared.h"
+#if !defined(__aarch64__)
+#include "cpuid_helper.h"
+#endif
 #include "net_md_5_bungee_jni_zlib_NativeCompressImpl.h"
-
-// Support for CentOS 6
-#if __linux__ // Waterfall
-__asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
-extern "C" void *__wrap_memcpy(void *dest, const void *src, size_t n) {
-    return memcpy(dest, src, n);
-}
-#endif // Waterfall
 
 typedef unsigned char byte;
 
@@ -32,6 +27,14 @@ jint throwException(JNIEnv *env, const char* message, int err) {
     jstring jMessage = (*env)->NewStringUTF(env, message);
     jthrowable throwable = (jthrowable) (*env)->CallStaticObjectMethod(env, classID, makeExceptionID, jMessage, err);
     return (*env)->Throw(env, throwable);
+}
+
+JNIEXPORT jboolean JNICALL Java_net_md_15_bungee_jni_zlib_NativeCompressImpl_checkSupported(JNIEnv* env, jobject obj) {
+	#if !defined(__aarch64__)
+	return (jboolean) checkCompressionNativesSupport();
+	#else
+	return JNI_TRUE;
+	#endif
 }
 
 void JNICALL Java_net_md_15_bungee_jni_zlib_NativeCompressImpl_reset(JNIEnv* env, jobject obj, jlong ctx, jboolean compress) {

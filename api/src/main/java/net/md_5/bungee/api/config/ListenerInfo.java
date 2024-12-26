@@ -1,12 +1,11 @@
 package net.md_5.bungee.api.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.List;
 import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
  * Class representing the configuration of a server listener. Used for allowing
@@ -109,7 +108,9 @@ public class ListenerInfo
      * Gets the bind address as an InetSocketAddress if possible.
      *
      * @return bind host
+     * @deprecated BungeeCord can listen via Unix domain sockets
      */
+    @Deprecated
     public InetSocketAddress getHost()
     {
         return (InetSocketAddress) socketAddress;

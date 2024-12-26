@@ -3,7 +3,6 @@ package io.github.waterfallmc.waterfall.log4j;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.io.IoBuilder;
-
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 

@@ -8,16 +8,19 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoop;
-import io.netty.handler.codec.http.*;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import net.md_5.bungee.api.Callback;
-import net.md_5.bungee.netty.PipelineUtils;
-
+import io.netty.handler.codec.http.DefaultHttpRequest;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpVersion;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import net.md_5.bungee.api.Callback;
+import net.md_5.bungee.netty.PipelineUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HttpClient
@@ -102,7 +105,7 @@ public class HttpClient
         } else {
             getWithDefaultResolver(eventLoop, uri, port, future, callback, ssl);
         }
-        //new Bootstrap().channel( PipelineUtils.getChannel() ).group( eventLoop ).gui( new HttpInitializer( callback, ssl, uri.getHost(), port ) ).
+        //new Bootstrap().channel( PipelineUtils.getChannel() ).group( eventLoop ).handler( new HttpInitializer( callback, ssl, uri.getHost(), port ) ).
         //        option( ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT ).remoteAddress( inetHost, port ).connect().addListener( future );
     }
 

@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 public class NativeZlibTest
 {
 
-    private final NativeCode<BungeeZlib> factory = new NativeCode<>( "native-compress", JavaZlib::new, NativeZlib::new );
+    private final NativeCode<BungeeZlib> factory = new NativeCode<>( "native-compress", JavaZlib::new, NativeZlib::new, true );
 
     @Test
     public void doTest() throws DataFormatException
@@ -75,7 +75,7 @@ public class NativeZlibTest
         long elapsed = System.currentTimeMillis() - start;
         System.out.println( "Took: " + elapsed + "ms" );
 
-        assertArrayEquals(dataBuf, check, "Results do not match");
+        assertTrue( Arrays.equals( dataBuf, check ), "Results do not match" );
     }
 
     private void testExceptionImpl(BungeeZlib zlib) throws DataFormatException

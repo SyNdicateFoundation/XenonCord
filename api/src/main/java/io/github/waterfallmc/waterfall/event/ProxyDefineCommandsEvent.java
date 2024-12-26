@@ -1,14 +1,17 @@
 package io.github.waterfallmc.waterfall.event;
 
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.Connection;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.TargetedEvent;
+import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.Event;
+
+import java.util.Map;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.connection.Connection;
-import net.md_5.bungee.api.event.TargetedEvent;
-import net.md_5.bungee.api.plugin.Command;
-
-import java.util.Map;
 
 /**
  * Called when the proxy intercepts the command packet

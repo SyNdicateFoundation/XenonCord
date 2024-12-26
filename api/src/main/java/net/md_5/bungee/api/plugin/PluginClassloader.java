@@ -2,9 +2,6 @@ package net.md_5.bungee.api.plugin;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
-import lombok.ToString;
-import net.md_5.bungee.api.ProxyServer;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +14,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import lombok.ToString;
+import net.md_5.bungee.api.ProxyServer;
 
 @ToString(of = "desc")
 final class PluginClassloader extends URLClassLoader

@@ -1,8 +1,7 @@
 package net.md_5.bungee.event;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Test;
 
 public class UnregisteringListenerTest
 {
@@ -14,7 +13,7 @@ public class UnregisteringListenerTest
     {
         bus.register( this );
         bus.unregister( this );
-        bus.post( new TestEvent(), null ); // Waterfall - We dont need an exception gui here
+        bus.post( new TestEvent(), null ); // Waterfall - We dont need an exception handler here
     }
 
     @EventHandler

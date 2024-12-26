@@ -1,10 +1,8 @@
 package net.md_5.bungee.event;
 
-import org.junit.jupiter.api.Test;
-
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.concurrent.CountDownLatch;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class EventBusTest
 {
@@ -16,14 +14,14 @@ public class EventBusTest
     public void testNestedEvents()
     {
         bus.register( this );
-        bus.post( new FirstEvent(), null ); // Waterfall - We dont need an exception gui here
+        bus.post( new FirstEvent(), null ); // Waterfall - We dont need an exception handler here
         assertEquals( 0, latch.getCount() );
     }
 
     @EventHandler
     public void firstListener(FirstEvent event)
     {
-        bus.post( new SecondEvent(), null ); // Waterfall - We dont need an exception gui here
+        bus.post( new SecondEvent(), null ); // Waterfall - We dont need an exception handler here
         assertEquals( 1, latch.getCount() );
         latch.countDown();
     }

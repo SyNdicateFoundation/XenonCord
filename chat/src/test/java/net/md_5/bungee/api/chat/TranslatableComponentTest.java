@@ -1,11 +1,9 @@
 package net.md_5.bungee.api.chat;
 
+import static net.md_5.bungee.api.ChatColor.*;
+import static org.junit.jupiter.api.Assertions.*;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.junit.jupiter.api.Test;
-
-import static net.md_5.bungee.api.ChatColor.AQUA;
-import static net.md_5.bungee.api.ChatColor.WHITE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TranslatableComponentTest
 {
@@ -50,4 +48,11 @@ public class TranslatableComponentTest
         assertEquals( "Buried Treasure Map", one_four_two.toPlainText() );
     }
 
+    @Test
+    public void testEscapedPercentInPlainText()
+    {
+        TranslatableComponent testComponent = new TranslatableComponent( "Test string with %% sign" );
+        assertEquals( "Test string with % sign", testComponent.toPlainText() );
+        assertEquals( "§fTest string with §f%§f sign", testComponent.toLegacyText() );
+    }
 }

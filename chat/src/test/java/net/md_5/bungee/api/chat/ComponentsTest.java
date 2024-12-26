@@ -1,15 +1,17 @@
 package net.md_5.bungee.api.chat;
 
+import static net.md_5.bungee.api.ChatColor.*;
+import static org.junit.jupiter.api.Assertions.*;
+import java.awt.Color;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.ObjIntConsumer;
+import java.util.function.Supplier;
 import net.md_5.bungee.api.chat.hover.content.Entity;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.junit.jupiter.api.Test;
-
-import java.awt.*;
-import java.util.function.*;
-
-import static net.md_5.bungee.api.ChatColor.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ComponentsTest
 {
@@ -268,7 +270,7 @@ public class ComponentsTest
         TextComponent component = new TextComponent( "test" );
         component.setHoverEvent( hoverEvent );
         assertEquals( component.getHoverEvent().getContents().size(), 1 );
-        assertInstanceOf(Text.class, component.getHoverEvent().getContents().get(0));
+        assertTrue( component.getHoverEvent().getContents().get( 0 ) instanceof Text );
         assertEquals( ( (Text) component.getHoverEvent().getContents().get( 0 ) ).getValue(), advancement );
     }
 
@@ -553,12 +555,12 @@ public class ComponentsTest
 
         ClickEvent url1 = test2[1].getClickEvent();
         assertNotNull( url1 );
-        assertSame(url1.getAction(), ClickEvent.Action.OPEN_URL);
+        assertTrue( url1.getAction() == ClickEvent.Action.OPEN_URL );
         assertEquals( "http://spigotmc.org", url1.getValue() );
 
         ClickEvent url2 = test2[3].getClickEvent();
         assertNotNull( url2 );
-        assertSame(url2.getAction(), ClickEvent.Action.OPEN_URL);
+        assertTrue( url2.getAction() == ClickEvent.Action.OPEN_URL );
         assertEquals( "http://google.com/test", url2.getValue() );
     }
 
@@ -669,6 +671,26 @@ public class ComponentsTest
         assertEquals( WHITE, extraGetter.apply( eventRetention, 1 ).getColor() );
         assertEquals( testEvent, extraGetter.apply( eventRetention, 1 ).getHoverEvent() );
         assertEquals( testClickEvent, extraGetter.apply( eventRetention, 1 ).getClickEvent() );
+    }
+
+    @Test
+    public void testBuilderSpecialFormatting()
+    {
+        BaseComponent[] components = new ComponentBuilder( "Hello " )
+                .bold(true).underlined(true).italic(true).strikethrough(true).obfuscated(true)
+                .append("World").underlined(false).strikethrough(false).create();
+
+        assertTrue( components[0].isBold() );
+        assertTrue( components[0].isUnderlined() );
+        assertTrue( components[0].isItalic() );
+        assertTrue( components[0].isStrikethrough() );
+        assertTrue( components[0].isObfuscated() );
+
+        assertTrue( components[1].isBold() );
+        assertFalse( components[1].isUnderlined() );
+        assertTrue( components[1].isItalic() );
+        assertFalse( components[1].isStrikethrough() );
+        assertTrue( components[1].isObfuscated() );
     }
 
     @Test

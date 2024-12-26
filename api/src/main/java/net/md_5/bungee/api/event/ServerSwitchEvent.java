@@ -25,6 +25,4 @@ public class ServerSwitchEvent extends Event
      * connection.
      */
     private final ServerInfo from;
-
-    private final ServerInfo target;
 }
