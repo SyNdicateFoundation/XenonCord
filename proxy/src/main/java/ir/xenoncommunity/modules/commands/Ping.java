@@ -12,33 +12,31 @@ public class Ping extends Command implements Listener {
     public Ping(){
         super("Ping", XenonCore.instance.getConfigData().getModules().getPingperm());
     }
+
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if(!sender.hasPermission(XenonCore.instance.getConfigData().getModules().getPingperm()))
-            return;
+        if (!sender.hasPermission(XenonCore.instance.getConfigData().getModules().getPingperm())) return;
 
-        if(sender instanceof ConsoleCommandSender) Message.send(sender,
-                "PREFIX &cCannot execute this command as console."
-                        .replace("PREFIX", XenonCore.instance.getConfigData().getPrefix()), false);
+        if (sender instanceof ConsoleCommandSender) {
+            Message.send(sender, XenonCore.instance.getConfigData().getPrefix() + " &cCannot execute this command as console.", false);
+            return;
+        }
         final ProxiedPlayer player = (ProxiedPlayer) sender;
 
-        if(args.length == 0){
+        if (args.length == 0) {
             Message.send(sender,
                     XenonCore.instance.getConfigData().getModules().getPingmessage()
-                            .replace("PREFIX",
-                                    XenonCore.instance.getConfigData().getPrefix())
-                            .replace("PING",  String.valueOf(player.getPing())),
-                    false);
+                            .replace("PREFIX", XenonCore.instance.getConfigData().getPrefix())
+                            .replace("PING", String.valueOf(player.getPing())), false);
             return;
         }
 
-        if(!sender.hasPermission(XenonCore.instance.getConfigData().getModules().getPingothersperm())) return;
+        if (!sender.hasPermission(XenonCore.instance.getConfigData().getModules().getPingothersperm())) return;
 
         Message.send(sender,
                 XenonCore.instance.getConfigData().getModules().getPingothersmessage()
                         .replace("PREFIX", XenonCore.instance.getConfigData().getPrefix())
                         .replace("PING", String.valueOf(XenonCore.instance.getBungeeInstance().getPlayer(args[0]).getPing()))
-                        .replace("USERNAME", args[0]),
-                false);
+                        .replace("USERNAME", args[0]), false);
     }
 }

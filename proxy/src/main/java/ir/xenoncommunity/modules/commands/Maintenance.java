@@ -32,15 +32,12 @@ import java.util.ArrayList;
             if (!downServers.contains("proxy")) {
                 downServers.add("proxy");
                 Message.send(sender,
-                        "PREFIX &cthe whole proxy is now on maintenance mode."
-                                .replace("PREFIX",
-                                        XenonCore.instance.getConfigData().getPrefix()), true);
+                        String.format("%s &cthe whole proxy is now on maintenance mode.", XenonCore.instance.getConfigData().getPrefix())
+                                , true);
                 XenonCore.instance.getBungeeInstance().getPlayers().forEach(e -> {
                     if (!e.hasPermission(
                             XenonCore.instance.getConfigData().getModules().getMaintenancebypassperm())){
-                        e.disconnect(ChatColor.translateAlternateColorCodes('&', XenonCore.instance.getConfigData().getModules().getMaintenancedisconnectmessage()
-                                .replace("PREFIX",
-                                        XenonCore.instance.getConfigData().getPrefix())));
+                        e.disconnect(ChatColor.translateAlternateColorCodes('&', XenonCore.instance.getConfigData().getModules().getMaintenancedisconnectmessage()));
                     }
                 });
 
@@ -48,9 +45,7 @@ import java.util.ArrayList;
             else {
                 downServers.remove("proxy");
                 Message.send(sender,
-                        "PREFIX &cthe whole proxy is no longer on maintenance mode."
-                                .replace("PREFIX",
-                                        XenonCore.instance.getConfigData().getPrefix()), true);
+                        String.format("%s &cthe whole proxy is no longer on maintenance mode.", XenonCore.instance.getConfigData().getPrefix()), true);
             }
             return;
         }
@@ -59,8 +54,7 @@ import java.util.ArrayList;
                 if(args[1].isEmpty()) Message.send(sender, "Please enter a server name", false);
                 downServers.add(args[1]);
                 Message.send(sender,
-                        "PREFIX &cAdded SERVER to maintenance mode server list.."
-                                .replace("PREFIX",  XenonCore.instance.getConfigData().getPrefix())
+                        String.format("%s &cAdded SERVER to maintenance mode server list..", XenonCore.instance.getConfigData().getPrefix())
                                 .replace("SERVER", args[1]), true);
                 XenonCore.instance.getBungeeInstance().getPlayers().forEach(e -> {
                     if (!e.hasPermission(
@@ -76,8 +70,7 @@ import java.util.ArrayList;
                 if(args[1].isEmpty()) Message.send(sender, "Please enter a server name", false);
                 downServers.remove(args[1]);
                 Message.send(sender,
-                        "PREFIX &cRemoved SERVER from maintenance mode server list.."
-                            .replace("PREFIX",  XenonCore.instance.getConfigData().getPrefix())
+                        String.format("%s &cRemoved SERVER from maintenance mode server list..", XenonCore.instance.getConfigData().getPrefix())
                             .replace("SERVER", args[1]), true);
                 break;
             default:

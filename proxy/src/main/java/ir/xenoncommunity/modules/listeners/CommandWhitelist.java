@@ -17,26 +17,25 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
-@ModuleListener public class CommandWhitelist implements Listener {
+@ModuleListener
+public class CommandWhitelist implements Listener {
 
-    @EventHandler public void onCommandExecution(final ChatEvent e) {
+    @EventHandler
+    public void onCommandExecution(final ChatEvent e) {
         if (!e.getMessage().startsWith("/")
                 || !(e.getSender() instanceof ProxiedPlayer)
                 || ((ProxiedPlayer) e.getSender()).hasPermission(XenonCore.instance.getConfigData().getCommandwhitelist().getBypass())) return;
 
-        String rawCommand = e.getMessage();
         ProxiedPlayer player = (ProxiedPlayer) e.getSender();
-        Configuration.CommandWhitelistData whitelistData = XenonCore.instance.getConfigData().getCommandwhitelist();
 
-        String baseCommand = rawCommand.split(" ")[0];
-
-        if (isPermitted(player, whitelistData, baseCommand)) {
+        if (isPermitted(player, XenonCore.instance.getConfigData().getCommandwhitelist(), e.getMessage().split(" ")[0])) {
             Message.sendNoPermMessage(player);
             e.setCancelled(true);
         }
     }
 
-    @EventHandler public void onTabComplete(final TabCompleteEvent e) {
+    @EventHandler
+    public void onTabComplete(final TabCompleteEvent e) {
         if (!(e.getSender() instanceof ProxiedPlayer)
                 || ((ProxiedPlayer) e.getSender()).hasPermission(XenonCore.instance.getConfigData().getCommandwhitelist().getBypass()))
             return;
@@ -45,7 +44,7 @@ import java.util.stream.Collectors;
         String command = e.getCursor().trim();
         Configuration.CommandWhitelistData whitelistData = XenonCore.instance.getConfigData().getCommandwhitelist();
 
-        if(command.equals("/"))
+        if (command.equals("/"))
             clearAndAdd(e, player, whitelistData);
 
         if (isPermitted(player, whitelistData, command)) {
@@ -53,7 +52,7 @@ import java.util.stream.Collectors;
         }
     }
 
-    private boolean isPermitted(ProxiedPlayer playerIn, Configuration.CommandWhitelistData whitelistData, String command){
+    private boolean isPermitted(ProxiedPlayer playerIn, Configuration.CommandWhitelistData whitelistData, String command) {
         return whitelistData.getPergroup().entrySet().stream()
                 .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey()) && playerIn.getServer().getInfo().getName().equals(entry.getKey().split("\\.")[1]))
                 .map(Map.Entry::getValue)
@@ -65,7 +64,7 @@ import java.util.stream.Collectors;
     private void clearAndAdd(TabCompleteEvent e, ProxiedPlayer playerIn, Configuration.CommandWhitelistData whitelistData) {
         e.getSuggestions().clear();
         e.getSuggestions().addAll(whitelistData.getPergroup().entrySet().stream()
-                .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey())  && playerIn.getServer().getInfo().getName().equals(entry.getKey().split("\\.")[1]))
+                .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey()) && playerIn.getServer().getInfo().getName().equals(entry.getKey().split("\\.")[1]))
                 .map(Map.Entry::getValue)
                 .flatMap(ss -> Arrays.stream(ss.getCommands()))
                 .collect(Collectors.toList()));

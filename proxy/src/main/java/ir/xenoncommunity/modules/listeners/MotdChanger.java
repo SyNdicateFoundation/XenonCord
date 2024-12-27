@@ -10,17 +10,17 @@ import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.util.Arrays;
-
 @SuppressWarnings("unused")
-@ModuleListener public class MotdChanger implements Listener {
+@ModuleListener
+public class MotdChanger implements Listener {
     @EventHandler
     public void proxyPingEvent(final ProxyPingEvent e) {
         final ServerPing serverPing = e.getResponse();
         serverPing.setDescriptionComponent(new TextComponent(ChatColor.translateAlternateColorCodes('&',
                 (Maintenance.downServers != null && Maintenance.downServers.contains("proxy")) ?
                         XenonCore.instance.getConfigData().getModules().getMaintenancemotd() :
-                        XenonCore.instance.getConfigData().getModules().getMotd().replace("ONLINE", String.valueOf(XenonCore.instance.getBungeeInstance().getOnlineCount())))));
+                        XenonCore.instance.getConfigData().getModules().getMotd().replace("ONLINE",
+                                "%s".replace("%s", String.valueOf(XenonCore.instance.getBungeeInstance().getOnlineCount()))))));
         e.setResponse(serverPing);
     }
 }

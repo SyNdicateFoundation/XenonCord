@@ -46,6 +46,7 @@ public class Configuration {
             configData.getModules().setSpymessage(configData.getModules().getSpymessage().replace("PREFIX", prefix));
             configData.getModules().setStaffchatmessage(configData.getModules().getStaffchatmessage().replace("PREFIX", prefix));
             configData.getCommandwhitelist().setBlockmessage(configData.getCommandwhitelist().getBlockmessage().replace("PREFIX", prefix));
+            configData.getModules().setMaintenancedisconnectmessage(configData.getModules().getMaintenancedisconnectmessage().replace("PREFIX", prefix));
             logger.info("Successfully Initialized!");
             return configData;
         } catch (final Exception e) {
