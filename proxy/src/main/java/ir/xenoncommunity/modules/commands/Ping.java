@@ -18,7 +18,7 @@ public class Ping extends Command implements Listener {
         if (!sender.hasPermission(XenonCore.instance.getConfigData().getModules().getPingperm())) return;
 
         if (sender instanceof ConsoleCommandSender) {
-            Message.send(sender, XenonCore.instance.getConfigData().getPrefix() + " &cCannot execute this command as console.", false);
+            Message.send(sender, XenonCore.instance.getConfigData().getCannotexecasconsoleerrormessage(), false);
             return;
         }
         final ProxiedPlayer player = (ProxiedPlayer) sender;
@@ -26,7 +26,6 @@ public class Ping extends Command implements Listener {
         if (args.length == 0) {
             Message.send(sender,
                     XenonCore.instance.getConfigData().getModules().getPingmessage()
-                            .replace("PREFIX", XenonCore.instance.getConfigData().getPrefix())
                             .replace("PING", String.valueOf(player.getPing())), false);
             return;
         }
@@ -35,7 +34,6 @@ public class Ping extends Command implements Listener {
 
         Message.send(sender,
                 XenonCore.instance.getConfigData().getModules().getPingothersmessage()
-                        .replace("PREFIX", XenonCore.instance.getConfigData().getPrefix())
                         .replace("PING", String.valueOf(XenonCore.instance.getBungeeInstance().getPlayer(args[0]).getPing()))
                         .replace("USERNAME", args[0]), false);
     }

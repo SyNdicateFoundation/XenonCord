@@ -23,7 +23,8 @@ public class ListenerInfo
     /**
      * Displayed MOTD.
      */
-    private final String motd;
+    private final String loadmessage;
+    private final String xenonMotd;
     /**
      * Max amount of slots displayed on the ping page.
      */
@@ -74,9 +75,9 @@ public class ListenerInfo
     private final boolean proxyProtocol;
 
     @Deprecated
-    public ListenerInfo(InetSocketAddress host, String motd, int maxPlayers, int tabListSize, List<String> serverPriority, boolean forceDefault, Map<String, String> forcedHosts, String tabListType, boolean setLocalAddress, boolean pingPassthrough, int queryPort, boolean queryEnabled)
+    public ListenerInfo(InetSocketAddress host, String loadingmessage, String xenonMotd, int maxPlayers, int tabListSize, List<String> serverPriority, boolean forceDefault, Map<String, String> forcedHosts, String tabListType, boolean setLocalAddress, boolean pingPassthrough, int queryPort, boolean queryEnabled)
     {
-        this( host, motd, maxPlayers, tabListSize, serverPriority, forceDefault, forcedHosts, tabListType, setLocalAddress, pingPassthrough, queryPort, queryEnabled, false );
+        this( host, loadingmessage, xenonMotd, maxPlayers, tabListSize, serverPriority, forceDefault, forcedHosts, tabListType, setLocalAddress, pingPassthrough, queryPort, queryEnabled, false );
     }
 
     /**

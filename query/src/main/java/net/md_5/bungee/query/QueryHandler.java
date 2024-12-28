@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -103,7 +104,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
             // Waterfall start
             List<String> players = bungee.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
 
-            ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(listener.getMotd(), "SMP", "Waterfall_Proxy",
+            ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(ChatColor.translateAlternateColorCodes( '&', listener.getXenonMotd() ), "SMP", "Waterfall_Proxy",
                     bungee.getOnlineCount(), listener.getMaxPlayers(), listener.getHost().getPort(),
                     listener.getHost().getHostString(), "MINECRAFT",  players, bungee.getGameVersion()));
             QueryResult result = bungee.getPluginManager().callEvent(event).getResult();

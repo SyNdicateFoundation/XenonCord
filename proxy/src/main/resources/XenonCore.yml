@@ -1,71 +1,80 @@
-# prefix for messages.
+# General Settings
 prefix: "&9&lXenon&bCord"
-# debug mode
 debug: true
-# XenonCord will kick players during loading process. this is it's kick messsage.
+
+# Kick message during loading process
 # Placeholders: PREFIX: your prefix
 loadingmessage: "PREFIX\n &r&cstill loading.\n\n &cYou got disconnected to prevent problems."
-# changes ingame brand name (F3)
+
+# In-game branding (F3 menu)
 ingamebrandname: "XenonCord"
-# A gui for proxy server
-# it has performance impact, indeed.
+
+# GUI Settings
 usegui: true
-guirefreshrate: 3000 # GUI will be refreshed every 3000 MS
+# GUI refresh rate in milliseconds
+guirefreshrate: 3000
+
+# Console error messages
+cannotexecasconsoleerrormessage: "PREFIX &cCannot execute this command as console."
+
+# Command error messages
+unknownoptionmessage: "PREFIX &cUnknown option, available: OPTIONS"
+
+# Modules Settings
 modules:
+  # MotdChanger Settings
   # Requires MotdChanger module to be enabled.
-  # Changes motd to this.
-  # Placeholders: ONLINE: current online count
   motd: "&b&lA &9&lXenon&bCord server."
+
+  # CommandSpy Settings
   # Requires CommandSpy module to be enabled.
-  # exceptions for command spy.
   spyexceptions:
     - "login"
     - "reg"
     - "register"
     - "log"
     - "l"
-  # Spy bypass permission
   spybypass: "xenoncord.spy.bypass"
-  # Spy alert permission
   spyperm: "xenoncord.spy.alerts"
-  # Spy message
-  # Placeholders: PREFIX: your prefix, PLAYER: player, COMMAND: executed command.
   spymessage: "PREFIX &r&dPLAYER &b» COMMAND"
+
+  # StaffChat Settings
   # Requires StaffChat module to be enabled.
-  # permission for staffchat
   staffchatperm: "xenoncord.staffchat"
-  # Staffchat message format.
-  # Placeholders: PREFIX: your prefix, PLAYER: player, MESSAGE: message.
   staffchatmessage: "PREFIX &cStaffChat &8PLAYER» &8MESSAGE"
+
+  # Maintenance Settings
   # Requires Maintenance module to be enabled.
-  # permission for maintenance command
   maintenanceperm: "xenoncord.maintenance"
-  # permission for maintenance bypass
   maintenancebypassperm: "xenoncord.maintenance.bypass"
-  # Maintenance message format.
-  # Placeholders: PREFIX: your prefix
+  maintenanceaddcommandmessage: "PREFIX &cAdded SERVER to maintenance mode server list.."
+  maintenanceremovecommandmessage: "PREFIX &cRemoved SERVER to maintenance mode server list.."
   maintenancedisconnectmessage: "PREFIX\n &cThe server you're trying to connect is on maintenance!\n please try later."
-  # Maintenance motd.
-  # the server will use this motd if the whole server is on maintenance.
-  # Placeholders: ONLINE: current online count
   maintenancemotd: "&b&lA &9&lXenon&bCord server is on maintenance. "
+
+  # Ping Settings
   # Requires Ping module to be enabled.
-  # permission for ping
   pingperm: "xenoncord.ping"
-  # permission for checking ping of others
   pingothersperm: "xenoncord.ping.others"
-  # ping message for users
-  # Placeholders: PREFIX: your prefix, PING: user's ping
   pingmessage: "PREFIX &8your ping is &bPING"
-  # ping message to ping others
-  # Placeholders: PREFIX: your prefix, PING: user's ping, USERNAME: other's username
   pingothersmessage: "PREFIX &aUSERNAME's ping is &bPING"
+
+  # BPlugins Settings
   # Requires BPlugins module to be enabled.
-  # permission for BPlugins
+  pluginisloadingmessage: "PREFIX &cLoading PLUGIN..."
+  pluginisunloadingmessage: "PREFIX &cUnloading PLUGIN..."
+  plugindoesntexisterrormessage: "PREFIX &cPlugin doesn't exist in folder."
   pluginsperm: "xenoncord.plugins"
-  # permission for BPlugins to toggle plugins
   pluginstoggleperm: "xenoncord.plugins.toggle"
-  # List of enabled modules
+
+  # Playtime Settings
+  # Requires Playtime module to be enabled.
+  playtimemessage: "PREFIX Your playtime is PLAYTIME"
+  playtimeothersmessage: "PREFIX PLAYER's playtime is PLAYTIME"
+  playtimeperm: "xenoncord.playtime"
+  playtimeothersperm: "xenoncord.playtime.others"
+
+  # Enabled Modules
   enables:
     - MotdChanger
     - CommandSpy
@@ -74,9 +83,13 @@ modules:
     - Maintenance
     - Ping
     - BPlugins
-# Requires AntiBot module to be enabled.
+    - Playtime
+    #- PunishManager
+
+# CommandWhitelist Settings
 # Requires CommandWhiteList module to be enabled.
-# pergroup works with permission. permission is xenoncord.commandwhitelist.example
+# Requires AntiBot module to be enabled.
+# Per-group commands work with permissions. Example: xenoncord.commandwhitelist.example
 commandwhitelist:
   bypass: "xenoncord.commandwhitelist.bypass"
   blockmessage: "PREFIX&c» Sorry, this command is blocked."

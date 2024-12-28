@@ -9,17 +9,21 @@ import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 @Getter
 public class Configuration {
     private final File configFile;
-    private final File sqlDataBase;
+    private final File sqlAntibot;
+    private final File sqlPlaytime;
     private final Logger logger = XenonCore.instance.getLogger();
     public Configuration(){
         this.configFile = new File("XenonCore.yml");
-        this.sqlDataBase = new File("XenonCore.db");
+        this.sqlAntibot = new File("AntiBot.db");
+        this.sqlPlaytime = new File("Playtimes.db");
     }
     private void copyConfig() {
         try {
@@ -40,14 +44,44 @@ public class Configuration {
         logger.info("Initializing Configuration...");
         try {
             if (!configFile.exists()) copyConfig();
+            if(!sqlPlaytime.exists()) Files.createFile(sqlPlaytime.toPath());
+
             final ConfigData configData = getConfig();
             final String prefix = configData.prefix;
+
+            final Configuration.ModulesData modules = configData.getModules();
+
             configData.setLoadingmessage(configData.getLoadingmessage().replace("PREFIX", prefix));
-            configData.getModules().setSpymessage(configData.getModules().getSpymessage().replace("PREFIX", prefix));
-            configData.getModules().setStaffchatmessage(configData.getModules().getStaffchatmessage().replace("PREFIX", prefix));
+            configData.setCannotexecasconsoleerrormessage(configData.getCannotexecasconsoleerrormessage().replace("PREFIX", prefix));
+            modules.setMotd(modules.getMotd().replace("PREFIX", prefix));
+            modules.setSpybypass(modules.getSpybypass().replace("PREFIX", prefix));
+            modules.setSpyperm(modules.getSpyperm().replace("PREFIX", prefix));
+            modules.setSpymessage(modules.getSpymessage().replace("PREFIX", prefix));
+            modules.setStaffchatperm(modules.getStaffchatperm().replace("PREFIX", prefix));
+            modules.setStaffchatmessage(modules.getStaffchatmessage().replace("PREFIX", prefix));
+            modules.setMaintenanceperm(modules.getMaintenanceperm().replace("PREFIX", prefix));
+            modules.setMaintenancebypassperm(modules.getMaintenancebypassperm().replace("PREFIX", prefix));
+            modules.setMaintenanceaddcommandmessage(modules.getMaintenanceaddcommandmessage().replace("PREFIX", prefix));
+            modules.setMaintenanceremovecommandmessage(modules.getMaintenanceremovecommandmessage().replace("PREFIX", prefix));
+            modules.setMaintenancedisconnectmessage(modules.getMaintenancedisconnectmessage().replace("PREFIX", prefix));
+            modules.setMaintenancemotd(modules.getMaintenancemotd().replace("PREFIX", prefix));
+            modules.setPingperm(modules.getPingperm().replace("PREFIX", prefix));
+            modules.setPingothersperm(modules.getPingothersperm().replace("PREFIX", prefix));
+            modules.setPingmessage(modules.getPingmessage().replace("PREFIX", prefix));
+            modules.setPingothersmessage(modules.getPingothersmessage().replace("PREFIX", prefix));
+            modules.setPluginisloadingmessage(modules.getPluginisloadingmessage().replace("PREFIX", prefix));
+            modules.setPluginisunloadingmessage(modules.getPluginisunloadingmessage().replace("PREFIX", prefix));
+            modules.setPlugindoesntexisterrormessage(modules.getPlugindoesntexisterrormessage().replace("PREFIX", prefix));
+            modules.setPluginsperm(modules.getPluginsperm().replace("PREFIX", prefix));
+            modules.setPluginstoggleperm(modules.getPluginstoggleperm().replace("PREFIX", prefix));
+            modules.setPlaytimemessage(modules.getPlaytimemessage().replace("PREFIX", prefix));
+            modules.setPlaytimeothersmessage(modules.getPlaytimeothersmessage().replace("PREFIX", prefix));
+            modules.setPlaytimeperm(modules.getPlaytimeperm().replace("PREFIX", prefix));
+            modules.setPlaytimeothersperm(modules.getPlaytimeothersperm().replace("PREFIX", prefix));
             configData.getCommandwhitelist().setBlockmessage(configData.getCommandwhitelist().getBlockmessage().replace("PREFIX", prefix));
-            configData.getModules().setMaintenancedisconnectmessage(configData.getModules().getMaintenancedisconnectmessage().replace("PREFIX", prefix));
+
             logger.info("Successfully Initialized!");
+
             return configData;
         } catch (final Exception e) {
             logger.error(e.getMessage());
@@ -67,7 +101,7 @@ public class Configuration {
     @Getter
     @Setter
     public static class ConfigData{
-        private String prefix, loadingmessage, ingamebrandname;
+        private String prefix, loadingmessage, ingamebrandname, cannotexecasconsoleerrormessage, unknownoptionmessage;
         private boolean debug, usegui;
         private long guirefreshrate;
         private ModulesData modules;
@@ -80,7 +114,10 @@ public class Configuration {
                 staffchatperm, staffchatmessage, maintenanceperm,
                 maintenancebypassperm, maintenancedisconnectmessage,
                 maintenancemotd, pingperm, pingothersperm, pingmessage,
-                pingothersmessage, pluginsperm, pluginstoggleperm;
+                pingothersmessage, pluginisloadingmessage, pluginisunloadingmessage,
+                plugindoesntexisterrormessage, maintenanceremovecommandmessage, pluginsperm,
+                pluginstoggleperm, playtimemessage, maintenanceaddcommandmessage, playtimeothersmessage,
+                playtimeperm, playtimeothersperm;
         private String[] spyexceptions, enables;
     }
     @Getter

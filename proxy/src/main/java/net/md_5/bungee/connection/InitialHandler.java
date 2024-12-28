@@ -163,7 +163,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         Preconditions.checkState( !this.legacy, "Not expecting LegacyPing" );
         this.legacy = true;
         final ServerInfo forced = AbstractReconnectHandler.getForcedHost(this);
-        final String motd = (forced != null) ? forced.getMotd() : listener.getMotd();
+        final String motd = (forced != null) ? forced.getMotd() : listener.getLoadmessage();
         final int protocol = bungee.getProtocolVersion();
         XenonCore.instance.getTaskManager().add(() -> {
             Callback<ServerPing> pingBack = (result, error) -> {
@@ -216,7 +216,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         Preconditions.checkState(thisState == State.STATUS, "Not expecting STATUS");
 
         final ServerInfo forced = AbstractReconnectHandler.getForcedHost(this);
-        final String motd = (forced != null) ? forced.getMotd() : listener.getMotd();
+        final String motd = (forced != null) ? forced.getMotd() : listener.getLoadmessage();
         final int protocol = (ProtocolConstants.SUPPORTED_VERSION_IDS.contains(handshake.getProtocolVersion()))
                 ? handshake.getProtocolVersion()
                 : bungee.getProtocolVersion();

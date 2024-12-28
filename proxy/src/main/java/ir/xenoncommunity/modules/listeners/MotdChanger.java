@@ -13,14 +13,15 @@ import net.md_5.bungee.event.EventHandler;
 @SuppressWarnings("unused")
 @ModuleListener
 public class MotdChanger implements Listener {
+    public static String finalMotd;
     @EventHandler
     public void proxyPingEvent(final ProxyPingEvent e) {
+        finalMotd = (Maintenance.downServers != null && Maintenance.downServers.contains("proxy")) ?
+                XenonCore.instance.getConfigData().getModules().getMaintenancemotd() :
+                XenonCore.instance.getConfigData().getModules().getMotd().replace("ONLINE",
+                        "%s".replace("%s", String.valueOf(XenonCore.instance.getBungeeInstance().getOnlineCount())));
         final ServerPing serverPing = e.getResponse();
-        serverPing.setDescriptionComponent(new TextComponent(ChatColor.translateAlternateColorCodes('&',
-                (Maintenance.downServers != null && Maintenance.downServers.contains("proxy")) ?
-                        XenonCore.instance.getConfigData().getModules().getMaintenancemotd() :
-                        XenonCore.instance.getConfigData().getModules().getMotd().replace("ONLINE",
-                                "%s".replace("%s", String.valueOf(XenonCore.instance.getBungeeInstance().getOnlineCount()))))));
+        serverPing.setDescriptionComponent(new TextComponent(ChatColor.translateAlternateColorCodes('&', finalMotd)));
         e.setResponse(serverPing);
     }
 }

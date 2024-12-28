@@ -184,7 +184,8 @@ public class BungeeCord extends ProxyServer
 
         xenonInstance.setConfigData(xenonInstance.getConfiguration().init());
 
-        Preconditions.checkState(xenonInstance.getConfigData() != null, "Config data should not be null!");
+        Preconditions.checkState(xenonInstance.getConfigData() != null,
+                "Something caused config to be null? Maybe config is for older version. delete it once.");
 
         if (Boolean.getBoolean("net.md_5.bungee.native.disable")) return;
 

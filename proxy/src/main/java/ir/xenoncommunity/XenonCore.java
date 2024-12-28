@@ -3,6 +3,7 @@ package ir.xenoncommunity;
 import ir.xenoncommunity.gui.SwingManager;
 import ir.xenoncommunity.modules.ModuleManager;
 import ir.xenoncommunity.utils.Configuration;
+import ir.xenoncommunity.utils.SQLManager;
 import ir.xenoncommunity.utils.TaskManager;
 import lombok.Getter;
 import lombok.Setter;

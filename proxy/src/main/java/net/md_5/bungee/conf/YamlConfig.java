@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
+
+import ir.xenoncommunity.XenonCore;
+import ir.xenoncommunity.modules.listeners.MotdChanger;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.ChatColor;
@@ -233,8 +236,8 @@ public class YamlConfig implements ConfigurationAdapter
 
         for ( Map<String, Object> val : base )
         {
-            String motd = get( "motd", "&1Another Bungee server", val );
-            motd = ChatColor.translateAlternateColorCodes( '&', motd );
+            String loadmessage = get( "motd_on_load", "&b&lPlease wait until XenonCord loads completely....", val );
+            loadmessage = ChatColor.translateAlternateColorCodes( '&', loadmessage );
 
             int maxPlayers = get( "max_players", 1, val );
             boolean forceDefault = get( "force_default_server", false, val );
@@ -279,7 +282,7 @@ public class YamlConfig implements ConfigurationAdapter
             }
             set( "priorities", serverPriority, val );
 
-            ListenerInfo info = new ListenerInfo( address, motd, maxPlayers, tabListSize, serverPriority, forceDefault, forced, value.toString(), setLocalAddress, pingPassthrough, queryPort, query, proxyProtocol );
+            ListenerInfo info = new ListenerInfo( address, loadmessage, MotdChanger.finalMotd, maxPlayers, tabListSize, serverPriority, forceDefault, forced, value.toString(), setLocalAddress, pingPassthrough, queryPort, query, proxyProtocol );
             ret.add( info );
         }
 

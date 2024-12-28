@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings("unused") public class Maintenance extends Command implements Listener {
     public static ArrayList<String> downServers = null;
+    private final String prefix = XenonCore.instance.getConfigData().getPrefix();
 
 
     public Maintenance() {
@@ -32,7 +33,8 @@ import java.util.ArrayList;
             if (!downServers.contains("proxy")) {
                 downServers.add("proxy");
                 Message.send(sender,
-                        String.format("%s &cthe whole proxy is now on maintenance mode.", XenonCore.instance.getConfigData().getPrefix())
+                        XenonCore.instance.getConfigData().getModules().getMaintenanceaddcommandmessage()
+                                .replace("SERVER", "the whole proxy")
                                 , true);
                 XenonCore.instance.getBungeeInstance().getPlayers().forEach(e -> {
                     if (!e.hasPermission(
@@ -45,7 +47,9 @@ import java.util.ArrayList;
             else {
                 downServers.remove("proxy");
                 Message.send(sender,
-                        String.format("%s &cthe whole proxy is no longer on maintenance mode.", XenonCore.instance.getConfigData().getPrefix()), true);
+                        XenonCore.instance.getConfigData().getModules().getMaintenanceremovecommandmessage()
+                                .replace("SERVER", "the whole proxy")
+                        , true);
             }
             return;
         }
@@ -54,15 +58,14 @@ import java.util.ArrayList;
                 if(args[1].isEmpty()) Message.send(sender, "Please enter a server name", false);
                 downServers.add(args[1]);
                 Message.send(sender,
-                        String.format("%s &cAdded SERVER to maintenance mode server list..", XenonCore.instance.getConfigData().getPrefix())
+                        XenonCore.instance.getConfigData().getModules().getMaintenanceaddcommandmessage()
                                 .replace("SERVER", args[1]), true);
                 XenonCore.instance.getBungeeInstance().getPlayers().forEach(e -> {
                     if (!e.hasPermission(
                             XenonCore.instance.getConfigData().getModules().getMaintenancebypassperm())
                     && e.getServer().getInfo().getName().equals(args[1])){
-                        e.disconnect(ChatColor.translateAlternateColorCodes('&', XenonCore.instance.getConfigData().getModules().getMaintenancedisconnectmessage()
-                                .replace("PREFIX",
-                                        XenonCore.instance.getConfigData().getPrefix())));
+                        e.disconnect(ChatColor.translateAlternateColorCodes('&',
+                                XenonCore.instance.getConfigData().getModules().getMaintenancedisconnectmessage()));
                     }
                 });
                 break;
@@ -70,13 +73,12 @@ import java.util.ArrayList;
                 if(args[1].isEmpty()) Message.send(sender, "Please enter a server name", false);
                 downServers.remove(args[1]);
                 Message.send(sender,
-                        String.format("%s &cRemoved SERVER from maintenance mode server list..", XenonCore.instance.getConfigData().getPrefix())
-                            .replace("SERVER", args[1]), true);
+                        XenonCore.instance.getConfigData().getModules().getMaintenanceremovecommandmessage()
+                                .replace("SERVER", args[1]), true);
                 break;
             default:
-                Message.send(sender,
-                        "PREFIX &cUnknown option, available: add, remove, blank (to set the whole proxy)"
-                                .replace("PREFIX",  XenonCore.instance.getConfigData().getPrefix()),
+                Message.send(sender,XenonCore.instance.getConfigData().getUnknownoptionmessage()
+                                .replace("OPTIONS", "add, remove, blank (to set the whole proxy)"),
                         false);
         }
 
@@ -88,9 +90,7 @@ import java.util.ArrayList;
         if(!e.getPlayer().hasPermission(
                 XenonCore.instance.getConfigData().getModules().getMaintenancebypassperm())) {
             e.getPlayer().disconnect(
-                    ChatColor.translateAlternateColorCodes('&', XenonCore.instance.getConfigData().getModules().getMaintenancedisconnectmessage()
-                            .replace("PREFIX",
-                                    XenonCore.instance.getConfigData().getPrefix())));
+                    ChatColor.translateAlternateColorCodes('&', XenonCore.instance.getConfigData().getModules().getMaintenancedisconnectmessage()));
         }
     }
     @EventHandler
@@ -100,9 +100,7 @@ import java.util.ArrayList;
         if(!e.getPlayer().hasPermission(
                 XenonCore.instance.getConfigData().getModules().getMaintenancebypassperm())) {
             e.setCancelled(true);
-            Message.send(e.getPlayer(), XenonCore.instance.getConfigData().getModules().getMaintenancedisconnectmessage()
-                    .replace("PREFIX",
-                            XenonCore.instance.getConfigData().getPrefix()), false);
+            Message.send(e.getPlayer(), XenonCore.instance.getConfigData().getModules().getMaintenancedisconnectmessage(), false);
 
         }
     }

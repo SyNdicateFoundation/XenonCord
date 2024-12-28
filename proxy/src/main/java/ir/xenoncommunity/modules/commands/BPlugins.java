@@ -19,6 +19,8 @@ public class BPlugins extends Command implements Listener {
     public BPlugins() {
         super("BPlugins", XenonCore.instance.getConfigData().getModules().getPingperm());
     }
+    
+    public String prefix = XenonCore.instance.getConfigData().getPrefix();
 
     @Override
     @SneakyThrows
@@ -33,7 +35,6 @@ public class BPlugins extends Command implements Listener {
 
             manager.getPlugins().forEach(plugin -> sb.append(plugin.getDescription().getName()).append(", "));
 
-            String prefix = XenonCore.instance.getConfigData().getPrefix();
             Message.send(sender, String.format("%s &cPLUGINS: %s.", prefix, sb.substring(0, sb.length() - 2)), false);
             return;
         }
@@ -44,7 +45,7 @@ public class BPlugins extends Command implements Listener {
 
         File plFile = new File(String.format("plugins/%s", args[1]));
         if (!plFile.exists()) {
-            Message.send(sender, String.format("%s &cPlugin does not exist in folder.", XenonCore.instance.getConfigData().getPrefix()), false);
+            Message.send(sender, XenonCore.instance.getConfigData().getModules().getPlugindoesntexisterrormessage(), false);
             return;
         }
 
@@ -77,8 +78,8 @@ public class BPlugins extends Command implements Listener {
                         manager.loadPlugins();
                         manager.getPlugin(desc.getName()).onEnable();
 
-                        Message.send(sender, String.format("%s &cLoading %s.",
-                                XenonCore.instance.getConfigData().getPrefix(), args[1]), true);
+                        Message.send(sender, XenonCore.instance.getConfigData().getModules().getPluginisloadingmessage()
+                                        .replace("PLUGIN", args[1]), true);
                         break;
                     case "unload":
                         Plugin plugin = manager.getPlugin(args[1]);
@@ -117,12 +118,11 @@ public class BPlugins extends Command implements Listener {
                         ((URLClassLoader) cl).close();
                         System.gc();
 
-                        Message.send(sender, String.format("%s &cUnloading %s.",
-                                XenonCore.instance.getConfigData().getPrefix(), args[1]), true);
+                        Message.send(sender, XenonCore.instance.getConfigData().getModules().getPluginisunloadingmessage()
+                                .replace("PLUGIN", args[1]), true);
                         break;
                     default:
-                        Message.send(sender, String.format("%s &cUnknown option, available: load, unload, blank (to see plugins list)",
-                                XenonCore.instance.getConfigData().getPrefix()), false);
+                        Message.send(sender, XenonCore.instance.getConfigData().getUnknownoptionmessage().replace("OPTIONS", "load, unload, blank (to see plugins list)"), false);
                         break;
                 }
             } catch (Exception e) {
