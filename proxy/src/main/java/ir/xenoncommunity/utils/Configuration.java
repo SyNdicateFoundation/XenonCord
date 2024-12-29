@@ -52,6 +52,7 @@ public class Configuration {
 
             configData.setLoadingmessage(configData.getLoadingmessage().replace("PREFIX", prefix));
             configData.setCannotexecasconsoleerrormessage(configData.getCannotexecasconsoleerrormessage().replace("PREFIX", prefix));
+            configData.setUnknownoptionmessage(configData.getUnknownoptionmessage().replace("PREFIX", prefix));
             configData.getMotdchanger().setMotd(configData.getMotdchanger().getMotd().replace("PREFIX", prefix));
             configData.getMotdchanger().setMaintenancemotd(configData.getMotdchanger().getMaintenancemotd().replace("PREFIX", prefix));
             configData.getCommandspy().setSpybypass(configData.getCommandspy().getSpybypass().replace("PREFIX", prefix));
