@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.sql.*;
 
 @Getter public class SQLManager {
@@ -16,6 +17,7 @@ import java.sql.*;
 
     public SQLManager(final File databaseFile, final String updateCMD){
         try {
+            if(!databaseFile.exists()) Files.createFile(databaseFile.toPath());
             Class.forName("org.sqlite.JDBC");
             this.databaseFile = databaseFile;
             this.connection = DriverManager.getConnection("jdbc:sqlite:" + this.databaseFile);

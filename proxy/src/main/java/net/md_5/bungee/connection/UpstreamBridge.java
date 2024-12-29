@@ -107,9 +107,9 @@ public class UpstreamBridge extends PacketHandler
     @Override
     public void handle(PacketWrapper packet) throws Exception
     {
-        //PacketReceiveEvent event = new PacketReceiveEvent(packet, con, false);
-        //bungee.getPluginManager().callEvent(event);
-        //if(event.isCancelled()) return;
+        PacketReceiveEvent event = new PacketReceiveEvent(packet, con);
+        bungee.getPluginManager().callEvent(event);
+        if(event.isCancelled()) return;
         ServerConnection server = con.getServer();
         if ( server != null && server.isConnected())
         {

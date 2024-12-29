@@ -18,19 +18,19 @@ public class CommandSpy implements Listener {
         if (!e.getMessage().startsWith("/") || !(e.getSender() instanceof ProxiedPlayer)) return;
 
         final ProxiedPlayer player = (ProxiedPlayer) e.getSender();
-        if (player.hasPermission(XenonCore.instance.getConfigData().getModules().getSpybypass())) return;
+        if (player.hasPermission(XenonCore.instance.getConfigData().getCommandspy().getSpybypass())) return;
 
         final String rawCommand = e.getMessage();
 
         XenonCore.instance.getTaskManager().add(() -> {
-            if (Arrays.stream(XenonCore.instance.getConfigData().getModules().getSpyexceptions())
+            if (Arrays.stream(XenonCore.instance.getConfigData().getCommandspy().getSpyexceptions())
                     .map(String::toLowerCase)
                     .anyMatch(rawCommand.substring(1).toLowerCase()::contains)) return;
 
             XenonCore.instance.getBungeeInstance().getPlayers().stream()
-                    .filter(proxiedPlayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getModules().getSpyperm()))
+                    .filter(proxiedPlayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getCommandspy().getSpyperm()))
                     .forEach(proxiedPlayer -> Message.send(proxiedPlayer,
-                            XenonCore.instance.getConfigData().getModules().getSpymessage()
+                            XenonCore.instance.getConfigData().getCommandspy().getSpymessage()
                                     .replace("PLAYER", player.getDisplayName())
                                     .replace("COMMAND", rawCommand), true));
         });

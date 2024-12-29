@@ -22,58 +22,6 @@ unknownoptionmessage: "PREFIX &cUnknown option, available: OPTIONS"
 
 # Modules Settings
 modules:
-  # MotdChanger Settings
-  # Requires MotdChanger module to be enabled.
-  motd: "&b&lA &9&lXenon&bCord server."
-
-  # CommandSpy Settings
-  # Requires CommandSpy module to be enabled.
-  spyexceptions:
-    - "login"
-    - "reg"
-    - "register"
-    - "log"
-    - "l"
-  spybypass: "xenoncord.spy.bypass"
-  spyperm: "xenoncord.spy.alerts"
-  spymessage: "PREFIX &r&dPLAYER &b» COMMAND"
-
-  # StaffChat Settings
-  # Requires StaffChat module to be enabled.
-  staffchatperm: "xenoncord.staffchat"
-  staffchatmessage: "PREFIX &cStaffChat &8PLAYER» &8MESSAGE"
-
-  # Maintenance Settings
-  # Requires Maintenance module to be enabled.
-  maintenanceperm: "xenoncord.maintenance"
-  maintenancebypassperm: "xenoncord.maintenance.bypass"
-  maintenanceaddcommandmessage: "PREFIX &cAdded SERVER to maintenance mode server list.."
-  maintenanceremovecommandmessage: "PREFIX &cRemoved SERVER to maintenance mode server list.."
-  maintenancedisconnectmessage: "PREFIX\n &cThe server you're trying to connect is on maintenance!\n please try later."
-  maintenancemotd: "&b&lA &9&lXenon&bCord server is on maintenance. "
-
-  # Ping Settings
-  # Requires Ping module to be enabled.
-  pingperm: "xenoncord.ping"
-  pingothersperm: "xenoncord.ping.others"
-  pingmessage: "PREFIX &8your ping is &bPING"
-  pingothersmessage: "PREFIX &aUSERNAME's ping is &bPING"
-
-  # BPlugins Settings
-  # Requires BPlugins module to be enabled.
-  pluginisloadingmessage: "PREFIX &cLoading PLUGIN..."
-  pluginisunloadingmessage: "PREFIX &cUnloading PLUGIN..."
-  plugindoesntexisterrormessage: "PREFIX &cPlugin doesn't exist in folder."
-  pluginsperm: "xenoncord.plugins"
-  pluginstoggleperm: "xenoncord.plugins.toggle"
-
-  # Playtime Settings
-  # Requires Playtime module to be enabled.
-  playtimemessage: "PREFIX Your playtime is PLAYTIME"
-  playtimeothersmessage: "PREFIX PLAYER's playtime is PLAYTIME"
-  playtimeperm: "xenoncord.playtime"
-  playtimeothersperm: "xenoncord.playtime.others"
-
   # Enabled Modules
   enables:
     - MotdChanger
@@ -84,11 +32,87 @@ modules:
     - Ping
     - BPlugins
     - Playtime
-    #- PunishManager
+    - PunishManager
+    - ExploitPatcher
+
+# MotdChanger Settings
+# Requires MotdChanger module to be enabled.
+motdchanger:
+  motd: "&b&lA &9&lXenon&bCord server."
+  maintenancemotd: "&b&lA &9&lXenon&bCord server is on maintenance. "
+
+# CommandSpy Settings
+# Requires CommandSpy module to be enabled.
+commandspy:
+  spyexceptions:
+    - "login"
+    - "reg"
+    - "register"
+    - "log"
+    - "l"
+  spybypass: "xenoncord.spy.bypass"
+  spyperm: "xenoncord.spy.alerts"
+  spymessage: "PREFIX &r&dPLAYER &b» COMMAND"
+
+# StaffChat Settings
+# Requires StaffChat module to be enabled.
+staffchat:
+  staffchatperm: "xenoncord.staffchat"
+  staffchatmessage: "PREFIX &cStaffChat &8PLAYER &a» &bMESSAGE"
+
+# Maintenance Settings
+# Requires Maintenance module to be enabled.
+maintenance:
+  maintenanceperm: "xenoncord.maintenance"
+  maintenancebypassperm: "xenoncord.maintenance.bypass"
+  maintenanceaddcommandmessage: "PREFIX &cAdded SERVER to maintenance mode server list.."
+  maintenanceremovecommandmessage: "PREFIX &cRemoved SERVER to maintenance mode server list.."
+  maintenancedisconnectmessage: "PREFIX\n &cThe server you're trying to connect is on maintenance!\n please try later."
+
+# Ping Settings
+# Requires Ping module to be enabled.
+ping:
+  pingperm: "xenoncord.ping"
+  pingothersperm: "xenoncord.ping.others"
+  pingmessage: "PREFIX &8your ping is &bPING"
+  pingothersmessage: "PREFIX &aUSERNAME's ping is &bPING"
+
+# BPlugins Settings
+# Requires BPlugins module to be enabled.
+bplugins:
+  pluginisloadingmessage: "PREFIX &cLoading PLUGIN..."
+  pluginisunloadingmessage: "PREFIX &cUnloading PLUGIN..."
+  plugindoesntexisterrormessage: "PREFIX &cPlugin doesn't exist in folder."
+  pluginsperm: "xenoncord.plugins"
+  pluginstoggleperm: "xenoncord.plugins.toggle"
+
+# Playtime Settings
+# Requires Playtime module to be enabled.
+playtime:
+  playtimemessage: "PREFIX Your playtime is PLAYTIME"
+  playtimeothersmessage: "PREFIX PLAYER's playtime is PLAYTIME"
+  playtimeperm: "xenoncord.playtime"
+  playtimeothersperm: "xenoncord.playtime.others"
+
+# PunishManager Settings
+# Requires PunishManager module to be enabled.
+# NOTE: clearchat works for self, means to clear the whole chat for all players, you need to use global argument.
+punishmanager:
+  banperm: "xenoncord.punishmanager.ban"
+  banannouncemessage: "PREFIX &aPLAYER1 &cbanned &aPLAYER2 &cfor &aREASON &cuntil DURATION."
+  bandisconnectmessage: "PREFIX\n\n &cPLAYER You are banned from this server.\nReason: REASON\nduration: DURATION"
+  muteperm: "xenoncord.punishmanager.mute"
+  muteannouncemessage: "PREFIX &aPLAYER1 &cmuted &aPLAYER2 &cfor &aREASON &cuntil DURATION."
+  muteblockmessage: "PREFIX\n\n &cPLAYER You are muted.\nReason: REASON\nduration: DURATION"
+  kickperm: "xenoncord.punishmanager.kick"
+  kickannouncemessage: "PREFIX &aPLAYER1 &ckicked &aPLAYER2 &cfor &aREASON."
+  kickdisconnectmessage: "PREFIX\n\n &cPLAYER You are kicked from this server.\nReason: REASON"
+  clearchatperm: "xenoncord.punishmanager.clearchat"
+  globalclearchatperm: "xenoncord.punishmanager.clearchat.global"
+
 
 # CommandWhitelist Settings
 # Requires CommandWhiteList module to be enabled.
-# Requires AntiBot module to be enabled.
 # Per-group commands work with permissions. Example: xenoncord.commandwhitelist.example
 commandwhitelist:
   bypass: "xenoncord.commandwhitelist.bypass"

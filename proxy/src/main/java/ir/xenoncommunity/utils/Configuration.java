@@ -19,11 +19,13 @@ public class Configuration {
     private final File configFile;
     private final File sqlAntibot;
     private final File sqlPlaytime;
+    private final File sqlPunishments;
     private final Logger logger = XenonCore.instance.getLogger();
     public Configuration(){
         this.configFile = new File("XenonCore.yml");
         this.sqlAntibot = new File("AntiBot.db");
         this.sqlPlaytime = new File("Playtimes.db");
+        this.sqlPunishments = new File("Punishments.db");
     }
     private void copyConfig() {
         try {
@@ -44,41 +46,45 @@ public class Configuration {
         logger.info("Initializing Configuration...");
         try {
             if (!configFile.exists()) copyConfig();
-            if(!sqlPlaytime.exists()) Files.createFile(sqlPlaytime.toPath());
 
             final ConfigData configData = getConfig();
             final String prefix = configData.prefix;
 
-            final Configuration.ModulesData modules = configData.getModules();
-
             configData.setLoadingmessage(configData.getLoadingmessage().replace("PREFIX", prefix));
             configData.setCannotexecasconsoleerrormessage(configData.getCannotexecasconsoleerrormessage().replace("PREFIX", prefix));
-            modules.setMotd(modules.getMotd().replace("PREFIX", prefix));
-            modules.setSpybypass(modules.getSpybypass().replace("PREFIX", prefix));
-            modules.setSpyperm(modules.getSpyperm().replace("PREFIX", prefix));
-            modules.setSpymessage(modules.getSpymessage().replace("PREFIX", prefix));
-            modules.setStaffchatperm(modules.getStaffchatperm().replace("PREFIX", prefix));
-            modules.setStaffchatmessage(modules.getStaffchatmessage().replace("PREFIX", prefix));
-            modules.setMaintenanceperm(modules.getMaintenanceperm().replace("PREFIX", prefix));
-            modules.setMaintenancebypassperm(modules.getMaintenancebypassperm().replace("PREFIX", prefix));
-            modules.setMaintenanceaddcommandmessage(modules.getMaintenanceaddcommandmessage().replace("PREFIX", prefix));
-            modules.setMaintenanceremovecommandmessage(modules.getMaintenanceremovecommandmessage().replace("PREFIX", prefix));
-            modules.setMaintenancedisconnectmessage(modules.getMaintenancedisconnectmessage().replace("PREFIX", prefix));
-            modules.setMaintenancemotd(modules.getMaintenancemotd().replace("PREFIX", prefix));
-            modules.setPingperm(modules.getPingperm().replace("PREFIX", prefix));
-            modules.setPingothersperm(modules.getPingothersperm().replace("PREFIX", prefix));
-            modules.setPingmessage(modules.getPingmessage().replace("PREFIX", prefix));
-            modules.setPingothersmessage(modules.getPingothersmessage().replace("PREFIX", prefix));
-            modules.setPluginisloadingmessage(modules.getPluginisloadingmessage().replace("PREFIX", prefix));
-            modules.setPluginisunloadingmessage(modules.getPluginisunloadingmessage().replace("PREFIX", prefix));
-            modules.setPlugindoesntexisterrormessage(modules.getPlugindoesntexisterrormessage().replace("PREFIX", prefix));
-            modules.setPluginsperm(modules.getPluginsperm().replace("PREFIX", prefix));
-            modules.setPluginstoggleperm(modules.getPluginstoggleperm().replace("PREFIX", prefix));
-            modules.setPlaytimemessage(modules.getPlaytimemessage().replace("PREFIX", prefix));
-            modules.setPlaytimeothersmessage(modules.getPlaytimeothersmessage().replace("PREFIX", prefix));
-            modules.setPlaytimeperm(modules.getPlaytimeperm().replace("PREFIX", prefix));
-            modules.setPlaytimeothersperm(modules.getPlaytimeothersperm().replace("PREFIX", prefix));
+            configData.getMotdchanger().setMotd(configData.getMotdchanger().getMotd().replace("PREFIX", prefix));
+            configData.getMotdchanger().setMaintenancemotd(configData.getMotdchanger().getMaintenancemotd().replace("PREFIX", prefix));
+            configData.getCommandspy().setSpybypass(configData.getCommandspy().getSpybypass().replace("PREFIX", prefix));
+            configData.getCommandspy().setSpyperm(configData.getCommandspy().getSpyperm().replace("PREFIX", prefix));
+            configData.getCommandspy().setSpymessage(configData.getCommandspy().getSpymessage().replace("PREFIX", prefix));
+            configData.getStaffchat().setStaffchatperm(configData.getStaffchat().getStaffchatperm().replace("PREFIX", prefix));
+            configData.getStaffchat().setStaffchatmessage(configData.getStaffchat().getStaffchatmessage().replace("PREFIX", prefix));
+            configData.getMaintenance().setMaintenanceperm(configData.getMaintenance().getMaintenanceperm().replace("PREFIX", prefix));
+            configData.getMaintenance().setMaintenancebypassperm(configData.getMaintenance().getMaintenancebypassperm().replace("PREFIX", prefix));
+            configData.getMaintenance().setMaintenanceaddcommandmessage(configData.getMaintenance().getMaintenanceaddcommandmessage().replace("PREFIX", prefix));
+            configData.getMaintenance().setMaintenanceremovecommandmessage(configData.getMaintenance().getMaintenanceremovecommandmessage().replace("PREFIX", prefix));
+            configData.getMaintenance().setMaintenancedisconnectmessage(configData.getMaintenance().getMaintenancedisconnectmessage().replace("PREFIX", prefix));
+            configData.getPing().setPingperm(configData.getPing().getPingperm().replace("PREFIX", prefix));
+            configData.getPing().setPingothersperm(configData.getPing().getPingothersperm().replace("PREFIX", prefix));
+            configData.getPing().setPingmessage(configData.getPing().getPingmessage().replace("PREFIX", prefix));
+            configData.getPing().setPingothersmessage(configData.getPing().getPingothersmessage().replace("PREFIX", prefix));
+            configData.getBplugins().setPluginisloadingmessage(configData.getBplugins().getPluginisloadingmessage().replace("PREFIX", prefix));
+            configData.getBplugins().setPluginisunloadingmessage(configData.getBplugins().getPluginisunloadingmessage().replace("PREFIX", prefix));
+            configData.getBplugins().setPlugindoesntexisterrormessage(configData.getBplugins().getPlugindoesntexisterrormessage().replace("PREFIX", prefix));
+            configData.getBplugins().setPluginsperm(configData.getBplugins().getPluginsperm().replace("PREFIX", prefix));
+            configData.getBplugins().setPluginstoggleperm(configData.getBplugins().getPluginstoggleperm().replace("PREFIX", prefix));
+            configData.getPlaytime().setPlaytimemessage(configData.getPlaytime().getPlaytimemessage().replace("PREFIX", prefix));
+            configData.getPlaytime().setPlaytimeothersmessage(configData.getPlaytime().getPlaytimeothersmessage().replace("PREFIX", prefix));
+            configData.getPlaytime().setPlaytimeperm(configData.getPlaytime().getPlaytimeperm().replace("PREFIX", prefix));
+            configData.getPlaytime().setPlaytimeothersperm(configData.getPlaytime().getPlaytimeothersperm().replace("PREFIX", prefix));
             configData.getCommandwhitelist().setBlockmessage(configData.getCommandwhitelist().getBlockmessage().replace("PREFIX", prefix));
+            configData.getPunishmanager().setBanannouncemessage(configData.getPunishmanager().getBanannouncemessage().replace("PREFIX", prefix));
+            configData.getPunishmanager().setBandisconnectmessage(configData.getPunishmanager().getBandisconnectmessage().replace("PREFIX", prefix));
+            configData.getPunishmanager().setMuteannouncemessage(configData.getPunishmanager().getMuteannouncemessage().replace("PREFIX", prefix));
+            configData.getPunishmanager().setMuteblockmessage(configData.getPunishmanager().getMuteblockmessage().replace("PREFIX", prefix));
+            configData.getPunishmanager().setKickannouncemessage(configData.getPunishmanager().getKickannouncemessage().replace("PREFIX", prefix));
+            configData.getPunishmanager().setKickdisconnectmessage(configData.getPunishmanager().getKickdisconnectmessage().replace("PREFIX", prefix));
+
 
             logger.info("Successfully Initialized!");
 
@@ -105,20 +111,69 @@ public class Configuration {
         private boolean debug, usegui;
         private long guirefreshrate;
         private ModulesData modules;
+        private MotdChangerData motdchanger;
+        private CommandSpyData commandspy;
+        private StaffChatData staffchat;
+        private MaintenanceData maintenance;
+        private PingData ping;
+        private BpluginsData bplugins;
+        private PlaytimeData playtime;
+        private PunishManagerData punishmanager;
         private CommandWhitelistData commandwhitelist;
     }
     @Getter
     @Setter
     public static class ModulesData{
-        private String motd, spybypass, spyperm, spymessage,
-                staffchatperm, staffchatmessage, maintenanceperm,
-                maintenancebypassperm, maintenancedisconnectmessage,
-                maintenancemotd, pingperm, pingothersperm, pingmessage,
-                pingothersmessage, pluginisloadingmessage, pluginisunloadingmessage,
-                plugindoesntexisterrormessage, maintenanceremovecommandmessage, pluginsperm,
-                pluginstoggleperm, playtimemessage, maintenanceaddcommandmessage, playtimeothersmessage,
+        private String[] enables;
+    }
+    @Getter
+    @Setter
+    public static class MotdChangerData {
+        private String motd, maintenancemotd;
+    }
+    @Getter
+    @Setter
+    public static class CommandSpyData {
+        private String spymessage, spyperm, spybypass;
+        private String[] spyexceptions;
+    }
+    @Getter
+    @Setter
+    public static class StaffChatData {
+        private String staffchatperm, staffchatmessage;
+    }
+    @Getter
+    @Setter
+    public static class MaintenanceData {
+        private String maintenanceperm, maintenancebypassperm,
+                maintenanceaddcommandmessage, maintenanceremovecommandmessage,
+                maintenancedisconnectmessage;
+    }
+    @Getter
+    @Setter
+    public static class PingData {
+        private String pingperm, pingothersperm,
+                pingmessage, pingothersmessage;
+    }
+    @Getter
+    @Setter
+    public static class BpluginsData {
+        private String pluginisloadingmessage, pluginisunloadingmessage,
+                plugindoesntexisterrormessage, pluginsperm, pluginstoggleperm;
+    }
+    @Getter
+    @Setter
+    public static class PlaytimeData {
+        private String playtimemessage, playtimeothersmessage,
                 playtimeperm, playtimeothersperm;
-        private String[] spyexceptions, enables;
+    }
+    @Getter
+    @Setter
+    public static class PunishManagerData {
+        private String banperm, banannouncemessage, bandisconnectmessage,
+                muteperm, muteannouncemessage, muteblockmessage,
+                kickperm, kickannouncemessage, kickdisconnectmessage,
+                clearchatperm, globalclearchatperm;
     }
     @Getter
     @Setter
@@ -126,7 +181,6 @@ public class Configuration {
         private String bypass, blockmessage;
         private Map<String, GroupData> pergroup;
     }
-
     @Getter
     @Setter
     public static class GroupData {

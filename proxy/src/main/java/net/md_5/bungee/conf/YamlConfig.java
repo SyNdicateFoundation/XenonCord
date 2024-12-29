@@ -282,7 +282,7 @@ public class YamlConfig implements ConfigurationAdapter
             }
             set( "priorities", serverPriority, val );
 
-            ListenerInfo info = new ListenerInfo( address, loadmessage, MotdChanger.finalMotd, maxPlayers, tabListSize, serverPriority, forceDefault, forced, value.toString(), setLocalAddress, pingPassthrough, queryPort, query, proxyProtocol );
+            ListenerInfo info = new ListenerInfo( address, loadmessage, XenonCore.instance.getCurrentMotd(), maxPlayers, tabListSize, serverPriority, forceDefault, forced, value.toString(), setLocalAddress, pingPassthrough, queryPort, query, proxyProtocol );
             ret.add( info );
         }
 

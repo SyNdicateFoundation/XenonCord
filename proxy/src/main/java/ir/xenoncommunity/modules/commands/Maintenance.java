@@ -14,40 +14,39 @@ import net.md_5.bungee.event.EventHandler;
 import java.util.ArrayList;
 
 @SuppressWarnings("unused") public class Maintenance extends Command implements Listener {
-    public static ArrayList<String> downServers = null;
     private final String prefix = XenonCore.instance.getConfigData().getPrefix();
 
 
     public Maintenance() {
-        super("maintenance", XenonCore.instance.getConfigData().getModules().getMaintenanceperm());
-        downServers = new ArrayList<>();
+        super("maintenance", XenonCore.instance.getConfigData().getMaintenance().getMaintenanceperm());
+        XenonCore.instance.setDownServers(new ArrayList<>());
         XenonCore.instance.getBungeeInstance().pluginManager.registerListener(null, this);
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if(!sender.hasPermission(XenonCore.instance.getConfigData().getModules().getMaintenanceperm()))
+        if(!sender.hasPermission(XenonCore.instance.getConfigData().getMaintenance().getMaintenanceperm()))
             return;
 
         if(args.length <= 0) {
-            if (!downServers.contains("proxy")) {
-                downServers.add("proxy");
+            if (!XenonCore.instance.getDownServers().contains("proxy")) {
+                XenonCore.instance.getDownServers().add("proxy");
                 Message.send(sender,
-                        XenonCore.instance.getConfigData().getModules().getMaintenanceaddcommandmessage()
+                        XenonCore.instance.getConfigData().getMaintenance().getMaintenanceaddcommandmessage()
                                 .replace("SERVER", "the whole proxy")
                                 , true);
                 XenonCore.instance.getBungeeInstance().getPlayers().forEach(e -> {
                     if (!e.hasPermission(
-                            XenonCore.instance.getConfigData().getModules().getMaintenancebypassperm())){
-                        e.disconnect(ChatColor.translateAlternateColorCodes('&', XenonCore.instance.getConfigData().getModules().getMaintenancedisconnectmessage()));
+                            XenonCore.instance.getConfigData().getMaintenance().getMaintenancebypassperm())){
+                        e.disconnect(ChatColor.translateAlternateColorCodes('&', XenonCore.instance.getConfigData().getMaintenance().getMaintenancedisconnectmessage()));
                     }
                 });
 
             }
             else {
-                downServers.remove("proxy");
+                XenonCore.instance.getDownServers().remove("proxy");
                 Message.send(sender,
-                        XenonCore.instance.getConfigData().getModules().getMaintenanceremovecommandmessage()
+                        XenonCore.instance.getConfigData().getMaintenance().getMaintenanceremovecommandmessage()
                                 .replace("SERVER", "the whole proxy")
                         , true);
             }
@@ -56,24 +55,24 @@ import java.util.ArrayList;
         switch (args[0]){
             case "add":
                 if(args[1].isEmpty()) Message.send(sender, "Please enter a server name", false);
-                downServers.add(args[1]);
+                XenonCore.instance.getDownServers().add(args[1]);
                 Message.send(sender,
-                        XenonCore.instance.getConfigData().getModules().getMaintenanceaddcommandmessage()
+                        XenonCore.instance.getConfigData().getMaintenance().getMaintenanceaddcommandmessage()
                                 .replace("SERVER", args[1]), true);
                 XenonCore.instance.getBungeeInstance().getPlayers().forEach(e -> {
                     if (!e.hasPermission(
-                            XenonCore.instance.getConfigData().getModules().getMaintenancebypassperm())
+                            XenonCore.instance.getConfigData().getMaintenance().getMaintenancebypassperm())
                     && e.getServer().getInfo().getName().equals(args[1])){
                         e.disconnect(ChatColor.translateAlternateColorCodes('&',
-                                XenonCore.instance.getConfigData().getModules().getMaintenancedisconnectmessage()));
+                                XenonCore.instance.getConfigData().getMaintenance().getMaintenancedisconnectmessage()));
                     }
                 });
                 break;
             case "remove":
                 if(args[1].isEmpty()) Message.send(sender, "Please enter a server name", false);
-                downServers.remove(args[1]);
+                XenonCore.instance.getDownServers().remove(args[1]);
                 Message.send(sender,
-                        XenonCore.instance.getConfigData().getModules().getMaintenanceremovecommandmessage()
+                        XenonCore.instance.getConfigData().getMaintenance().getMaintenanceremovecommandmessage()
                                 .replace("SERVER", args[1]), true);
                 break;
             default:
@@ -85,22 +84,22 @@ import java.util.ArrayList;
     }
     @EventHandler
     public void onJoin(PostLoginEvent e){
-        if(!(Maintenance.downServers.contains("proxy") || Maintenance.downServers.contains(e.getTarget().getName()))) return;
+        if(!(XenonCore.instance.getDownServers().contains("proxy") || XenonCore.instance.getDownServers().contains(e.getTarget().getName()))) return;
 
         if(!e.getPlayer().hasPermission(
-                XenonCore.instance.getConfigData().getModules().getMaintenancebypassperm())) {
+                XenonCore.instance.getConfigData().getMaintenance().getMaintenancebypassperm())) {
             e.getPlayer().disconnect(
-                    ChatColor.translateAlternateColorCodes('&', XenonCore.instance.getConfigData().getModules().getMaintenancedisconnectmessage()));
+                    ChatColor.translateAlternateColorCodes('&', XenonCore.instance.getConfigData().getMaintenance().getMaintenancedisconnectmessage()));
         }
     }
     @EventHandler
     public void onServerSwitch(ServerConnectEvent e){
-        if(!downServers.contains(e.getTarget().getName())) return;
+        if(!XenonCore.instance.getDownServers().contains(e.getTarget().getName())) return;
 
         if(!e.getPlayer().hasPermission(
-                XenonCore.instance.getConfigData().getModules().getMaintenancebypassperm())) {
+                XenonCore.instance.getConfigData().getMaintenance().getMaintenancebypassperm())) {
             e.setCancelled(true);
-            Message.send(e.getPlayer(), XenonCore.instance.getConfigData().getModules().getMaintenancedisconnectmessage(), false);
+            Message.send(e.getPlayer(), XenonCore.instance.getConfigData().getMaintenance().getMaintenancedisconnectmessage(), false);
 
         }
     }

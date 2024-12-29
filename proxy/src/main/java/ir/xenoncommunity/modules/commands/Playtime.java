@@ -17,7 +17,7 @@ public class Playtime extends Command implements Listener {
     private final SQLManager sqlManager;
 
     public Playtime() {
-        super("playtime", XenonCore.instance.getConfigData().getModules().getPlaytimeperm(), "pt");
+        super("playtime", XenonCore.instance.getConfigData().getPlaytime().getPlaytimeperm(), "pt");
         sqlManager = new SQLManager(
                 XenonCore.instance.getConfiguration().getSqlPlaytime(),
                 "CREATE TABLE IF NOT EXISTS Players (" +
@@ -30,7 +30,7 @@ public class Playtime extends Command implements Listener {
 
     @EventHandler
     public void onJoin(final PostLoginEvent event) {
-        if (!event.getPlayer().hasPermission(XenonCore.instance.getConfigData().getModules().getPlaytimeperm())) return;
+        if (!event.getPlayer().hasPermission(XenonCore.instance.getConfigData().getPlaytime().getPlaytimeperm())) return;
 
         XenonCore.instance.getTaskManager().add(() -> {
             try {
@@ -52,7 +52,7 @@ public class Playtime extends Command implements Listener {
 
     @EventHandler
     public void onLeave(final PlayerDisconnectEvent event) {
-        if (!event.getPlayer().hasPermission(XenonCore.instance.getConfigData().getModules().getPlaytimeperm())) return;
+        if (!event.getPlayer().hasPermission(XenonCore.instance.getConfigData().getPlaytime().getPlaytimeperm())) return;
 
         XenonCore.instance.getTaskManager().add(() -> {
             try {
@@ -89,7 +89,7 @@ public class Playtime extends Command implements Listener {
                     preparedStatement.setString(1, playerName);
                     if (preparedStatement.executeQuery().next())
                         Message.send(sender,
-                                XenonCore.instance.getConfigData().getModules().getPlaytimemessage()
+                                XenonCore.instance.getConfigData().getPlaytime().getPlaytimemessage()
                                         .replace("PLAYTIME",
                                                 String.valueOf((((int) sqlManager.getData(playerName, "totalplaytime"))
                                                         / 3600000))),
@@ -101,7 +101,7 @@ public class Playtime extends Command implements Listener {
                 preparedStatement.setString(1, playerName);
                 if (preparedStatement.executeQuery().next())
                     Message.send(sender,
-                            XenonCore.instance.getConfigData().getModules().getPlaytimemessage()
+                            XenonCore.instance.getConfigData().getPlaytime().getPlaytimeothersmessage()
                                     .replace("PLAYER", playerName)
                                     .replace("PLAYTIME",
                                             String.valueOf((((int) sqlManager.getData(playerName, "totalplaytime")) / 3600000))), false);

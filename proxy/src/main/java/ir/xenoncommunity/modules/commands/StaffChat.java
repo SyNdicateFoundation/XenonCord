@@ -18,14 +18,14 @@ import java.util.List;
 public class StaffChat extends Command implements Listener {
     private final ArrayList<String> toggles;
     public StaffChat() {
-        super("staffchat", XenonCore.instance.getConfigData().getModules().getStaffchatperm(), "sc");
+        super("staffchat", XenonCore.instance.getConfigData().getStaffchat().getStaffchatperm(), "sc");
         toggles = new ArrayList<>();
         XenonCore.instance.getBungeeInstance().pluginManager.registerListener(null, this);
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(XenonCore.instance.getConfigData().getModules().getStaffchatperm())) return;
+        if (!sender.hasPermission(XenonCore.instance.getConfigData().getStaffchat().getStaffchatperm())) return;
 
         final String senderName = sender.getName();
 
@@ -47,7 +47,7 @@ public class StaffChat extends Command implements Listener {
         final ProxiedPlayer sender = (ProxiedPlayer) e.getSender();
         final String senderName = sender.getName();
 
-        if (!sender.hasPermission(XenonCore.instance.getConfigData().getModules().getStaffchatperm())
+        if (!sender.hasPermission(XenonCore.instance.getConfigData().getStaffchat().getStaffchatperm())
                 || !toggles.contains(senderName)
                 || e.getMessage().startsWith("/")) {
             return;
@@ -61,9 +61,9 @@ public class StaffChat extends Command implements Listener {
     private void sendMessage(final String msg, final String senderName){
         XenonCore.instance.getTaskManager().add(() ->
                 XenonCore.instance.getBungeeInstance().getPlayers().stream()
-                .filter(proxiedPlayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getModules().getStaffchatperm()))
+                .filter(proxiedPlayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getStaffchat().getStaffchatperm()))
                 .forEach(proxiedPlayer -> Message.send(proxiedPlayer,
-                        XenonCore.instance.getConfigData().getModules().getStaffchatmessage()
+                        XenonCore.instance.getConfigData().getStaffchat().getStaffchatmessage()
                                 .replace("PLAYER", senderName)
                                 .replace("MESSAGE", msg), true)));
     }

@@ -17,7 +17,7 @@ import java.util.logging.Handler;
 
 public class BPlugins extends Command implements Listener {
     public BPlugins() {
-        super("BPlugins", XenonCore.instance.getConfigData().getModules().getPingperm());
+        super("BPlugins", XenonCore.instance.getConfigData().getBplugins().getPluginsperm());
     }
     
     public String prefix = XenonCore.instance.getConfigData().getPrefix();
@@ -25,7 +25,7 @@ public class BPlugins extends Command implements Listener {
     @Override
     @SneakyThrows
     public void execute(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(XenonCore.instance.getConfigData().getModules().getPluginsperm())) {
+        if (!sender.hasPermission(XenonCore.instance.getConfigData().getBplugins().getPluginsperm())) {
             return;
         }
 
@@ -39,13 +39,13 @@ public class BPlugins extends Command implements Listener {
             return;
         }
 
-        if (!sender.hasPermission(XenonCore.instance.getConfigData().getModules().getPluginstoggleperm())) {
+        if (!sender.hasPermission(XenonCore.instance.getConfigData().getBplugins().getPluginstoggleperm())) {
             return;
         }
 
         File plFile = new File(String.format("plugins/%s", args[1]));
         if (!plFile.exists()) {
-            Message.send(sender, XenonCore.instance.getConfigData().getModules().getPlugindoesntexisterrormessage(), false);
+            Message.send(sender, XenonCore.instance.getConfigData().getBplugins().getPlugindoesntexisterrormessage(), false);
             return;
         }
 
@@ -78,7 +78,7 @@ public class BPlugins extends Command implements Listener {
                         manager.loadPlugins();
                         manager.getPlugin(desc.getName()).onEnable();
 
-                        Message.send(sender, XenonCore.instance.getConfigData().getModules().getPluginisloadingmessage()
+                        Message.send(sender, XenonCore.instance.getConfigData().getBplugins().getPluginisloadingmessage()
                                         .replace("PLUGIN", args[1]), true);
                         break;
                     case "unload":
@@ -118,7 +118,7 @@ public class BPlugins extends Command implements Listener {
                         ((URLClassLoader) cl).close();
                         System.gc();
 
-                        Message.send(sender, XenonCore.instance.getConfigData().getModules().getPluginisunloadingmessage()
+                        Message.send(sender, XenonCore.instance.getConfigData().getBplugins().getPluginisunloadingmessage()
                                 .replace("PLUGIN", args[1]), true);
                         break;
                     default:

@@ -26,6 +26,8 @@ public class XenonCore {
     private final Configuration configuration;
     @Setter private Configuration.ConfigData configData;
     private final ModuleManager moduleManager;
+    @Setter private String currentMotd;
+    @Setter private ArrayList<String> downServers = null;
     /**
      * Initializes all required variables.
      */

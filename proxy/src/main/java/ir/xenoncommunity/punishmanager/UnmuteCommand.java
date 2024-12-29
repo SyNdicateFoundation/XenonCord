@@ -4,10 +4,10 @@ import ir.xenoncommunity.utils.SQLManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
-public class UnbanCommand extends Command {
+public class UnmuteCommand extends Command {
     private final SQLManager sqlManager;
-    public UnbanCommand(SQLManager sqlManagerIn){
-        super("unban", "");
+    public UnmuteCommand(SQLManager sqlManagerIn){
+        super("unmute", "");
         this.sqlManager = sqlManagerIn;;
     }
     @Override
