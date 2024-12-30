@@ -48,15 +48,17 @@ public class MuteCommand extends Command {
         XenonCore.instance.getTaskManager().add(() -> {
             try {
                 @Cleanup final PreparedStatement preparedStatement = sqlManager.getConnection().prepareStatement(
-                        "INSERT INTO Players (username, reason, banduration, muteduration, lastpunish) " +
-                                "VALUES (?, ?, 0, ?, ?) " +
+                        "INSERT INTO Players (username, reason, banduration, muteduration, lastpunish, punishadmin) " +
+                                "VALUES (?, ?, 0, ?, ?, ?) " +
                                 "ON CONFLICT (username) DO UPDATE SET muteduration = EXCLUDED.banduration," +
                                 "reason = EXCLUDED.reason," +
-                                "lastpunish = EXCLUDED.lastpunish;");
+                                "lastpunish = EXCLUDED.lastpunish," +
+                                "punishadmin = EXCLUDED.punishadmin;");
                 preparedStatement.setString(1, playerName);
                 preparedStatement.setString(2, reason);
                 preparedStatement.setInt(3, muteDuration);
                 preparedStatement.setInt(4, (int) System.currentTimeMillis());
+                preparedStatement.setString(5, sender.getName());
                 preparedStatement.executeUpdate();
 
                 XenonCore.instance.getBungeeInstance().getPlayers().forEach(player ->

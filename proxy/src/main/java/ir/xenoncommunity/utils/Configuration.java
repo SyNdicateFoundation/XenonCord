@@ -9,10 +9,8 @@ import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 @Getter
 public class Configuration {
@@ -85,6 +83,8 @@ public class Configuration {
             configData.getPunishmanager().setMuteblockmessage(configData.getPunishmanager().getMuteblockmessage().replace("PREFIX", prefix));
             configData.getPunishmanager().setKickannouncemessage(configData.getPunishmanager().getKickannouncemessage().replace("PREFIX", prefix));
             configData.getPunishmanager().setKickdisconnectmessage(configData.getPunishmanager().getKickdisconnectmessage().replace("PREFIX", prefix));
+            configData.getPunishmanager().setUnbanconsolelogmessage(configData.getPunishmanager().getUnbanconsolelogmessage().replace("PREFIX", prefix));
+            configData.getPunishmanager().setUnmuteconsolelogmessage(configData.getPunishmanager().getUnmuteconsolelogmessage().replace("PREFIX", prefix));
 
 
             logger.info("Successfully Initialized!");
@@ -174,7 +174,9 @@ public class Configuration {
         private String banperm, banannouncemessage, bandisconnectmessage,
                 muteperm, muteannouncemessage, muteblockmessage,
                 kickperm, kickannouncemessage, kickdisconnectmessage,
-                clearchatperm, globalclearchatperm;
+                clearchatperm, globalclearchatperm, unbanconsolelogmessage,
+                unmuteconsolelogmessage;
+        private String[] mutecommands;
     }
     @Getter
     @Setter

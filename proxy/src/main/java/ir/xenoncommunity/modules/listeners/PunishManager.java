@@ -19,6 +19,7 @@ import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
 import java.sql.PreparedStatement;
+import java.util.Arrays;
 
 @ModuleListener
 public class PunishManager implements Listener {
@@ -30,7 +31,8 @@ public class PunishManager implements Listener {
                         "reason TEXT," +
                         "banduration BIGINT," +
                         "muteduration BIGINT," +
-                        "lastpunish BIGINT" +
+                        "lastpunish BIGINT," +
+                        "punishadmin TEXT" +
                         ");");
         new Reflections("ir.xenoncommunity.punishmanager").getSubTypesOf(Command.class).forEach(command ->{
             try {
@@ -50,8 +52,9 @@ public class PunishManager implements Listener {
                 final Integer banduration = (Integer) sqlManager.getData(username, "banduration");
                 final Integer lastpunish = (Integer) sqlManager.getData(username, "lastpunish");
                 final Integer currentTime = (int) System.currentTimeMillis();
+                final String punishAdmin = (String) sqlManager.getData(e.getConnection().getName(), "punishadmin");
 
-                if(banduration == null || lastpunish == null || currentTime == null) return;
+                if(banduration == null || lastpunish == null || currentTime == null || punishAdmin == null) return;
 
                 if(banduration > 0){
                     if(currentTime - lastpunish < banduration) {
@@ -68,6 +71,10 @@ public class PunishManager implements Listener {
                     preparedStatement.setString(1, username);
                     preparedStatement.executeUpdate();
                     sqlManager.updateDB(preparedStatement);
+                    Message.send(XenonCore.instance.getConfigData().getPunishmanager().getUnbanconsolelogmessage()
+                            .replace("PLAYER1",
+                            e.getConnection().getName()
+                                    .replace("PLAYER2", punishAdmin)));
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -76,15 +83,17 @@ public class PunishManager implements Listener {
     }
     @EventHandler
     public void onChat(final ChatEvent e){
-        // add commands that should not bypass mute
-        if(e.getMessage().startsWith("/")) return;
+        if(e.getMessage().startsWith("/") && !Arrays.stream(XenonCore.instance.getConfigData().getPunishmanager().getMutecommands()).anyMatch(element -> e.getMessage().startsWith(element))) {
+            return;
+        }
         final String username = ((CommandSender)e.getSender()).getName();
         try {
             final Integer muteduration = (Integer) sqlManager.getData(username, "muteduration");
             final Integer lastpunish = (Integer) sqlManager.getData(username, "lastpunish");
             final Integer currentTime = (int) System.currentTimeMillis();
+            final String punishAdmin = (String) sqlManager.getData(((CommandSender) e.getSender()).getName(), "punishadmin");
 
-            if(muteduration == null || lastpunish == null || currentTime == null) return;
+            if(muteduration == null || lastpunish == null || currentTime == null || punishAdmin == null) return;
 
             if(muteduration > 0){
                 if(currentTime - lastpunish < muteduration) {
@@ -102,6 +111,10 @@ public class PunishManager implements Listener {
                 preparedStatement.setString(1, username);
                 preparedStatement.executeUpdate();
                 sqlManager.updateDB(preparedStatement);
+                Message.send(XenonCore.instance.getConfigData().getPunishmanager().getUnmuteconsolelogmessage()
+                        .replace("PLAYER1",
+                                ((CommandSender) e.getSender()).getName())
+                        .replace("PLAYER2", punishAdmin));
             }
         } catch (Exception ex) {
             ex.printStackTrace();

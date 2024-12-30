@@ -1,5 +1,5 @@
 # General Settings
-prefix: "&9&lXenon&bCord"
+prefix: "&9&lXenon&b&lCord"
 debug: true
 
 # Kick message during loading process
@@ -109,7 +109,14 @@ punishmanager:
   kickdisconnectmessage: "PREFIX\n\n &cPLAYER You are kicked from this server.\nReason: REASON"
   clearchatperm: "xenoncord.punishmanager.clearchat"
   globalclearchatperm: "xenoncord.punishmanager.clearchat.global"
-
+  unbanconsolelogmessage: "PREFIX &aPLAYER1 &bgot unbanned because the ban is expired. they were banned by: &aPLAYER2"
+  unmuteconsolelogmessage: "PREFIX &aPLAYER1 &bgot unmuted because the mute is expired. they were muted by: &aPLAYER2"
+  mutecommands:
+    - "/r"
+    - "/reply"
+    - "/msg"
+    - "/tell"
+    - "/replytoggle"
 
 # CommandWhitelist Settings
 # Requires CommandWhiteList module to be enabled.
