@@ -10,10 +10,12 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.LoginEvent;
+import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.command.ConsoleCommandSender;
 import net.md_5.bungee.event.EventHandler;
 import org.reflections.Reflections;
 
@@ -43,6 +45,7 @@ public class PunishManager implements Listener {
                 XenonCore.instance.getLogger().error(e.getMessage());
             }
         });
+        XenonCore.instance.getBungeeInstance().registerChannel("xenonban:channel");
     }
     @EventHandler
     public void onJoin(final LoginEvent e) {
@@ -74,7 +77,7 @@ public class PunishManager implements Listener {
                     Message.send(XenonCore.instance.getConfigData().getPunishmanager().getUnbanconsolelogmessage()
                             .replace("PLAYER1",
                             e.getConnection().getName()
-                                    .replace("PLAYER2", punishAdmin)));
+                                   ) .replace("PLAYER2", punishAdmin));
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -83,7 +86,9 @@ public class PunishManager implements Listener {
     }
     @EventHandler
     public void onChat(final ChatEvent e){
-        if(e.getMessage().startsWith("/") && !Arrays.stream(XenonCore.instance.getConfigData().getPunishmanager().getMutecommands()).anyMatch(element -> e.getMessage().startsWith(element))) {
+        if(e.getMessage().startsWith("/") &&
+                Arrays.stream(XenonCore.instance.getConfigData().getPunishmanager().getMutecommands())
+                        .noneMatch(element -> e.getMessage().split(" ")[0].equals(element))) {
             return;
         }
         final String username = ((CommandSender)e.getSender()).getName();
@@ -119,5 +124,14 @@ public class PunishManager implements Listener {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+    @EventHandler
+    public void onPluginMessage(PluginMessageEvent e) {
+        if (!e.getTag().equalsIgnoreCase("xenonban:channel")) return;
+
+        XenonCore.instance.getBungeeInstance().getPluginManager().dispatchCommand(
+                XenonCore.instance.getBungeeInstance().getConsole(),
+                new String(e.getData()));
+
     }
 }
