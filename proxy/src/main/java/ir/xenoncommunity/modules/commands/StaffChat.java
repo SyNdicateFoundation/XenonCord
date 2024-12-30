@@ -65,6 +65,9 @@ public class StaffChat extends Command implements Listener {
                 .forEach(proxiedPlayer -> Message.send(proxiedPlayer,
                         XenonCore.instance.getConfigData().getStaffchat().getStaffchatmessage()
                                 .replace("PLAYER", senderName)
-                                .replace("MESSAGE", msg), true)));
+                                .replace("MESSAGE", msg), false)));
+        Message.send(XenonCore.instance.getConfigData().getStaffchat().getStaffchatmessage()
+                .replace("PLAYER", senderName)
+                .replace("MESSAGE", msg));
     }
 }

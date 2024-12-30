@@ -71,8 +71,13 @@ public class BanCommand extends Command {
                             .replace("PLAYER1", sender.getName())
                             .replace("PLAYER2", playerName)
                             .replace("REASON", reason)
-                            .replace("DURATION", String.valueOf(banDuration / 60000)), true);
+                            .replace("DURATION", String.valueOf(banDuration / 60000)), false);
                 });
+                Message.send(XenonCore.instance.getConfigData().getPunishmanager().getBanannouncemessage()
+                        .replace("PLAYER1", sender.getName())
+                        .replace("PLAYER2", playerName)
+                        .replace("REASON", reason)
+                        .replace("DURATION", String.valueOf(banDuration / 60000)));
 
             } catch (Exception e) {
                 e.printStackTrace();

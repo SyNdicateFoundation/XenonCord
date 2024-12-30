@@ -59,8 +59,12 @@ public class KickCommand extends Command {
                     Message.send(player, XenonCore.instance.getConfigData().getPunishmanager().getKickannouncemessage()
                             .replace("PLAYER1", sender.getName())
                             .replace("PLAYER2", playerName)
-                            .replace("REASON", reason), true);
+                            .replace("REASON", reason), false);
             });
+                Message.send(XenonCore.instance.getConfigData().getPunishmanager().getKickannouncemessage()
+                        .replace("PLAYER1", sender.getName())
+                        .replace("PLAYER2", playerName)
+                        .replace("REASON", reason));
 
             } catch (Exception e) {
                 e.printStackTrace();

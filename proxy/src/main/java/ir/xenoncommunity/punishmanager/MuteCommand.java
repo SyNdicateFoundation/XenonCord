@@ -64,8 +64,14 @@ public class MuteCommand extends Command {
                         .replace("PLAYER1", sender.getName())
                         .replace("PLAYER2", playerName)
                         .replace("REASON", reason)
-                        .replace("DURATION", String.valueOf(muteDuration / 60000)), true));
+                        .replace("DURATION", String.valueOf(muteDuration / 60000)), false));
 
+
+                Message.send(XenonCore.instance.getConfigData().getPunishmanager().getMuteannouncemessage()
+                        .replace("PLAYER1", sender.getName())
+                        .replace("PLAYER2", playerName)
+                        .replace("REASON", reason)
+                        .replace("DURATION", String.valueOf(muteDuration / 60000)));
             } catch (Exception e) {
                 e.printStackTrace();
             }

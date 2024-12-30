@@ -14,6 +14,9 @@ import net.md_5.bungee.command.ConsoleCommandSender;
         if(console || senderIn instanceof ConsoleCommandSender)
             XenonCore.instance.getLogger().info(ChatColor.translateAlternateColorCodes('&', message));
     }
+    public void send(final String message){
+        XenonCore.instance.getLogger().info(ChatColor.translateAlternateColorCodes('&', message));
+    }
     public void sendNoPermMessage(final CommandSender senderIn){
         if(!(senderIn instanceof ConsoleCommandSender))
             senderIn.sendMessage(ChatColor.translateAlternateColorCodes('&',

@@ -31,7 +31,7 @@ public class ClearChatCommand extends Command {
 
         XenonCore.instance.getTaskManager().add(() -> XenonCore.instance.getBungeeInstance().getPlayers().forEach(player -> {
             for(int i = 0; i <= 100; i++)
-                Message.send((CommandSender) player, "", false);
+                Message.send(player, "", false);
         }));
 
     }
