@@ -129,6 +129,8 @@ public class PunishManager implements Listener {
     public void onPluginMessage(PluginMessageEvent e) {
         if (!e.getTag().equalsIgnoreCase("xenonban:channel")) return;
 
+        System.out.println("pluginmessage received");
+        System.out.println(new String(e.getData()));
         XenonCore.instance.getBungeeInstance().getPluginManager().dispatchCommand(
                 XenonCore.instance.getBungeeInstance().getConsole(),
                 new String(e.getData()));
