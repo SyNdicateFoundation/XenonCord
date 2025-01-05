@@ -59,6 +59,14 @@ commandspy:
 staffchat:
   staffchatperm: "xenoncord.staffchat"
   staffchatmessage: "PREFIX &cStaffChat &8PLAYER &a» &bMESSAGE"
+  togglemessage: "PREFIX &cStaffChat is now STATE for you!"
+
+# StaffChat Settings
+# Requires StaffChat module to be enabled.
+adminchat:
+  adminchatperm: "xenoncord.adminchat"
+  adminchatmessage: "PREFIX &cStaffChat &8PLAYER &a» &bMESSAGE"
+  togglemessage: "PREFIX &cStaffChat is now STATE for you!"
 
 # Maintenance Settings
 # Requires Maintenance module to be enabled.

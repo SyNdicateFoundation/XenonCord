@@ -1,6 +1,7 @@
 package ir.xenoncommunity.utils;
 
 import ir.xenoncommunity.XenonCore;
+import ir.xenoncommunity.modules.commands.AdminChat;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
@@ -54,28 +55,20 @@ public class Configuration {
             configData.getMotdchanger().setMotd(configData.getMotdchanger().getMotd().replace("PREFIX", prefix));
             configData.getMotdchanger().setMaintenancemotd(configData.getMotdchanger().getMaintenancemotd().replace("PREFIX", prefix));
             configData.getCommandspy().setSpybypass(configData.getCommandspy().getSpybypass().replace("PREFIX", prefix));
-            configData.getCommandspy().setSpyperm(configData.getCommandspy().getSpyperm().replace("PREFIX", prefix));
             configData.getCommandspy().setSpymessage(configData.getCommandspy().getSpymessage().replace("PREFIX", prefix));
-            configData.getStaffchat().setStaffchatperm(configData.getStaffchat().getStaffchatperm().replace("PREFIX", prefix));
             configData.getStaffchat().setStaffchatmessage(configData.getStaffchat().getStaffchatmessage().replace("PREFIX", prefix));
-            configData.getMaintenance().setMaintenanceperm(configData.getMaintenance().getMaintenanceperm().replace("PREFIX", prefix));
-            configData.getMaintenance().setMaintenancebypassperm(configData.getMaintenance().getMaintenancebypassperm().replace("PREFIX", prefix));
-            configData.getMaintenance().setMaintenanceaddcommandmessage(configData.getMaintenance().getMaintenanceaddcommandmessage().replace("PREFIX", prefix));
+            configData.getStaffchat().setTogglemessage(configData.getStaffchat().getTogglemessage().replace("PREFIX", prefix));
+            configData.getAdminchat().setAdminchatmessage(configData.getAdminchat().getAdminchatmessage().replace("PREFIX", prefix));
+            configData.getAdminchat().setTogglemessage(configData.getAdminchat().getTogglemessage().replace("PREFIX", prefix));configData.getMaintenance().setMaintenanceaddcommandmessage(configData.getMaintenance().getMaintenanceaddcommandmessage().replace("PREFIX", prefix));
             configData.getMaintenance().setMaintenanceremovecommandmessage(configData.getMaintenance().getMaintenanceremovecommandmessage().replace("PREFIX", prefix));
             configData.getMaintenance().setMaintenancedisconnectmessage(configData.getMaintenance().getMaintenancedisconnectmessage().replace("PREFIX", prefix));
-            configData.getPing().setPingperm(configData.getPing().getPingperm().replace("PREFIX", prefix));
-            configData.getPing().setPingothersperm(configData.getPing().getPingothersperm().replace("PREFIX", prefix));
             configData.getPing().setPingmessage(configData.getPing().getPingmessage().replace("PREFIX", prefix));
             configData.getPing().setPingothersmessage(configData.getPing().getPingothersmessage().replace("PREFIX", prefix));
             configData.getBplugins().setPluginisloadingmessage(configData.getBplugins().getPluginisloadingmessage().replace("PREFIX", prefix));
             configData.getBplugins().setPluginisunloadingmessage(configData.getBplugins().getPluginisunloadingmessage().replace("PREFIX", prefix));
             configData.getBplugins().setPlugindoesntexisterrormessage(configData.getBplugins().getPlugindoesntexisterrormessage().replace("PREFIX", prefix));
-            configData.getBplugins().setPluginsperm(configData.getBplugins().getPluginsperm().replace("PREFIX", prefix));
-            configData.getBplugins().setPluginstoggleperm(configData.getBplugins().getPluginstoggleperm().replace("PREFIX", prefix));
             configData.getPlaytime().setPlaytimemessage(configData.getPlaytime().getPlaytimemessage().replace("PREFIX", prefix));
             configData.getPlaytime().setPlaytimeothersmessage(configData.getPlaytime().getPlaytimeothersmessage().replace("PREFIX", prefix));
-            configData.getPlaytime().setPlaytimeperm(configData.getPlaytime().getPlaytimeperm().replace("PREFIX", prefix));
-            configData.getPlaytime().setPlaytimeothersperm(configData.getPlaytime().getPlaytimeothersperm().replace("PREFIX", prefix));
             configData.getCommandwhitelist().setBlockmessage(configData.getCommandwhitelist().getBlockmessage().replace("PREFIX", prefix));
             configData.getPunishmanager().setBanannouncemessage(configData.getPunishmanager().getBanannouncemessage().replace("PREFIX", prefix));
             configData.getPunishmanager().setBandisconnectmessage(configData.getPunishmanager().getBandisconnectmessage().replace("PREFIX", prefix));
@@ -115,6 +108,7 @@ public class Configuration {
         private MotdChangerData motdchanger;
         private CommandSpyData commandspy;
         private StaffChatData staffchat;
+        private AdminChatData adminchat;
         private MaintenanceData maintenance;
         private PingData ping;
         private BpluginsData bplugins;
@@ -141,7 +135,12 @@ public class Configuration {
     @Getter
     @Setter
     public static class StaffChatData {
-        private String staffchatperm, staffchatmessage;
+        private String staffchatperm, staffchatmessage, togglemessage;
+    }
+    @Getter
+    @Setter
+    public static class AdminChatData {
+        private String adminchatperm, adminchatmessage, togglemessage;
     }
     @Getter
     @Setter
