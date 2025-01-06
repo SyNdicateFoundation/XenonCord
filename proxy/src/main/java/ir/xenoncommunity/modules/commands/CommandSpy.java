@@ -17,10 +17,10 @@ import java.util.Arrays;
 @SuppressWarnings("unused")
 @ModuleListener
 public class CommandSpy extends Command implements Listener {
-    private ArrayList<String> spyOffPlayers;
+    private final ArrayList<String> spyPlayers;
     public CommandSpy() {
-        super("cmdspy", XenonCore.instance.getConfigData().getCommandspy().getSpyperm(), "spyoff");
-        spyOffPlayers = new ArrayList<>();
+        super("cmdspy", XenonCore.instance.getConfigData().getCommandspy().getSpyperm());
+        spyPlayers = new ArrayList<>();
     }
 
     @Override
@@ -29,8 +29,16 @@ public class CommandSpy extends Command implements Listener {
         && sender.hasPermission(XenonCore.instance.getConfigData().getCommandspy().getSpyperm())) {
             if(sender instanceof ConsoleCommandSender) return;
 
-            if(spyOffPlayers.contains(sender.getName())) spyOffPlayers.remove(sender.getName());
-            else spyOffPlayers.add(sender.getName());
+            if(spyPlayers.contains(sender.getName())){
+                Message.send(sender, XenonCore.instance.getConfigData().getCommandspy().getSpytogglemessage()
+                        .replace("STATE", "disabled"), false);
+                spyPlayers.remove(sender.getName());
+            }
+            else {
+                Message.send(sender, XenonCore.instance.getConfigData().getCommandspy().getSpytogglemessage()
+                        .replace("STATE", "enabled"), false);
+                spyPlayers.add(sender.getName());
+            }
         }
     }
     @EventHandler
@@ -50,7 +58,7 @@ public class CommandSpy extends Command implements Listener {
             XenonCore.instance.getBungeeInstance().getPlayers().stream()
                     .filter(proxiedPlayer ->
                             proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getCommandspy().getSpyperm())
-                                    && spyOffPlayers.contains(proxiedPlayer.getName()))
+                                    && spyPlayers.contains(proxiedPlayer.getName()))
                     .forEach(proxiedPlayer -> Message.send(proxiedPlayer,
                             XenonCore.instance.getConfigData().getCommandspy().getSpymessage()
                                     .replace("PLAYER", player.getDisplayName())

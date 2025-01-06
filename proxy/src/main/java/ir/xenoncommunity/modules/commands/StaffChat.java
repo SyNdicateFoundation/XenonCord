@@ -32,8 +32,16 @@ public class StaffChat extends Command implements Listener {
         if(args.length == 0) {
             if(sender instanceof ConsoleCommandSender) return;
 
-            if(toggles.contains(senderName)) toggles.remove(senderName);
-            else toggles.add(senderName);
+            if(toggles.contains(senderName)) {
+                Message.send(sender, XenonCore.instance.getConfigData().getStaffchat().getTogglemessage()
+                        .replace("STATE", "disabled"), false);
+                toggles.remove(senderName);
+            }
+            else {
+                Message.send(sender, XenonCore.instance.getConfigData().getStaffchat().getTogglemessage()
+                        .replace("STATE", "enabled"), false);
+                toggles.add(senderName);
+            }
 
             return;
         }

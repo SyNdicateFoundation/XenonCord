@@ -27,6 +27,7 @@ modules:
     - MotdChanger
     - CommandSpy
     - StaffChat
+    - AdminChat
     #- CommandWhitelist
     - Maintenance
     - Ping
@@ -53,6 +54,7 @@ commandspy:
   spybypass: "xenoncord.spy.bypass"
   spyperm: "xenoncord.spy.alerts"
   spymessage: "PREFIX &r&dPLAYER &b» COMMAND"
+  spytogglemessage: "PREFIX &cCommand Spy is now STATE for you."
 
 # StaffChat Settings
 # Requires StaffChat module to be enabled.
@@ -65,8 +67,8 @@ staffchat:
 # Requires StaffChat module to be enabled.
 adminchat:
   adminchatperm: "xenoncord.adminchat"
-  adminchatmessage: "PREFIX &cStaffChat &8PLAYER &a» &bMESSAGE"
-  togglemessage: "PREFIX &cStaffChat is now STATE for you!"
+  adminchatmessage: "PREFIX &cAdminChat &8PLAYER &a» &bMESSAGE"
+  togglemessage: "PREFIX &cAdminChat is now STATE for you!"
 
 # Maintenance Settings
 # Requires Maintenance module to be enabled.
@@ -106,6 +108,11 @@ playtime:
 # Requires PunishManager module to be enabled.
 # NOTE: clearchat works for self, means to clear the whole chat for all players, you need to use global argument.
 punishmanager:
+  # XenonCord supports a plugin channel with XenonBanBackend
+  # on your spigot to actually execute the ban cmd on bungee console
+  # so it'll get litebans to work.
+  # available: XenonCord, LiteBans
+  mode: LiteBans
   banperm: "xenoncord.punishmanager.ban"
   banannouncemessage: "PREFIX &aPLAYER1 &cbanned &aPLAYER2 &cfor &aREASON &cuntil DURATION."
   bandisconnectmessage: "PREFIX\n\n &cPLAYER You are banned from this server.\nReason: REASON\nduration: DURATION"

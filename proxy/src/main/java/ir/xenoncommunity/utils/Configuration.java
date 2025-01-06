@@ -56,6 +56,7 @@ public class Configuration {
             configData.getMotdchanger().setMaintenancemotd(configData.getMotdchanger().getMaintenancemotd().replace("PREFIX", prefix));
             configData.getCommandspy().setSpybypass(configData.getCommandspy().getSpybypass().replace("PREFIX", prefix));
             configData.getCommandspy().setSpymessage(configData.getCommandspy().getSpymessage().replace("PREFIX", prefix));
+            configData.getCommandspy().setSpytogglemessage(configData.getCommandspy().getSpytogglemessage().replace("PREFIX", prefix));
             configData.getStaffchat().setStaffchatmessage(configData.getStaffchat().getStaffchatmessage().replace("PREFIX", prefix));
             configData.getStaffchat().setTogglemessage(configData.getStaffchat().getTogglemessage().replace("PREFIX", prefix));
             configData.getAdminchat().setAdminchatmessage(configData.getAdminchat().getAdminchatmessage().replace("PREFIX", prefix));
@@ -129,7 +130,7 @@ public class Configuration {
     @Getter
     @Setter
     public static class CommandSpyData {
-        private String spymessage, spyperm, spybypass;
+        private String spymessage, spyperm, spybypass, spytogglemessage;
         private String[] spyexceptions;
     }
     @Getter
@@ -170,7 +171,7 @@ public class Configuration {
     @Getter
     @Setter
     public static class PunishManagerData {
-        private String banperm, banannouncemessage, bandisconnectmessage,
+        private String mode, banperm, banannouncemessage, bandisconnectmessage,
                 muteperm, muteannouncemessage, muteblockmessage,
                 kickperm, kickannouncemessage, kickdisconnectmessage,
                 clearchatperm, globalclearchatperm, unbanconsolelogmessage,

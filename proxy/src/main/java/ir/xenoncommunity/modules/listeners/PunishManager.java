@@ -27,6 +27,9 @@ import java.util.Arrays;
 public class PunishManager implements Listener {
     private SQLManager sqlManager;
     public PunishManager(){
+        XenonCore.instance.getBungeeInstance().registerChannel("xenonban:channel");
+        if(XenonCore.instance.getConfigData().getPunishmanager().getMode().equals("LiteBans")) return;
+
         sqlManager = new SQLManager(XenonCore.instance.getConfiguration().getSqlPunishments(),
                 "CREATE TABLE IF NOT EXISTS Players (" +
                         "username TEXT PRIMARY KEY," +
@@ -36,6 +39,7 @@ public class PunishManager implements Listener {
                         "lastpunish BIGINT," +
                         "punishadmin TEXT" +
                         ");");
+
         new Reflections("ir.xenoncommunity.punishmanager").getSubTypesOf(Command.class).forEach(command ->{
             try {
                 Constructor<?> constructor = command.getConstructor(SQLManager.class);
@@ -45,7 +49,6 @@ public class PunishManager implements Listener {
                 XenonCore.instance.getLogger().error(e.getMessage());
             }
         });
-        XenonCore.instance.getBungeeInstance().registerChannel("xenonban:channel");
     }
     @EventHandler
     public void onJoin(final LoginEvent e) {
