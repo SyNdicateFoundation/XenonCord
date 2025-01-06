@@ -298,9 +298,13 @@ public class YamlConfig implements ConfigurationAdapter
     @SuppressWarnings("unchecked")
     public Collection<String> getGroups(String player)
     {
-        Collection<String> ret = new HashSet<>();
-        ret.add( "default" );
-        return ret;
+        return new HashSet<>();
+    }
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection<String> getPermissions(String group)
+    {
+        return Collections.EMPTY_SET;
     }
 
 }

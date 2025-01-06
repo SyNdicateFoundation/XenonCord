@@ -73,4 +73,12 @@ public interface ConfigurationAdapter
      * @return all the player's groups.
      */
     public Collection<String> getGroups(String player);
+    /**
+     * Get all permission corresponding to the specified group. The result of
+     * this method may or may not be cached, depending on the implementation.
+     *
+     * @param group the group to check
+     * @return all true permissions for this group
+     */
+    public Collection<String> getPermissions(String group);
 }
