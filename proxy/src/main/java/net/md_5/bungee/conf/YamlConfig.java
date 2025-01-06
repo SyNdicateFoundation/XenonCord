@@ -294,4 +294,13 @@ public class YamlConfig implements ConfigurationAdapter
         return get( path, def );
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection<String> getGroups(String player)
+    {
+        Collection<String> ret = new HashSet<>();
+        ret.add( "default" );
+        return ret;
+    }
+
 }

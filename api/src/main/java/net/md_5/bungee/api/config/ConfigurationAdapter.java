@@ -65,4 +65,12 @@ public interface ConfigurationAdapter
      * @return a list of all hosts to bind to
      */
     public Collection<ListenerInfo> getListeners();
+
+    /**
+     * Get all groups this player is in.
+     *
+     * @param player the player to check
+     * @return all the player's groups.
+     */
+    public Collection<String> getGroups(String player);
 }

@@ -52,6 +52,7 @@ public class PunishManager implements Listener {
     }
     @EventHandler
     public void onJoin(final LoginEvent e) {
+        if(XenonCore.instance.getConfigData().getPunishmanager().getMode().equals("LiteBans")) return;
         final String username = e.getConnection().getName();
         XenonCore.instance.getTaskManager().add(() -> {
             try {
@@ -89,6 +90,7 @@ public class PunishManager implements Listener {
     }
     @EventHandler
     public void onChat(final ChatEvent e){
+        if(XenonCore.instance.getConfigData().getPunishmanager().getMode().equals("LiteBans")) return;
         if(e.getMessage().startsWith("/") &&
                 Arrays.stream(XenonCore.instance.getConfigData().getPunishmanager().getMutecommands())
                         .noneMatch(element -> e.getMessage().split(" ")[0].equals(element))) {
@@ -132,7 +134,6 @@ public class PunishManager implements Listener {
     public void onPluginMessage(PluginMessageEvent e) {
         if (!e.getTag().equalsIgnoreCase("xenonban:channel")) return;
 
-        System.out.println(new String(e.getData()));
         XenonCore.instance.getBungeeInstance().getPluginManager().dispatchCommand(
                 XenonCore.instance.getBungeeInstance().getConsole(),
                 new String(e.getData()));
