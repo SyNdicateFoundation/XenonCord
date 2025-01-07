@@ -126,6 +126,7 @@ public class Configuration {
     @Setter
     public static class MotdChangerData {
         private String motd, maintenancemotd;
+        private Boolean onemoreplayer;
     }
     @Getter
     @Setter

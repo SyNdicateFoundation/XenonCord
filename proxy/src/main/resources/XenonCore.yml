@@ -10,7 +10,7 @@ loadingmessage: "PREFIX\n &r&cstill loading.\n\n &cYou got disconnected to preve
 ingamebrandname: "XenonCord"
 
 # GUI Settings
-usegui: true
+usegui: false
 # GUI refresh rate in milliseconds
 guirefreshrate: 3000
 
@@ -41,6 +41,8 @@ modules:
 motdchanger:
   motd: "&b&lA &9&lXenon&bCord server."
   maintenancemotd: "&b&lA &9&lXenon&bCord server is on maintenance. "
+  # Just like that plugin to increase players by online count + 1
+  onemoreplayer: true
 
 # CommandSpy Settings
 # Requires CommandSpy module to be enabled.
