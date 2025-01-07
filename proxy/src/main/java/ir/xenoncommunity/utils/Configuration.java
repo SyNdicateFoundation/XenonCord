@@ -52,6 +52,8 @@ public class Configuration {
             configData.setLoadingmessage(configData.getLoadingmessage().replace("PREFIX", prefix));
             configData.setCannotexecasconsoleerrormessage(configData.getCannotexecasconsoleerrormessage().replace("PREFIX", prefix));
             configData.setUnknownoptionmessage(configData.getUnknownoptionmessage().replace("PREFIX", prefix));
+            configData.setReloadmessage(configData.getReloadmessage().replace("PREFIX", prefix));
+            configData.setReloadcompletemessage(configData.getReloadcompletemessage().replace("PREFIX", prefix));
             configData.getMotdchanger().setMotd(configData.getMotdchanger().getMotd().replace("PREFIX", prefix));
             configData.getMotdchanger().setMaintenancemotd(configData.getMotdchanger().getMaintenancemotd().replace("PREFIX", prefix));
             configData.getCommandspy().setSpybypass(configData.getCommandspy().getSpybypass().replace("PREFIX", prefix));
@@ -102,7 +104,8 @@ public class Configuration {
     @Getter
     @Setter
     public static class ConfigData{
-        private String prefix, loadingmessage, ingamebrandname, cannotexecasconsoleerrormessage, unknownoptionmessage;
+        private String prefix, loadingmessage, ingamebrandname, cannotexecasconsoleerrormessage,
+                unknownoptionmessage, xenoncordperm, reloadperm, reloadmessage, reloadcompletemessage;
         private boolean debug, usegui;
         private long guirefreshrate;
         private ModulesData modules;

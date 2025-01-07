@@ -20,6 +20,18 @@ cannotexecasconsoleerrormessage: "PREFIX &cCannot execute this command as consol
 # Command error messages
 unknownoptionmessage: "PREFIX &cUnknown option, available: OPTIONS"
 
+# XenonCord command perm
+xenoncordperm: "xenoncord.xenoncord"
+
+# "xenoncord reload" Command Permission
+reloadperm: "xenoncord.xenoncord.reload"
+
+# Reload Command Message
+reloadmessage: "PREFIX Proxy is now reloading...!"
+
+# Reload complete message
+reloadcompletemessage: "PREFIX Reload is now complete!"
+
 # Modules Settings
 modules:
   # Enabled Modules

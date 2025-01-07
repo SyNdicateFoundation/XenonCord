@@ -15,7 +15,7 @@ import java.util.Arrays;
 
 @SuppressWarnings("unused")
 public class AdminChat extends Command implements Listener {
-    private final ArrayList<String> toggles;
+    public static ArrayList<String> toggles;
     public AdminChat() {
         super("adminchat", XenonCore.instance.getConfigData().getAdminchat().getAdminchatperm(), "ac");
         toggles = new ArrayList<>();
@@ -47,8 +47,8 @@ public class AdminChat extends Command implements Listener {
             final StringBuilder stringBuilder = new StringBuilder();
             Arrays.stream(args).forEach(string -> stringBuilder.append(string).append(" "));
             sendMessage(stringBuilder.toString(), senderName);
-
     }
+
     @EventHandler
     public void onChat(ChatEvent e){
         final ProxiedPlayer sender = (ProxiedPlayer) e.getSender();
@@ -61,6 +61,8 @@ public class AdminChat extends Command implements Listener {
         }
 
         e.setCancelled(true);
+
+        if(StaffChat.toggles != null && StaffChat.toggles.contains(senderName)) return;
 
         sendMessage(e.getMessage(), senderName);
     }

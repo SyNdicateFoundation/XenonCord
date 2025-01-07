@@ -16,7 +16,7 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class StaffChat extends Command implements Listener {
-    private final ArrayList<String> toggles;
+    public static ArrayList<String> toggles;
     public StaffChat() {
         super("staffchat", XenonCore.instance.getConfigData().getStaffchat().getStaffchatperm(), "sc");
         toggles = new ArrayList<>();
@@ -62,6 +62,8 @@ public class StaffChat extends Command implements Listener {
         }
 
         e.setCancelled(true);
+
+        if(AdminChat.toggles != null && AdminChat.toggles.contains(senderName)) return;
 
         sendMessage(e.getMessage(), senderName);
     }
