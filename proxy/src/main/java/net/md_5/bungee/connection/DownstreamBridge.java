@@ -271,7 +271,7 @@ public class DownstreamBridge extends PacketHandler
             t = serverScoreboard.getTeam( team.getName() );
         }
 
-        if ( t != null ) return;
+        if ( t == null ) return;
 
         if ( team.getMode() == 0 || team.getMode() == 2 )
         {
