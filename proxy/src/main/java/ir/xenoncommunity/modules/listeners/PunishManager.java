@@ -13,7 +13,6 @@ import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.command.ConsoleCommandSender;
 import net.md_5.bungee.event.EventHandler;
 import org.reflections.Reflections;
 
@@ -22,7 +21,6 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 
 import java.lang.reflect.Constructor;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.PreparedStatement;
@@ -32,7 +30,7 @@ import java.util.Arrays;
 public class PunishManager implements Listener {
     private SQLManager sqlManager;
     public PunishManager(){
-        initBackend();
+        XenonCore.instance.getTaskManager().async(this::initBackend);
         if(XenonCore.instance.getConfigData().getPunishmanager().getMode().equals("LiteBans")) return;
 
         sqlManager = new SQLManager(XenonCore.instance.getConfiguration().getSqlPunishments(),
@@ -145,6 +143,8 @@ public class PunishManager implements Listener {
 
             String req;
             while((req = br.readLine()) != null){
+
+                System.out.println(req);
                 XenonCore.instance.getBungeeInstance().getPluginManager().dispatchCommand(
                         XenonCore.instance.getBungeeInstance().getConsole(), req
                 );
