@@ -5,21 +5,26 @@ import ir.xenoncommunity.annotations.ModuleListener;
 import ir.xenoncommunity.utils.Message;
 import ir.xenoncommunity.utils.SQLManager;
 import lombok.Cleanup;
+import lombok.SneakyThrows;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.LoginEvent;
-import net.md_5.bungee.api.event.PluginMessageEvent;
-import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.command.ConsoleCommandSender;
 import net.md_5.bungee.event.EventHandler;
 import org.reflections.Reflections;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+
 import java.lang.reflect.Constructor;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.sql.PreparedStatement;
 import java.util.Arrays;
 
@@ -27,7 +32,7 @@ import java.util.Arrays;
 public class PunishManager implements Listener {
     private SQLManager sqlManager;
     public PunishManager(){
-        XenonCore.instance.getBungeeInstance().registerChannel("xenonban:channel");
+        initBackend();
         if(XenonCore.instance.getConfigData().getPunishmanager().getMode().equals("LiteBans")) return;
 
         sqlManager = new SQLManager(XenonCore.instance.getConfiguration().getSqlPunishments(),
@@ -130,13 +135,22 @@ public class PunishManager implements Listener {
             ex.printStackTrace();
         }
     }
-    @EventHandler
-    public void onPluginMessage(PluginMessageEvent e) {
-        if (!e.getTag().equalsIgnoreCase("xenonban:channel")) return;
 
-        XenonCore.instance.getBungeeInstance().getPluginManager().dispatchCommand(
-                XenonCore.instance.getBungeeInstance().getConsole(),
-                new String(e.getData()));
+    @SneakyThrows private void initBackend(){
+        @Cleanup final ServerSocket serverSocket = new ServerSocket( 20019, 50, InetAddress.getByName("127.0.0.1"));
+
+        while(true){
+            @Cleanup final Socket socket = serverSocket.accept();
+            @Cleanup final BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            String req;
+            while((req = br.readLine()) != null){
+                XenonCore.instance.getBungeeInstance().getPluginManager().dispatchCommand(
+                        XenonCore.instance.getBungeeInstance().getConsole(), req
+                );
+            }
+        }
+
 
     }
 }
