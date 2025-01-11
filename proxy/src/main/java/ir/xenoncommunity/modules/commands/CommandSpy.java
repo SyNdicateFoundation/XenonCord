@@ -28,11 +28,11 @@ public class CommandSpy extends Command implements Listener {
     @Override
     @SneakyThrows
     public void execute(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(XenonCore.instance.getConfigData().getMaintenance().getMaintenanceperm()))
+        if (!sender.hasPermission(XenonCore.instance.getConfigData().getCommandspy().getSpyperm()))
             return;
 
         final String senderName = sender.getName();
-        if (args.length <= 0) {
+        if (args.length == 0) {
             if (!spyPlayers.contains(senderName)) {
                 spyPlayers.add(senderName);
                 Message.send(sender,
