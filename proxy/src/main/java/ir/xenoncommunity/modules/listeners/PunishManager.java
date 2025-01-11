@@ -144,7 +144,6 @@ public class PunishManager implements Listener {
             String req;
             while((req = br.readLine()) != null){
 
-                System.out.println(req);
                 XenonCore.instance.getBungeeInstance().getPluginManager().dispatchCommand(
                         XenonCore.instance.getBungeeInstance().getConsole(), req
                 );
