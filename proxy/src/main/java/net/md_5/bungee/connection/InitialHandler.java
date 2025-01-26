@@ -15,6 +15,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.http.HttpClient;
+import net.md_5.bungee.jni.cipher.BungeeCipher;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.HandlerBoss;
 import net.md_5.bungee.netty.PacketHandler;
@@ -374,62 +375,69 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     }
 
     @Override
-    public void handle(final EncryptionResponse encryptResponse) throws Exception {
-        Preconditions.checkState(thisState == State.ENCRYPT, "Not expecting ENCRYPT");
-        Preconditions.checkState(EncryptionUtil.check(loginRequest.getPublicKey(), encryptResponse, request), "Invalid verification");
+    public void handle(final EncryptionResponse encryptResponse) throws Exception
+    {
+        Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
+        Preconditions.checkState( EncryptionUtil.check( loginRequest.getPublicKey(), encryptResponse, request ), "Invalid verification" );
+        thisState = State.FINISHING; // Waterfall - move earlier - There is no verification of this later (and this is not API)
 
-        thisState = State.FINISHING; // Move earlier - There is no verification of this later (and this is not API)
-
-        SecretKey sharedKey = EncryptionUtil.getSecret(encryptResponse, request);
-
-        if (sharedKey instanceof SecretKeySpec && sharedKey.getEncoded().length != 16) {
-            ch.close();
-            return;
-        }
-
-        ch.addBefore(PipelineUtils.FRAME_DECODER, PipelineUtils.DECRYPT_HANDLER, new CipherDecoder(EncryptionUtil.getCipher(false, sharedKey)));
-        ch.addBefore(PipelineUtils.FRAME_PREPENDER, PipelineUtils.ENCRYPT_HANDLER, new CipherEncoder(EncryptionUtil.getCipher(true, sharedKey)));
-
-        String encName = URLEncoder.encode(InitialHandler.this.getName(), "UTF-8");
-
-        MessageDigest sha = MessageDigest.getInstance("SHA-1");
-        XenonCore.instance.getTaskManager().add(() -> {
-            try{
-                for (byte[] bit : new byte[][]{
-                        request.getServerId().getBytes("ISO_8859_1"),
-                        sharedKey.getEncoded(),
-                        EncryptionUtil.keys.getPublic().getEncoded()
-                }) {
-                    sha.update(bit);
-                }
-
-                HttpClient.get(String.format(
-                                MOJANG_AUTH_URL,
-                                encName,
-                                URLEncoder.encode(new BigInteger(sha.digest()).toString(16), "UTF-8"),
-                                (BungeeCord.getInstance().config.isPreventProxyConnections() && getSocketAddress() instanceof InetSocketAddress)
-                                        ? "&ip=" + URLEncoder.encode(getAddress().getAddress().getHostAddress(), "UTF-8")
-                                        : "")
-                        , ch.getHandle().eventLoop(),
-                        (result, error) -> {
-                            if (error == null) {
-                                LoginResult obj = BungeeCord.getInstance().gson.fromJson(result, LoginResult.class);
-                                if (obj != null && obj.getId() != null) {
-                                    loginProfile = obj;
-                                    name = obj.getName();
-                                    uniqueId = Util.getUUID(obj.getId());
-                                    finish();
-                                } else
-                                    disconnect(bungee.getTranslation("offline_mode_player"));
-                            } else {
-                                disconnect(bungee.getTranslation("mojang_fail"));
-                                bungee.getLogger().log(Level.SEVERE, "Error authenticating " + getName() + " with minecraft.net", error);
-                            }
-                        });
-            }catch(Exception e){
-                e.printStackTrace();
+        SecretKey sharedKey = EncryptionUtil.getSecret( encryptResponse, request );
+        // Waterfall start
+        if (sharedKey instanceof SecretKeySpec) {
+            if (sharedKey.getEncoded().length != 16) {
+                this.ch.close();
+                return;
             }
-        });
+        }
+        // Waterfall end
+        BungeeCipher decrypt = EncryptionUtil.getCipher( false, sharedKey );
+        ch.addBefore( PipelineUtils.FRAME_DECODER, PipelineUtils.DECRYPT_HANDLER, new CipherDecoder( decrypt ) );
+        BungeeCipher encrypt = EncryptionUtil.getCipher( true, sharedKey );
+        ch.addBefore( PipelineUtils.FRAME_PREPENDER, PipelineUtils.ENCRYPT_HANDLER, new CipherEncoder( encrypt ) );
+        // disable use of composite buffers if we use natives
+        ch.updateComposite();
+
+        String encName = URLEncoder.encode( InitialHandler.this.getName(), "UTF-8" );
+
+        MessageDigest sha = MessageDigest.getInstance( "SHA-1" );
+        for ( byte[] bit : new byte[][]
+                {
+                        request.getServerId().getBytes( "ISO_8859_1" ), sharedKey.getEncoded(), EncryptionUtil.keys.getPublic().getEncoded()
+                } )
+        {
+            sha.update( bit );
+        }
+        String encodedHash = URLEncoder.encode( new BigInteger( sha.digest() ).toString( 16 ), "UTF-8" );
+
+        String preventProxy = ( BungeeCord.getInstance().config.isPreventProxyConnections() && getSocketAddress() instanceof InetSocketAddress ) ? "&ip=" + URLEncoder.encode( getAddress().getAddress().getHostAddress(), "UTF-8" ) : "";
+        String authURL = String.format( MOJANG_AUTH_URL, encName, encodedHash, preventProxy );
+
+        Callback<String> handler = new Callback<String>()
+        {
+            @Override
+            public void done(String result, Throwable error)
+            {
+                if ( error == null )
+                {
+                    LoginResult obj = BungeeCord.getInstance().gson.fromJson( result, LoginResult.class );
+                    if ( obj != null && obj.getId() != null )
+                    {
+                        loginProfile = obj;
+                        name = obj.getName();
+                        uniqueId = Util.getUUID( obj.getId() );
+                        finish();
+                        return;
+                    }
+                    disconnect( bungee.getTranslation( "offline_mode_player" ) );
+                } else
+                {
+                    disconnect( bungee.getTranslation( "mojang_fail" ) );
+                    bungee.getLogger().log( Level.SEVERE, "Error authenticating " + getName() + " with minecraft.net", error );
+                }
+            }
+        };
+        //thisState = State.FINISHING; // Waterfall - move earlier
+        HttpClient.get( authURL, ch.getHandle().eventLoop(), handler );
     }
 
     private void finish() {
