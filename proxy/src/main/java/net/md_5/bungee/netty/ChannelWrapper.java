@@ -22,225 +22,152 @@ import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
 import net.md_5.bungee.protocol.packet.Kick;
 
-public class ChannelWrapper
-{
-
+public class ChannelWrapper {
     private final Channel ch;
-    @Getter
-    @Setter
-    private SocketAddress remoteAddress;
-    @Getter
-    private volatile boolean closed;
-    @Getter
-    private volatile boolean closing;
+    @Getter @Setter private SocketAddress remoteAddress;
+    @Getter private volatile boolean closed, closing;
 
-    public ChannelWrapper(ChannelHandlerContext ctx)
-    {
+    public ChannelWrapper(ChannelHandlerContext ctx) {
         this.ch = ctx.channel();
-        this.remoteAddress = ( this.ch.remoteAddress() == null ) ? this.ch.parent().localAddress() : this.ch.remoteAddress();
+        this.remoteAddress = (this.ch.remoteAddress() == null) ? this.ch.parent().localAddress() : this.ch.remoteAddress();
     }
 
-    public Protocol getDecodeProtocol()
-    {
+    public Protocol getDecodeProtocol() {
         return getMinecraftDecoder().getProtocol();
     }
 
-    public void setDecodeProtocol(Protocol protocol)
-    {
-        getMinecraftDecoder().setProtocol( protocol );
+    public void setDecodeProtocol(Protocol protocol) {
+        getMinecraftDecoder().setProtocol(protocol);
     }
 
-    public Protocol getEncodeProtocol()
-    {
+    public Protocol getEncodeProtocol() {
         return getMinecraftEncoder().getProtocol();
     }
 
-    public void setEncodeProtocol(Protocol protocol)
-    {
-        getMinecraftEncoder().setProtocol( protocol );
+    public void setEncodeProtocol(Protocol protocol) {
+        getMinecraftEncoder().setProtocol(protocol);
     }
 
-    public void setProtocol(Protocol protocol)
-    {
-        setDecodeProtocol( protocol );
-        setEncodeProtocol( protocol );
+    public void setProtocol(Protocol protocol) {
+        setDecodeProtocol(protocol);
+        setEncodeProtocol(protocol);
     }
 
-    public void setVersion(int protocol)
-    {
-        getMinecraftDecoder().setProtocolVersion( protocol );
-        getMinecraftEncoder().setProtocolVersion( protocol );
+    public void setVersion(int protocol) {
+        getMinecraftDecoder().setProtocolVersion(protocol);
+        getMinecraftEncoder().setProtocolVersion(protocol);
     }
 
-    public MinecraftDecoder getMinecraftDecoder()
-    {
-        return ch.pipeline().get( MinecraftDecoder.class );
+    public MinecraftDecoder getMinecraftDecoder() {
+        return ch.pipeline().get(MinecraftDecoder.class);
     }
 
-    public MinecraftEncoder getMinecraftEncoder()
-    {
-        return ch.pipeline().get( MinecraftEncoder.class );
+    public MinecraftEncoder getMinecraftEncoder() {
+        return ch.pipeline().get(MinecraftEncoder.class);
     }
 
-    public int getEncodeVersion()
-    {
+    public int getEncodeVersion() {
         return getMinecraftEncoder().getProtocolVersion();
     }
 
-    public void write(Object packet)
-    {
-        if ( !closed )
-        {
+    public void write(Object packet) {
+        if (!closed) {
             DefinedPacket defined = null;
-            if ( packet instanceof PacketWrapper )
-            {
+            if (packet instanceof PacketWrapper) {
                 PacketWrapper wrapper = (PacketWrapper) packet;
-                wrapper.setReleased( true );
-                ch.writeAndFlush( wrapper.buf, ch.voidPromise() );
+                wrapper.setReleased(true);
+                ch.writeAndFlush(wrapper.buf, ch.voidPromise());
                 defined = wrapper.packet;
-            } else
-            {
-                ch.writeAndFlush( packet, ch.voidPromise() );
-                if ( packet instanceof DefinedPacket )
-                {
+            } else {
+                ch.writeAndFlush(packet, ch.voidPromise());
+                if (packet instanceof DefinedPacket) {
                     defined = (DefinedPacket) packet;
                 }
             }
-
-            if ( defined != null )
-            {
+            if (defined != null) {
                 Protocol nextProtocol = defined.nextProtocol();
-                if ( nextProtocol != null )
-                {
-                    setEncodeProtocol( nextProtocol );
+                if (nextProtocol != null) {
+                    setEncodeProtocol(nextProtocol);
                 }
             }
         }
     }
 
-    public void markClosed()
-    {
+    public void markClosed() {
         closed = closing = true;
     }
 
-    public void close()
-    {
-        close( null );
+    public void close() {
+        close(null);
     }
 
-    public void close(Object packet)
-    {
-        if ( !closed )
-        {
+    public void close(Object packet) {
+        if (!closed) {
             closed = closing = true;
-
-            if ( packet != null && ch.isActive() )
-            {
-                ch.writeAndFlush( packet ).addListeners( ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE );
-            } else
-            {
+            if (packet != null && ch.isActive()) {
+                ch.writeAndFlush(packet).addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE);
+            } else {
                 ch.flush();
                 ch.close();
             }
         }
     }
 
-    public void delayedClose(final Kick kick)
-    {
-        if ( !closing )
-        {
+    public void delayedClose(final Kick kick) {
+        if (!closing) {
             closing = true;
-
-            // Minecraft client can take some time to switch protocols.
-            // Sending the wrong disconnect packet whilst a protocol switch is in progress will crash it.
-            // Delay 250ms to ensure that the protocol switch (if any) has definitely taken place.
-            ch.eventLoop().schedule( new Runnable()
-            {
-
-                @Override
-                public void run()
-                {
-                    close( kick );
-                }
-            }, 250, TimeUnit.MILLISECONDS );
+            ch.eventLoop().schedule(() -> close(kick), 250, TimeUnit.MILLISECONDS);
         }
     }
 
-    public void addBefore(String baseName, String name, ChannelHandler handler)
-    {
-        Preconditions.checkState( ch.eventLoop().inEventLoop(), "cannot add handler outside of event loop" );
+    public void addBefore(String baseName, String name, ChannelHandler handler) {
+        Preconditions.checkState(ch.eventLoop().inEventLoop(), "cannot add handler outside of event loop");
         ch.pipeline().flush();
-        ch.pipeline().addBefore( baseName, name, handler );
+        ch.pipeline().addBefore(baseName, name, handler);
     }
 
-    public Channel getHandle()
-    {
+    public Channel getHandle() {
         return ch;
     }
 
-    public void setCompressionThreshold(int compressionThreshold)
-    {
-        if ( ch.pipeline().get( PacketCompressor.class ) == null && compressionThreshold >= 0 )
-        {
-            addBefore( PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor() );
+    public void setCompressionThreshold(int compressionThreshold) {
+        if (compressionThreshold >= 0) {
+            if (ch.pipeline().get(PacketCompressor.class) == null) addBefore(PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor());
+            ch.pipeline().get(PacketCompressor.class).setThreshold(compressionThreshold);
+        } else {
+            ch.pipeline().remove("compress");
         }
-        if ( compressionThreshold >= 0 )
-        {
-            ch.pipeline().get( PacketCompressor.class ).setThreshold( compressionThreshold );
-        } else
-        {
-            ch.pipeline().remove( "compress" );
+        if (ch.pipeline().get(PacketDecompressor.class) == null && compressionThreshold >= 0) {
+            addBefore(PipelineUtils.PACKET_DECODER, "decompress", new PacketDecompressor(compressionThreshold));
         }
-
-        if ( ch.pipeline().get( PacketDecompressor.class ) == null && compressionThreshold >= 0 )
-        {
-            addBefore( PipelineUtils.PACKET_DECODER, "decompress", new PacketDecompressor(compressionThreshold) );
+        if (compressionThreshold < 0) {
+            ch.pipeline().remove("decompress");
         }
-        if ( compressionThreshold < 0 )
-        {
-            ch.pipeline().remove( "decompress" );
-        }
-        // disable use of composite buffers if we use natives
         updateComposite();
     }
 
-    /*
-     * Should be called on encryption add and on compressor add or remove
-     */
-    public void updateComposite()
-    {
-        CipherEncoder cipherEncoder = ch.pipeline().get( CipherEncoder.class );
-        PacketCompressor packetCompressor = ch.pipeline().get( PacketCompressor.class );
-        Varint21LengthFieldPrepender prepender = ch.pipeline().get( Varint21LengthFieldPrepender.class );
-        boolean compressorCompose = cipherEncoder == null || cipherEncoder.getCipher().allowComposite();
-        boolean prependerCompose = compressorCompose && ( packetCompressor == null || packetCompressor.getZlib().allowComposite() );
+    public void updateComposite() {
+        final CipherEncoder cipherEncoder = ch.pipeline().get(CipherEncoder.class);
+        final PacketCompressor packetCompressor = ch.pipeline().get(PacketCompressor.class);
+        final Varint21LengthFieldPrepender prepender = ch.pipeline().get(Varint21LengthFieldPrepender.class);
+        final boolean compressorCompose = cipherEncoder == null || cipherEncoder.getCipher().allowComposite();
+        final boolean prependerCompose = compressorCompose && (packetCompressor == null || packetCompressor.getZlib().allowComposite());
 
-        if ( prepender != null )
-        {
-            ProxyServer.getInstance().getLogger().log( Level.FINE, "set prepender compose to {0} for {1}", new Object[]
-                    {
-                            prependerCompose, ch
-                    } );
-            prepender.setCompose( prependerCompose );
+        if (prepender != null) {
+            ProxyServer.getInstance().getLogger().log(Level.FINE, "set prepender compose to {0} for {1}", new Object[]{prependerCompose, ch});
+            prepender.setCompose(prependerCompose);
         }
-        if ( packetCompressor != null )
-        {
-            ProxyServer.getInstance().getLogger().log( Level.FINE, "set packetCompressor compose to {0} for {1}", new Object[]
-                    {
-                            compressorCompose, ch
-                    } );
-            packetCompressor.setCompose( compressorCompose );
+        if (packetCompressor != null) {
+            ProxyServer.getInstance().getLogger().log(Level.FINE, "set packetCompressor compose to {0} for {1}", new Object[]{compressorCompose, ch});
+            packetCompressor.setCompose(compressorCompose);
         }
     }
 
-    public void scheduleIfNecessary(Runnable task)
-    {
-        if ( ch.eventLoop().inEventLoop() )
-        {
+    public void scheduleIfNecessary(Runnable task) {
+        if (ch.eventLoop().inEventLoop()) {
             task.run();
-            return;
+        } else {
+            ch.eventLoop().execute(task);
         }
-
-        ch.eventLoop().execute( task );
     }
 }
