@@ -438,7 +438,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         String encName = URLEncoder.encode(InitialHandler.this.getName(), "UTF-8");
         MessageDigest sha = MessageDigest.getInstance("SHA-1");
 
-        XenonCore.instance.getTaskManager().add(() -> {
+        //XenonCore.instance.getTaskManager().add(() -> {
             try {
                 for (byte[] bit : new byte[][]{
                         request.getServerId().getBytes("ISO_8859_1"),
@@ -475,7 +475,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        });
+       // });
     }
 
 
