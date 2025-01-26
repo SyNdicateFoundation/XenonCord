@@ -318,9 +318,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         } else if (host.endsWith("."))
             handshake.setHost(host.substring(0, host.length() - 1));
 
+        bungee.getPluginManager().callEvent(new PlayerHandshakeEvent(InitialHandler.this, handshake));
         this.virtualHost = InetSocketAddress.createUnresolved(handshake.getHost(), handshake.getPort());
 
-        bungee.getPluginManager().callEvent(new PlayerHandshakeEvent(InitialHandler.this, handshake));
         if (ch.isClosing())
             return;
 
@@ -391,32 +391,45 @@ public class InitialHandler extends PacketHandler implements PendingConnection
 
         this.loginRequest = loginRequest;
 
-        final int limit = BungeeCord.getInstance().config.getPlayerLimit();
-        if (limit > 0 && bungee.getOnlineCount() >= limit) {
-            disconnect(bungee.getTranslation("proxy_full"));
+        int limit = BungeeCord.getInstance().config.getPlayerLimit();
+        if ( limit > 0 && bungee.getOnlineCount() >= limit )
+        {
+            disconnect( bungee.getTranslation( "proxy_full" ) );
             return;
         }
 
-        if (!isOnlineMode() && bungee.getPlayer(getUniqueId()) != null) {
-            disconnect(bungee.getTranslation("already_connected_proxy"));
+        // If offline mode and they are already on, don't allow connect
+        // We can just check by UUID here as names are based on UUID
+        if ( !isOnlineMode() && bungee.getPlayer( getUniqueId() ) != null )
+        {
+            disconnect( bungee.getTranslation( "already_connected_proxy" ) );
             return;
         }
 
-        bungee.getPluginManager().callEvent(new PreLoginEvent(InitialHandler.this, (result, error) -> {
-            if (result.isCancelled()) {
+        Callback<PreLoginEvent> callback = (result, error) -> {
+            if ( result.isCancelled() )
+            {
                 BaseComponent reason = result.getReason();
-                disconnect((reason != null) ? reason : TextComponent.fromLegacy(bungee.getTranslation("kick_message")));
+                disconnect( ( reason != null ) ? reason : TextComponent.fromLegacy( bungee.getTranslation( "kick_message" ) ) );
                 return;
             }
-            if (ch.isClosing()) return;
-            if (onlineMode) {
+            if ( ch.isClosing() )
+            {
+                return;
+            }
+            if ( onlineMode )
+            {
                 thisState = State.ENCRYPT;
-                unsafe().sendPacket(EncryptionUtil.encryptRequest());
-            } else {
+                unsafe().sendPacket( request = EncryptionUtil.encryptRequest() );
+            } else
+            {
                 thisState = State.FINISHING;
                 finish();
             }
-        }));
+        };
+
+        // fire pre login event
+        bungee.getPluginManager().callEvent( new PreLoginEvent( InitialHandler.this, callback ) );
     }
 
     @Override
@@ -700,23 +713,32 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         return !ch.isClosed();
     }
 
-    public void relayMessage(PluginMessage input) {
-        String content = new String( input.getData(), StandardCharsets.UTF_8 );
-        XenonCore.instance.getTaskManager().async(() -> {
-            Arrays.stream(content.split("\0")).forEach(id -> {
+    public void relayMessage(PluginMessage input) throws Exception
+    {
+        if ( input.getTag().equals( "REGISTER" ) || input.getTag().equals( "minecraft:register" ) )
+        {
+            String content = new String( input.getData(), StandardCharsets.UTF_8 );
+
+            for ( String id : content.split( "\0" ) )
+            {
                 // Waterfall start: Add configurable limits for plugin messaging
-                if (input.getTag().equals("REGISTER") || input.getTag().equals("minecraft:register")){
-                    Preconditions.checkState(!(registeredChannels.size() > bungee.getConfig().getPluginChannelLimit()), "Too many registered channels. This limit can be configured in the waterfall.yml");
-                    Preconditions.checkArgument(!(id.length() > bungee.getConfig().getPluginChannelNameLimit()), "Channel name too long. This limit can be configured in the waterfall.yml");
-                    // Waterfall end
-                    registeredChannels.add(id);
-                } else if ( input.getTag().equals( "UNREGISTER" ) || input.getTag().equals( "minecraft:unregister" )){
-                    registeredChannels.remove( id );
-                }else if ( input.getTag().equals( "MC|Brand" ) || input.getTag().equals( "minecraft:brand" )){
-                    brandMessage = input;
-                }
-            });
-        });
+                Preconditions.checkState( !(registeredChannels.size() > bungee.getConfig().getPluginChannelLimit()), "Too many registered channels. This limit can be configured in the waterfall.yml" );
+                Preconditions.checkArgument( !(id.length() > bungee.getConfig().getPluginChannelNameLimit()), "Channel name too long. This limit can be configured in the waterfall.yml" );
+                // Waterfall end
+                registeredChannels.add( id );
+            }
+        } else if ( input.getTag().equals( "UNREGISTER" ) || input.getTag().equals( "minecraft:unregister" ) )
+        {
+            String content = new String( input.getData(), StandardCharsets.UTF_8 );
+
+            for ( String id : content.split( "\0" ) )
+            {
+                registeredChannels.remove( id );
+            }
+        } else if ( input.getTag().equals( "MC|Brand" ) || input.getTag().equals( "minecraft:brand" ) )
+        {
+            brandMessage = input;
+        }
     }
 
     @Override
