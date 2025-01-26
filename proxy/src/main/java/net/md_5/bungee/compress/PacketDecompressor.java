@@ -14,14 +14,9 @@ import net.md_5.bungee.protocol.DefinedPacket;
 public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>
 {
 
-    @Getter
-    @Setter
-    private int compressionThreshold;
+    private final int compressionThreshold;
     private final BungeeZlib zlib = CompressFactory.zlib.newInstance();
 
-    public PacketDecompressor(final int i){
-        compressionThreshold = i;
-    }
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception
     {
