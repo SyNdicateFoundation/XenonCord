@@ -409,17 +409,18 @@ public class ServerConnector extends PacketHandler
             user.getServer().disconnect( "Quitting" );
         }
 
-        // Add to new server
+        // Add to new serverwhat
         // TODO: Move this to the connected() method of DownstreamBridge
         target.addPlayer( user );
         user.getPendingConnects().remove( target );
         user.setServerJoinQueue( null );
         user.setDimensionChange( false );
 
+        ServerInfo from = ( user.getServer() == null ) ? null : user.getServer().getInfo();
         user.setServer( server );
         ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridge( bungee, user, server ) );
 
-        bungee.getPluginManager().callEvent( new ServerSwitchEvent( user, ( user.getServer() == null ) ? null : user.getServer().getInfo() ) );
+        bungee.getPluginManager().callEvent( new ServerSwitchEvent( user, from) );
 
         thisState = State.FINISHED;
 
