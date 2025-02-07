@@ -10,7 +10,6 @@ import net.md_5.bungee.command.ConsoleCommandSender;
     public void send(final CommandSender senderIn, final String message, boolean console){
         if(!(senderIn instanceof ConsoleCommandSender))
             senderIn.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
-
         if(console || senderIn instanceof ConsoleCommandSender)
             XenonCore.instance.getLogger().info(ChatColor.translateAlternateColorCodes('&', message));
     }

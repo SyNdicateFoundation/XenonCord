@@ -12,7 +12,6 @@ import net.md_5.bungee.event.EventHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @SuppressWarnings("unused")
 public class StaffChat extends Command implements Listener {

@@ -19,12 +19,14 @@ public class Configuration {
     private final File sqlAntibot;
     private final File sqlPlaytime;
     private final File sqlPunishments;
+    private final File sqlStaffActivity;
     private final Logger logger = XenonCore.instance.getLogger();
     public Configuration(){
         this.configFile = new File("XenonCore.yml");
         this.sqlAntibot = new File("AntiBot.db");
         this.sqlPlaytime = new File("Playtimes.db");
         this.sqlPunishments = new File("Punishments.db");
+        this.sqlStaffActivity = new File("StaffActivity.db");
     }
     private void copyConfig() {
         try {
@@ -118,6 +120,7 @@ public class Configuration {
         private BpluginsData bplugins;
         private PlaytimeData playtime;
         private PunishManagerData punishmanager;
+        private StaffActivityData staffactivity;
         private CommandWhitelistData commandwhitelist;
     }
     @Getter
@@ -181,6 +184,12 @@ public class Configuration {
                 clearchatperm, globalclearchatperm, unbanconsolelogmessage,
                 unmuteconsolelogmessage;
         private String[] mutecommands;
+    }
+    @Getter
+    @Setter
+    public static class StaffActivityData {
+        private String staffusernames[];
+        private int sendtime;
     }
     @Getter
     @Setter

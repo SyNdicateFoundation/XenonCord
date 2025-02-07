@@ -147,6 +147,15 @@ punishmanager:
     - "/tell"
     - "/replytoggle"
 
+# StaffActivitySender Settings
+# Requires StaffActivitySender module to be enabled.
+staffactivity:
+  # adds a person with this permission to staff activity list to watch
+  staffusernames:
+    - "BuffOvrFlw"
+  # Sends the message at 6 AM
+  sendtime: 6
+
 # CommandWhitelist Settings
 # Requires CommandWhiteList module to be enabled.
 # Per-group commands work with permissions. Example: xenoncord.commandwhitelist.example

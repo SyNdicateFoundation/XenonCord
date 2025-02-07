@@ -1,7 +1,6 @@
 package ir.xenoncommunity.punishmanager;
 
 import ir.xenoncommunity.XenonCore;
-import ir.xenoncommunity.commands.CommandSend;
 import ir.xenoncommunity.utils.Message;
 import ir.xenoncommunity.utils.SQLManager;
 import net.md_5.bungee.api.CommandSender;
