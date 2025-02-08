@@ -1,6 +1,7 @@
 package ir.xenoncommunity.modules.listeners;
 
 import ir.xenoncommunity.XenonCore;
+import ir.xenoncommunity.annotations.ModuleListener;
 import ir.xenoncommunity.utils.DiscordWebhook;
 import ir.xenoncommunity.utils.Message;
 import ir.xenoncommunity.utils.SQLManager;
@@ -18,6 +19,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Arrays;
 
+@ModuleListener
 public class StaffActivitySender implements Listener {
     private final SQLManager sqlManager;
 
