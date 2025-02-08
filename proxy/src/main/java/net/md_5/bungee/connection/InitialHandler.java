@@ -221,6 +221,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                 }
 
                 Callback<ProxyPingEvent> callback = (result1, error1) -> {
+                    if (ch.isClosing()) return;
+
                     final ServerPing legacy = result1.getResponse();
                     ch.close(ping.isV1_5()
                             ? ChatColor.DARK_BLUE + "\00" + 127
@@ -289,7 +291,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                         }
                     }
                 };
-                bungee.getPluginManager().callEvent( new ProxyPingEvent( InitialHandler.this, result, eventLoopCallback( callback ) ) );
+                bungee.getPluginManager().callEvent( new ProxyPingEvent( InitialHandler.this, result, callback ) );
             }
         };
 
@@ -454,6 +456,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                     disconnect( ( reason != null ) ? reason : TextComponent.fromLegacy( bungee.getTranslation( "kick_message" ) ) );
                     return;
                 }
+                if ( ch.isClosing() )
+                {
+                    return;
+                }
                 if ( onlineMode )
                 {
                     thisState = State.ENCRYPT;
@@ -467,7 +473,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         };
 
         // fire pre login event
-        bungee.getPluginManager().callEvent( new PreLoginEvent( InitialHandler.this, eventLoopCallback( callback ) ) );
+        bungee.getPluginManager().callEvent( new PreLoginEvent( InitialHandler.this, callback ) );
     }
 
     @Override
@@ -537,78 +543,54 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     }
 
 
-    private void finish()
-{
-    offlineId = UUID.nameUUIDFromBytes( ( "OfflinePlayer:" + getName() ).getBytes( StandardCharsets.UTF_8 ) );
-    if ( uniqueId == null )
-    {
-        uniqueId = offlineId;
-    }
-    rewriteId = ( bungee.config.isIpForward() ) ? uniqueId : offlineId;
+    private void finish() {
+        offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes(StandardCharsets.UTF_8));
+        if (uniqueId == null)
+            uniqueId = offlineId;
 
-    if ( BungeeCord.getInstance().config.isEnforceSecureProfile() )
-    {
-        if ( getVersion() >= ProtocolConstants.MINECRAFT_1_19_1 && getVersion() < ProtocolConstants.MINECRAFT_1_19_3 )
-        {
-            boolean secure = false;
-            try
-            {
-                secure = EncryptionUtil.check( loginRequest.getPublicKey(), uniqueId );
-            } catch ( GeneralSecurityException ex )
-            {
+        rewriteId = (bungee.config.isIpForward()) ? uniqueId : offlineId;
+
+        if (BungeeCord.getInstance().config.isEnforceSecureProfile()) {
+            if (getVersion() >= ProtocolConstants.MINECRAFT_1_19_1 && getVersion() < ProtocolConstants.MINECRAFT_1_19_3) {
+                try {
+                    if (!EncryptionUtil.check(loginRequest.getPublicKey(), uniqueId)) {
+                        disconnect(bungee.getTranslation("secure_profile_invalid"));
+                        return;
+                    }
+                } catch (Exception ignored) {}
             }
+        }
 
-            if ( !secure )
-            {
-                disconnect( bungee.getTranslation( "secure_profile_invalid" ) );
+        if ((isOnlineMode() && bungee.getPlayer(getName()) != null
+                && bungee.getPlayer(getUniqueId()) != null)
+                || bungee.getPlayer(getName()) != null) {
+            disconnect(bungee.getTranslation("already_connected_proxy"));
+            return;
+        }
+
+        bungee.getPluginManager().callEvent(new LoginEvent(InitialHandler.this, (result, error) -> {
+            if (result.isCancelled()) {
+                BaseComponent reason = result.getReason();
+                disconnect((reason != null) ? reason : TextComponent.fromLegacy(bungee.getTranslation("kick_message")));
                 return;
             }
-        }
+            if (ch.isClosing()) return;
+
+            ch.getHandle().eventLoop().execute(() -> {
+                if (!ch.isClosing()) {
+                    userCon = new UserConnection(bungee, ch, getName(), InitialHandler.this);
+                    userCon.setCompressionThreshold(BungeeCord.getInstance().config.getCompressionThreshold());
+
+                    if (getVersion() < ProtocolConstants.MINECRAFT_1_20_2) {
+                        unsafe().sendPacket(new LoginSuccess(getRewriteId(), getName(), (loginProfile == null) ? null : loginProfile.getProperties()));
+                        ch.setProtocol(Protocol.GAME);
+                    }
+                    finish2();
+                }
+            });
+        }, this.getLoginProfile())); // Waterfall: Parse LoginResult object to new constructor of LoginEvent
     }
 
-    ProxiedPlayer oldName = bungee.getPlayer( getName() );
-    if ( oldName != null )
-    {
-        // TODO See #1218
-        disconnect( bungee.getTranslation( "already_connected_proxy" ) );
-        return;
-    }
-
-    if ( isOnlineMode() )
-    {
-        // And then also for their old UUID
-        ProxiedPlayer oldID = bungee.getPlayer( getUniqueId() );
-        if ( oldID != null )
-        {
-            // TODO See #1218
-            disconnect( bungee.getTranslation( "already_connected_proxy" ) );
-            return;
-        }
-    }
-
-
-    Callback<LoginEvent> complete = (result, error) -> {
-        if ( result.isCancelled() )
-        {
-            BaseComponent reason = result.getReason();
-            disconnect( ( reason != null ) ? reason : TextComponent.fromLegacy( bungee.getTranslation( "kick_message" ) ) );
-            return;
-        }
-
-        userCon = new UserConnection( bungee, ch, getName(), InitialHandler.this );
-        userCon.setCompressionThreshold( BungeeCord.getInstance().config.getCompressionThreshold() );
-
-        if ( getVersion() < ProtocolConstants.MINECRAFT_1_20_2 )
-        {
-            unsafe.sendPacket( new LoginSuccess( getRewriteId(), getName(), ( loginProfile == null ) ? null : loginProfile.getProperties() ) );
-            ch.setProtocol( Protocol.GAME );
-        }
-        finish2();
-    };
-
-    // fire login event
-    bungee.getPluginManager().callEvent( new LoginEvent( InitialHandler.this, eventLoopCallback( complete ) ) );
-}
 
     private void finish2()
     {
@@ -638,12 +620,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
             @Override
             public void done(PostLoginEvent result, Throwable error)
             {
+                // #3612: Don't progress further if disconnected during event
+                if ( ch.isClosing() )
+                {
+                    return;
+                }
 
                 userCon.connect( result.getTarget(), null, true, ServerConnectEvent.Reason.JOIN_PROXY );
             }
         };
 
-        bungee.getPluginManager().callEvent( new PostLoginEvent( userCon, initialServer, eventLoopCallback( complete ) ) );
+        bungee.getPluginManager().callEvent( new PostLoginEvent( userCon, initialServer, complete ) );
     }
 
     @Override
