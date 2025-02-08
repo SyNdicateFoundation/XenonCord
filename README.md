@@ -1,5 +1,7 @@
 # XenonCord: A lightweight, easy to use, scaleable bungeecord instance.
 
+NOTE: this project is migrating into SyNdicateFoundation/XenonCordReborn because of huge upcomming changes. this repo will be there until the reborn repo be completly available. and then, will be archived.
+
 ## Overview
 
 - this project is a waterfall fork, which is a fork of bungeecord.
