@@ -55,13 +55,7 @@ public class NativeZlib implements BungeeZlib
 
         while ( !nativeCompress.finished && ( compress || in.isReadable() ) )
         {
-            if ( compress )
-            {
-                out.ensureWritable( OUTPUT_BUFFER_SIZE );
-            } else
-            {
-                Preconditions.checkArgument( out.isWritable(), "Output buffer overrun" );
-            }
+            out.ensureWritable( OUTPUT_BUFFER_SIZE );
 
             int processed;
             try

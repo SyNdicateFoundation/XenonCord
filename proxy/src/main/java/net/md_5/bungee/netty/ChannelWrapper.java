@@ -180,30 +180,16 @@ public class ChannelWrapper
 
     public void setCompressionThreshold(int compressionThreshold)
     {
-        PacketCompressor compressor = ch.pipeline().get( PacketCompressor.class );
-        PacketDecompressor decompressor = ch.pipeline().get( PacketDecompressor.class );
+        if ( ch.pipeline().get( PacketCompressor.class ) == null && compressionThreshold >= 0 )
+        {
+            addBefore( PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor() );
+        }
         if ( compressionThreshold >= 0 )
         {
-            if ( compressor == null )
-            {
-                addBefore( PipelineUtils.PACKET_ENCODER, "compress", compressor = new PacketCompressor() );
-            }
-            compressor.setThreshold( compressionThreshold );
-
-            if ( decompressor == null )
-            {
-                addBefore( PipelineUtils.PACKET_DECODER, "decompress", decompressor = new PacketDecompressor(compressionThreshold) );
-            }
+            ch.pipeline().get( PacketCompressor.class ).setThreshold( compressionThreshold );
         } else
         {
-            if ( compressor != null )
-            {
-                ch.pipeline().remove( "compress" );
-            }
-            if ( decompressor != null )
-            {
-                ch.pipeline().remove( "decompress" );
-            }
+            ch.pipeline().remove( "compress" );
         }
 
         if ( ch.pipeline().get( PacketDecompressor.class ) == null && compressionThreshold >= 0 )

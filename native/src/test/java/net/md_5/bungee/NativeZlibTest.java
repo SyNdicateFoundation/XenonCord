@@ -64,7 +64,7 @@ public class NativeZlibTest
 
         zlib.process( originalBuf, compressed );
 
-        ByteBuf uncompressed = Unpooled.directBuffer( dataBuf.length, dataBuf.length );
+        ByteBuf uncompressed = Unpooled.directBuffer();
 
         zlib.init( false, 0 );
         zlib.process( compressed, uncompressed );
