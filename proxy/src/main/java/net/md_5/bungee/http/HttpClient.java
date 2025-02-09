@@ -34,7 +34,7 @@ public class HttpClient
     // Waterfall End
 
     @SuppressWarnings("UnusedAssignment")
-    public static void get(String url, EventLoop eventLoop, final Callback<String> callback)
+    public static void get(String url, EventLoop eventLoop, Callback<String> callback)
     {
         Preconditions.checkNotNull( url, "url" );
         Preconditions.checkNotNull( eventLoop, "eventLoop" );

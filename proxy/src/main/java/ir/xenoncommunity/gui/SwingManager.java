@@ -32,8 +32,7 @@ public class SwingManager {
         frame.setResizable(false);
         frame.setLayout(new BorderLayout());
 
-        JPanel panel = createMainPanel();
-        frame.add(panel);
+        frame.add(createMainPanel());
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
@@ -47,7 +46,7 @@ public class SwingManager {
     }
 
     private JPanel createMainPanel() {
-        JPanel panel = new JPanel();
+        final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(new Color(30, 30, 30));
         panel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -71,19 +70,17 @@ public class SwingManager {
         playerListArea.setLineWrap(true);
         playerListArea.setWrapStyleWord(true);
 
-        JPanel roundedPanel = createRoundedPanel(new JScrollPane(playerListArea));
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
-        panel.add(roundedPanel);
+        panel.add(createRoundedPanel(new JScrollPane(playerListArea)));
 
-        JButton closeButton = createCloseButton();
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
-        panel.add(closeButton);
+        panel.add(createCloseButton());
 
         return panel;
     }
 
     private JLabel createLabel(String text, int fontSize, Color color) {
-        JLabel label = new JLabel(text, SwingConstants.CENTER);
+        final JLabel label = new JLabel(text, SwingConstants.CENTER);
         label.setForeground(color);
         label.setFont(new Font("Roboto", Font.BOLD, fontSize));
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -91,7 +88,7 @@ public class SwingManager {
     }
 
     private JButton createCloseButton() {
-        JButton closeButton = new JButton("Close");
+        final JButton closeButton = new JButton("Close");
         closeButton.setFont(new Font("Arial", Font.PLAIN, 16));
         closeButton.setForeground(Color.WHITE);
         closeButton.setBackground(new Color(220, 20, 60));
@@ -105,7 +102,7 @@ public class SwingManager {
     }
 
     private JPanel createRoundedPanel(JComponent component) {
-        JPanel roundedPanel = new JPanel() {
+        final JPanel roundedPanel = new JPanel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 g.setColor(new Color(0, 255, 255));
@@ -120,7 +117,7 @@ public class SwingManager {
     }
 
     private void updatePlayerList() {
-        StringBuilder playerNames = new StringBuilder();
+        final StringBuilder playerNames = new StringBuilder();
         XenonCore.instance.getPlayerNames().forEach(playerName -> playerNames.append(playerName).append("\n"));
         playerListArea.setText(playerNames.toString());
     }
@@ -130,8 +127,6 @@ public class SwingManager {
     }
 
     public String getMemoryUsageText() {
-        long usedMemory = (Runtime.getRuntime().maxMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024);
-        long maxMemory = Runtime.getRuntime().maxMemory() / (1024 * 1024);
-        return "Memory usage: " + usedMemory + "MB / " + maxMemory + "MB";
+        return "Memory usage: " + (Runtime.getRuntime().maxMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024) + "MB / " + Runtime.getRuntime().maxMemory() / (1024 * 1024) + "MB";
     }
 }

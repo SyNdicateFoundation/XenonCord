@@ -10,7 +10,7 @@ import java.util.Collections;
 public class BungeeCordLauncher
 {
 
-    public static void main(final String[] args) throws Exception
+    public static void main( String[] args) throws Exception
     {
         final OptionParser parser = new OptionParser();
         final OptionSet options = parser.parse( args );

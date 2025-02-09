@@ -207,7 +207,7 @@ public class BungeeCord extends ProxyServer
      */
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void start(final long startTime) throws Exception
+    public void start( long startTime) throws Exception
     {
 
         xenonInstance.getLogger().info(String.format("Enabled XenonCord %s", XenonCore.instance.getVersion()));
@@ -361,7 +361,7 @@ public class BungeeCord extends ProxyServer
     }
 
     @Override
-    public void stop(final String reason)
+    public void stop( String reason)
     {
         new Thread( "Shutdown Thread" )
         {
@@ -376,7 +376,7 @@ public class BungeeCord extends ProxyServer
     // This must be run on a separate thread to avoid deadlock!
     @SuppressFBWarnings("DM_EXIT")
     @SuppressWarnings("TooBroadCatch")
-    private void independentThreadStop(final String reason, boolean callSystemExit)
+    private void independentThreadStop( String reason, boolean callSystemExit)
     {
         xenonInstance.shutdown();
 
@@ -749,7 +749,7 @@ public class BungeeCord extends ProxyServer
     }
 
     @Override
-    public Collection<ProxiedPlayer> matchPlayer(final String partialName)
+    public Collection<ProxiedPlayer> matchPlayer( String partialName)
     {
         Preconditions.checkNotNull( partialName, "partialName" );
         final ProxiedPlayer exactMatch = getPlayer( partialName );

@@ -13,15 +13,13 @@ import java.util.Arrays;
 public class MuteCommand extends Command {
     private final SQLManager sqlManager;
 
-    public MuteCommand(final SQLManager sqlManagerIn) {
+    public MuteCommand( SQLManager sqlManagerIn) {
         super("mute", XenonCore.instance.getConfigData().getPunishmanager().getMuteperm());
         this.sqlManager = sqlManagerIn;
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(XenonCore.instance.getConfigData().getPunishmanager().getMuteperm())) return;
-
         if (args.length < 3) {
             Message.send(sender,
                     XenonCore.instance.getConfigData().getUnknownoptionmessage()

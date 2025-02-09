@@ -26,7 +26,6 @@ public class XenonCore {
     @Setter private Configuration.ConfigData configData;
     private final ModuleManager moduleManager;
     @Setter private String currentMotd;
-    @Setter private ArrayList<String> downServers = null;
     /**
      * Initializes all required variables.
      */
@@ -41,17 +40,16 @@ public class XenonCore {
     /**
      * Called when proxy is loaded.
      */
-    public void init(final long startTime){
-        getLogger().info(String.format("Loading the proxy server itself has been done. took: %sms", System.currentTimeMillis() - startTime));
+    public void init(long startTime){
+        getLogger().info("Loading the proxy server itself has been done. took: {}ms", System.currentTimeMillis() - startTime);
         getTaskManager().async(() -> {
             while(!isProxyCompletlyLoaded)
                 bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(ChatColor.translateAlternateColorCodes('&', configData.getLoadingmessage())));
 
             moduleManager.init();
             SwingManager.createAndShowGUI();
-            getLogger().info(String.format("Successfully booted! Loading the proxy server with plugins took: %sms", System.currentTimeMillis() - startTime));
+            getLogger().info("Successfully booted! Loading the proxy server with plugins took: {}ms", System.currentTimeMillis() - startTime);
         });
-
     }
 
     /**
@@ -66,13 +64,13 @@ public class XenonCore {
     }
 
     public String getVersion(){
-        return "0.0.91 BETA";
+        return "V1";
     }
-    public void logdebuginfo(final String msg){
+    public void logdebuginfo(String msg){
         if(configData.isDebug())
             logger.info(msg);
     }
-    public void logdebugerror(final String msg){
+    public void logdebugerror(String msg){
         if(configData.isDebug())
             logger.error(msg);
     }

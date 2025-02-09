@@ -1,4 +1,8 @@
 package ir.xenoncommunity.utils;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.awt.Color;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,9 +15,9 @@ import java.util.Map;
 import java.util.Set;
 import javax.net.ssl.HttpsURLConnection;
 
-public class DiscordWebhook {
+@SuppressWarnings("unused") public class DiscordWebhook {
     private final String url;
-    private String content = null;
+    private String content;
     private String username;
     private String avatarUrl;
     public final List<EmbedObject> embeds = new ArrayList<>();
@@ -43,84 +47,82 @@ public class DiscordWebhook {
     }
 
     public void execute() throws IOException {
-        if (this.content == null && this.embeds.isEmpty()) {
+        if (this.content == null && this.embeds.isEmpty())
             throw new IllegalArgumentException("Set content or add at least one EmbedObject");
-        }
-        JSONObject json = new JSONObject();
+
+        final JSONObject json = new JSONObject();
         json.put("content", this.content);
         json.put("username", this.username);
         json.put("avatar_url", this.avatarUrl);
         if (!this.embeds.isEmpty()) {
-            ArrayList<JSONObject> embedObjects = new ArrayList<>();
+            final ArrayList<JSONObject> embedObjects = new ArrayList<>();
             for (EmbedObject embed : this.embeds) {
-                JSONObject jsonEmbed = new JSONObject();
+                final JSONObject jsonEmbed = new JSONObject();
                 jsonEmbed.put("title", embed.getTitle());
                 jsonEmbed.put("description", embed.getDescription());
                 jsonEmbed.put("url", embed.getUrl());
                 if (embed.getColor() != null) {
-                    Color color = embed.getColor();
-                    int rgb = color.getRed();
-                    rgb = (rgb << 8) + color.getGreen();
-                    rgb = (rgb << 8) + color.getBlue();
-                    jsonEmbed.put("color", Integer.valueOf(rgb));
+                    jsonEmbed.put("color", (embed.getColor().getRed() << 16) + (embed.getColor().getGreen() << 8) + embed.getColor().getBlue());
                 }
-                EmbedObject.Footer footer = embed.getFooter();
-                EmbedObject.Image image = embed.getImage();
-                EmbedObject.Thumbnail thumbnail = embed.getThumbnail();
-                EmbedObject.Author author = embed.getAuthor();
-                List<EmbedObject.Field> fields = embed.getFields();
-                if (footer != null) {
-                    JSONObject jsonFooter = new JSONObject();
-                    jsonFooter.put("text", footer.getText());
-                    jsonFooter.put("icon_url", footer.getIconUrl());
-                    jsonEmbed.put("footer", jsonFooter);
-                }
-                if (image != null) {
-                    JSONObject jsonImage = new JSONObject();
-                    jsonImage.put("url", image.getUrl());
-                    jsonEmbed.put("image", jsonImage);
-                }
-                if (thumbnail != null) {
-                    JSONObject jsonThumbnail = new JSONObject();
-                    jsonThumbnail.put("url", thumbnail.getUrl());
-                    jsonEmbed.put("thumbnail", jsonThumbnail);
-                }
-                if (author != null) {
-                    JSONObject jsonAuthor = new JSONObject();
-                    jsonAuthor.put("name", author.getName());
-                    jsonAuthor.put("url", author.getUrl());
-                    jsonAuthor.put("icon_url", author.getIconUrl());
-                    jsonEmbed.put("author", jsonAuthor);
-                }
-                ArrayList<JSONObject> jsonFields = new ArrayList<>();
-                for (EmbedObject.Field field : fields) {
-                    JSONObject jsonField = new JSONObject();
-                    jsonField.put("name", field.getName());
-                    jsonField.put("value", field.getValue());
-                    jsonField.put("inline", Boolean.valueOf(field.isInline()));
-                    jsonFields.add(jsonField);
-                }
-                if (!jsonFields.isEmpty()) jsonEmbed.put("fields", jsonFields.toArray());
+                addOptionalFields(jsonEmbed, embed);
                 embedObjects.add(jsonEmbed);
             }
             json.put("embeds", embedObjects.toArray());
         }
         json.put("attachments", new String[0]);
-        URL url = new URL(this.url);
-        HttpsURLConnection connection = (HttpsURLConnection)url.openConnection();
+        sendRequest(json);
+    }
+
+    private void addOptionalFields(JSONObject jsonEmbed, EmbedObject embed) {
+        if (embed.getFooter() != null) {
+            final JSONObject jsonFooter = new JSONObject();
+            jsonFooter.put("text", embed.getFooter().getText());
+            jsonFooter.put("icon_url", embed.getFooter().getIconUrl());
+            jsonEmbed.put("footer", jsonFooter);
+        }
+        if (embed.getImage() != null) {
+            final JSONObject jsonImage = new JSONObject();
+            jsonImage.put("url", embed.getImage().getUrl());
+            jsonEmbed.put("image", jsonImage);
+        }
+        if (embed.getThumbnail() != null) {
+            final JSONObject jsonThumbnail = new JSONObject();
+            jsonThumbnail.put("url", embed.getThumbnail().getUrl());
+            jsonEmbed.put("thumbnail", jsonThumbnail);
+        }
+        if (embed.getAuthor() != null) {
+            final JSONObject jsonAuthor = new JSONObject();
+            jsonAuthor.put("name", embed.getAuthor().getName());
+            jsonAuthor.put("url", embed.getAuthor().getUrl());
+            jsonAuthor.put("icon_url", embed.getAuthor().getIconUrl());
+            jsonEmbed.put("author", jsonAuthor);
+        }
+        final ArrayList<JSONObject> jsonFields = new ArrayList<>();
+        for (EmbedObject.Field field : embed.getFields()) {
+            final JSONObject jsonField = new JSONObject();
+            jsonField.put("name", field.getName());
+            jsonField.put("value", field.getValue());
+            jsonField.put("inline", field.isInline());
+            jsonFields.add(jsonField);
+        }
+        if (!jsonFields.isEmpty()) jsonEmbed.put("fields", jsonFields.toArray());
+    }
+
+    private void sendRequest(JSONObject json) throws IOException {
+        final HttpsURLConnection connection = (HttpsURLConnection) new URL(this.url).openConnection();
         connection.addRequestProperty("Content-Type", "application/json");
         connection.addRequestProperty("User-Agent", "Java-DiscordWebhook");
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
-        OutputStream stream = connection.getOutputStream();
-        stream.write(json.toString().getBytes());
-        stream.flush();
-        stream.close();
+        try (OutputStream stream = connection.getOutputStream()) {
+            stream.write(json.toString().getBytes());
+            stream.flush();
+        }
         connection.getInputStream().close();
         connection.disconnect();
     }
 
-    private class JSONObject {
+    private static class JSONObject {
         private final HashMap<String, Object> map = new HashMap<>();
 
         void put(String key, Object value) {
@@ -130,18 +132,17 @@ public class DiscordWebhook {
         }
 
         public String toString() {
-            StringBuilder builder = new StringBuilder();
-            Set<Map.Entry<String, Object>> entrySet = this.map.entrySet();
+            final StringBuilder builder = new StringBuilder();
+            final Set<Map.Entry<String, Object>> entrySet = this.map.entrySet();
             builder.append("{");
+
             int i = 0;
             for (Map.Entry<String, Object> entry : entrySet) {
                 Object val = entry.getValue();
                 builder.append(quote(entry.getKey())).append(":");
                 if (val instanceof String) {
                     builder.append(quote(String.valueOf(val)));
-                } else if (val instanceof Integer) {
-                    builder.append(Integer.valueOf(String.valueOf(val)));
-                } else if (val instanceof Boolean) {
+                } else if (val instanceof Integer || val instanceof Boolean) {
                     builder.append(val);
                 } else if (val instanceof JSONObject) {
                     builder.append(val);
@@ -165,6 +166,7 @@ public class DiscordWebhook {
         private JSONObject() {}
     }
 
+    @Getter
     public static class EmbedObject {
         private String title;
         private String description;
@@ -175,42 +177,6 @@ public class DiscordWebhook {
         private Image image;
         private Author author;
         private final List<Field> fields = new ArrayList<>();
-
-        public String getTitle() {
-            return this.title;
-        }
-
-        public String getDescription() {
-            return this.description;
-        }
-
-        public String getUrl() {
-            return this.url;
-        }
-
-        public Color getColor() {
-            return this.color;
-        }
-
-        public Footer getFooter() {
-            return this.footer;
-        }
-
-        public Thumbnail getThumbnail() {
-            return this.thumbnail;
-        }
-
-        public Image getImage() {
-            return this.image;
-        }
-
-        public Author getAuthor() {
-            return this.author;
-        }
-
-        public List<Field> getFields() {
-            return this.fields;
-        }
 
         public EmbedObject setTitle(String title) {
             this.title = title;
@@ -257,94 +223,39 @@ public class DiscordWebhook {
             return this;
         }
 
-        private class Field {
+        @AllArgsConstructor
+        @Getter
+        private static class Field {
             private final String name;
             private final String value;
             private final boolean inline;
-
-            private Field(String name, String value, boolean inline) {
-                this.name = name;
-                this.value = value;
-                this.inline = inline;
-            }
-
-            private String getName() {
-                return this.name;
-            }
-
-            private String getValue() {
-                return this.value;
-            }
-
-            private boolean isInline() {
-                return this.inline;
-            }
         }
 
-        private class Author {
+        @AllArgsConstructor
+        @Getter
+        private static class Author {
             private final String name;
             private final String url;
             private final String iconUrl;
-
-            private Author(String name, String url, String iconUrl) {
-                this.name = name;
-                this.url = url;
-                this.iconUrl = iconUrl;
-            }
-
-            private String getName() {
-                return this.name;
-            }
-
-            private String getUrl() {
-                return this.url;
-            }
-
-            private String getIconUrl() {
-                return this.iconUrl;
-            }
         }
 
-        private class Image {
+        @AllArgsConstructor
+        @Getter
+        private static class Image {
             private final String url;
-
-            private Image(String url) {
-                this.url = url;
-            }
-
-            private String getUrl() {
-                return this.url;
-            }
         }
 
-        private class Thumbnail {
+        @AllArgsConstructor
+        @Getter
+        private static class Thumbnail {
             private final String url;
-
-            private Thumbnail(String url) {
-                this.url = url;
-            }
-
-            private String getUrl() {
-                return this.url;
-            }
         }
 
-        private class Footer {
+        @AllArgsConstructor
+        @Getter
+        private static class Footer {
             private final String text;
             private final String iconUrl;
-
-            private Footer(String text, String iconUrl) {
-                this.text = text;
-                this.iconUrl = iconUrl;
-            }
-
-            private String getText() {
-                return this.text;
-            }
-
-            private String getIconUrl() {
-                return this.iconUrl;
-            }
         }
     }
 }

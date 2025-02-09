@@ -1,7 +1,6 @@
 package ir.xenoncommunity.utils;
 
 import ir.xenoncommunity.XenonCore;
-import ir.xenoncommunity.modules.commands.AdminChat;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
@@ -20,18 +19,18 @@ public class Configuration {
     private final File sqlPlaytime;
     private final File sqlPunishments;
     private final File sqlStaffActivity;
-    private final Logger logger = XenonCore.instance.getLogger();
+    private final Logger logger;
     public Configuration(){
         this.configFile = new File("XenonCore.yml");
         this.sqlAntibot = new File("AntiBot.db");
         this.sqlPlaytime = new File("Playtimes.db");
         this.sqlPunishments = new File("Punishments.db");
         this.sqlStaffActivity = new File("StaffActivity.db");
+        this.logger = XenonCore.instance.getLogger();
     }
     private void copyConfig() {
         try {
-            @NonNull @Cleanup final InputStream in = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("XenonCore.yml"));
-            @Cleanup final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            @Cleanup final BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("XenonCore.yml"))));
             @Cleanup final BufferedWriter writer = new BufferedWriter(new FileWriter(configFile));
 
             String line;
@@ -39,7 +38,7 @@ public class Configuration {
                 writer.write(line);
                 writer.newLine();
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error(e.getMessage());
         }
     }
@@ -48,7 +47,8 @@ public class Configuration {
         try {
             if (!configFile.exists()) copyConfig();
 
-            final ConfigData configData = getConfig();
+            @Cleanup final FileInputStream is = new FileInputStream(configFile);
+            final ConfigData configData = new Yaml().loadAs(is, ConfigData.class);
             final String prefix = configData.prefix;
 
             configData.setLoadingmessage(configData.getLoadingmessage().replace("PREFIX", prefix));
@@ -84,25 +84,14 @@ public class Configuration {
             configData.getPunishmanager().setUnbanconsolelogmessage(configData.getPunishmanager().getUnbanconsolelogmessage().replace("PREFIX", prefix));
             configData.getPunishmanager().setUnmuteconsolelogmessage(configData.getPunishmanager().getUnmuteconsolelogmessage().replace("PREFIX", prefix));
 
-
             logger.info("Successfully Initialized!");
 
             return configData;
-        } catch (final Exception e) {
+        } catch ( Exception e) {
             logger.error(e.getMessage());
         }
         return null;
     }
-    public ConfigData getConfig() {
-        try {
-            @Cleanup final FileInputStream is = new FileInputStream(configFile);
-            return new Yaml().loadAs(is, ConfigData.class);
-        } catch (final Exception e) {
-            logger.error(e.getMessage());
-            return null;
-        }
-    }
-    // Config structures
     @Getter
     @Setter
     public static class ConfigData{

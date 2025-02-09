@@ -4,8 +4,7 @@ import ir.xenoncommunity.XenonCore;
 
 import java.util.concurrent.*;
 
-@SuppressWarnings("unused")
-public class TaskManager {
+@SuppressWarnings("unused") public class TaskManager {
     private final ExecutorService queueExecutorService;
     private final ExecutorService executorService;
     private final ExecutorService cachedExecutorService;
@@ -23,11 +22,11 @@ public class TaskManager {
         this.scheduledExecutor = Executors.newScheduledThreadPool(4);
     }
 
-    public void add(final Runnable runnableIn) {
+    public void add(Runnable runnableIn) {
         queueExecutorService.submit(() -> {
             try {
                 runnableIn.run();
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 XenonCore.instance.getLogger().error(e.getMessage());
             } finally {
                 Thread.currentThread().interrupt();
@@ -35,21 +34,21 @@ public class TaskManager {
         });
     }
 
-    public void async(final Runnable runnableIn) {
+    public void async(Runnable runnableIn) {
         executorService.submit(() -> {
             try {
                 runnableIn.run();
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 XenonCore.instance.getLogger().error(e.getMessage());
             }
         });
     }
 
-    public void cachedAsync(final Runnable runnableIn) {
+    public void cachedAsync(Runnable runnableIn) {
         cachedExecutorService.submit(() -> {
             try {
                 runnableIn.run();
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 XenonCore.instance.getLogger().error(e.getMessage());
             }
         });

@@ -7,4 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface ModuleListener {}
+public @interface ModuleListener {
+    boolean isExtended();
+    boolean isImplemented();
+}

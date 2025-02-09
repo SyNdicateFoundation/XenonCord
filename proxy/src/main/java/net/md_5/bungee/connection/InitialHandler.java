@@ -477,7 +477,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     }
 
     @Override
-    public void handle(final EncryptionResponse encryptResponse) throws Exception
+    public void handle(EncryptionResponse encryptResponse) throws Exception
     {
         Preconditions.checkState( thisState == State.ENCRYPT, "Not expecting ENCRYPT" );
         Preconditions.checkState( EncryptionUtil.check( loginRequest.getPublicKey(), encryptResponse, request ), "Invalid verification" );
@@ -696,7 +696,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     }
 
     @Override
-    public void disconnect(final BaseComponent... reason)
+    public void disconnect(BaseComponent... reason)
     {
         disconnect( TextComponent.fromArray( reason ) );
     }

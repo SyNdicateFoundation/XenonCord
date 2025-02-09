@@ -71,7 +71,7 @@ public class SchedulerTest
         assertTrue( b.get() );
     }
 
-    private ScheduledTask setup(TaskScheduler scheduler, final AtomicBoolean hasRun)
+    private ScheduledTask setup(TaskScheduler scheduler, AtomicBoolean hasRun)
     {
         return scheduler.schedule( DummyPlugin.INSTANCE, new Runnable()
         {

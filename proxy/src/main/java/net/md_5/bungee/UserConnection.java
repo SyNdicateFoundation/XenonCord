@@ -275,25 +275,25 @@ public final class UserConnection implements ProxiedPlayer
         return null;
     }
 
-    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry)
+    public void connect(ServerInfo info, Callback<Boolean> callback, boolean retry)
     {
         connect( info, callback, retry, ServerConnectEvent.Reason.PLUGIN );
     }
 
-    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason)
+    public void connect(ServerInfo info, Callback<Boolean> callback, boolean retry, ServerConnectEvent.Reason reason)
     {
         // Waterfall start
         connect(info, callback, retry, reason, bungee.getConfig().getServerConnectTimeout());
     }
-    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, int timeout) {
+    public void connect(ServerInfo info, Callback<Boolean> callback, boolean retry, int timeout) {
         connect(info, callback, retry, ServerConnectEvent.Reason.PLUGIN, timeout);
     }
 
-    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason, final int timeout) {
+    public void connect(ServerInfo info, Callback<Boolean> callback, boolean retry, ServerConnectEvent.Reason reason, int timeout) {
         this.connect(info, callback, retry, reason, timeout, true);
     }
 
-    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason, final int timeout, boolean sendFeedback)
+    public void connect(ServerInfo info, Callback<Boolean> callback, boolean retry, ServerConnectEvent.Reason reason, int timeout, boolean sendFeedback)
     {
         // Waterfall end
         Preconditions.checkNotNull( info, "info" );
@@ -307,14 +307,14 @@ public final class UserConnection implements ProxiedPlayer
     }
 
     @Override
-    public void connect(final ServerConnectRequest request)
+    public void connect( ServerConnectRequest request)
     {
         Preconditions.checkNotNull( request, "request" );
 
         ch.getHandle().eventLoop().execute( () -> connect0( request ) );
     }
 
-    private void connect0(final ServerConnectRequest request)
+    private void connect0( ServerConnectRequest request)
     {
         final Callback<ServerConnectRequest.Result> callback = request.getCallback();
         final ServerConnectEvent event = new ServerConnectEvent( this, request.getTarget(), request.getReason(), request );
@@ -416,7 +416,7 @@ public final class UserConnection implements ProxiedPlayer
         disconnect0( reason );
     }
 
-    public void disconnect0(final BaseComponent reason)
+    public void disconnect0( BaseComponent reason)
     {
         if ( ch.isClosing() ) return;
 

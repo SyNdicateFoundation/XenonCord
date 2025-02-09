@@ -11,18 +11,17 @@ import net.md_5.bungee.api.plugin.Command;
 import java.sql.PreparedStatement;
 import java.util.Arrays;
 
+@SuppressWarnings("unused")
 public class BanCommand extends Command {
     private final SQLManager sqlManager;
 
-    public BanCommand(final SQLManager sqlManagerIn) {
+    public BanCommand( SQLManager sqlManagerIn) {
         super("ban", XenonCore.instance.getConfigData().getPunishmanager().getBanperm());
         this.sqlManager = sqlManagerIn;
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(XenonCore.instance.getConfigData().getPunishmanager().getBanperm())) return;
-
         if (args.length < 3) {
             Message.send(sender,
                     XenonCore.instance.getConfigData().getUnknownoptionmessage()

@@ -6,27 +6,30 @@ import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import org.reflections.Reflections;
 
-import java.util.Arrays;
+import java.util.*;
 
 public class ModuleManager {
-    public void init(){
+
+    public void init() {
         XenonCore.instance.getLogger().info("Initializing modules....");
-        new Reflections("ir.xenoncommunity.modules.listeners").getTypesAnnotatedWith(ModuleListener.class).forEach(listener -> Arrays.stream(XenonCore.instance.getConfigData().getModules().getEnables()).filter(module -> module.equals(listener.getSimpleName())).forEach(module -> {
+
+        new Reflections("ir.xenoncommunity.modules.impl").getTypesAnnotatedWith(ModuleListener.class).forEach(listener -> Arrays.stream(XenonCore.instance.getConfigData().getModules().getEnables()).filter(module -> module.equals(listener.getSimpleName())).forEach(module -> {
             try {
-                XenonCore.instance.logdebuginfo(String.format("Module %s loaded.", module));
-                XenonCore.instance.getBungeeInstance().pluginManager.registerListener(null, (Listener) listener.newInstance());
+                if(listener.getAnnotation(ModuleListener.class).isExtended() && !listener.getAnnotation(ModuleListener.class).isImplemented()){
+                    XenonCore.instance.getBungeeInstance().getPluginManager().registerCommand(null, (Command) listener.newInstance());
+                    XenonCore.instance.logdebuginfo(String.format("Module %s loaded as a command.", module));
+                } else if(!listener.getAnnotation(ModuleListener.class).isExtended() && listener.getAnnotation(ModuleListener.class).isImplemented()){
+                    XenonCore.instance.getBungeeInstance().getPluginManager().registerListener(null, (Listener) listener.newInstance());
+                    XenonCore.instance.logdebuginfo(String.format("Module %s loaded as a listener.", module));
+                } else if(listener.getAnnotation(ModuleListener.class).isExtended() && listener.getAnnotation(ModuleListener.class).isImplemented()){
+                    XenonCore.instance.getBungeeInstance().getPluginManager().registerListenerAndCommand(null, listener);
+                    XenonCore.instance.logdebuginfo(String.format("Module %s loaded as a both.", module));
+                }
             } catch (Exception e) {
                 XenonCore.instance.getLogger().error(e.getMessage());
             }
         }));
-        new Reflections("ir.xenoncommunity.modules.commands").getSubTypesOf(Command.class).forEach(command -> Arrays.stream(XenonCore.instance.getConfigData().getModules().getEnables()).filter(module -> module.equals(command.getSimpleName())).forEach(commandModule -> {
-            try {
-                XenonCore.instance.logdebuginfo(String.format("Module %s loaded.", commandModule));
-                XenonCore.instance.getBungeeInstance().pluginManager.registerCommand(null, command.newInstance());
-            } catch (Exception e) {
-                XenonCore.instance.getLogger().error(e.getMessage());
-            }
-        }));
+
         XenonCore.instance.getLogger().info("Successfully Initialized!");
     }
 }

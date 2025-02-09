@@ -563,4 +563,29 @@ public final class PluginManager
         }
         return false;
     }
+
+    public void registerListenerAndCommand(Plugin plugin, Class cls)
+    {
+        try {
+            final Object listener = cls.newInstance();
+            for (Method method : listener.getClass().getDeclaredMethods()) {
+                Preconditions.checkArgument(!method.isAnnotationPresent(Subscribe.class),
+                        "Listener %s has registered using deprecated subscribe annotation! Please update to @EventHandler.", listener);
+            }
+            synchronized (listenersByPlugin) {
+                eventBus.register(listener);
+                listenersByPlugin.put(plugin,(Listener) listener);
+            }
+
+            synchronized (commandsByPlugin) {
+                commandMap.put(((Command)listener).getName().toLowerCase(Locale.ROOT), ((Command)listener));
+                for (String alias : ((Command)listener).getAliases()) {
+                    commandMap.put(alias.toLowerCase(Locale.ROOT), ((Command)listener));
+                }
+                commandsByPlugin.put(plugin, ((Command)listener));
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 }

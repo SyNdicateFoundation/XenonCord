@@ -14,8 +14,6 @@ public class ClearChatCommand extends Command {
     }
     @Override
     public void execute(CommandSender sender, String[] args){
-        if(!sender.hasPermission(XenonCore.instance.getConfigData().getPunishmanager().getClearchatperm())) return;
-
         if(args.length == 0){
             for(int i = 0; i <= 100; i++){
                 Message.send(sender, "", false);

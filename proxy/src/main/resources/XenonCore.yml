@@ -47,6 +47,7 @@ modules:
     - Playtime
     - PunishManager
     - ExploitPatcher
+    - StaffActivitySender
 
 # MotdChanger Settings
 # Requires MotdChanger module to be enabled.

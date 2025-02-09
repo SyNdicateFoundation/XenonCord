@@ -1,6 +1,7 @@
-package ir.xenoncommunity.modules.commands;
+package ir.xenoncommunity.modules.impl;
 
 import ir.xenoncommunity.XenonCore;
+import ir.xenoncommunity.annotations.ModuleListener;
 import ir.xenoncommunity.utils.Message;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -14,12 +15,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @SuppressWarnings("unused")
+@ModuleListener(isExtended = true, isImplemented = true)
 public class StaffChat extends Command implements Listener {
     public static ArrayList<String> toggles;
     public StaffChat() {
         super("staffchat", XenonCore.instance.getConfigData().getStaffchat().getStaffchatperm(), "sc");
         toggles = new ArrayList<>();
-        XenonCore.instance.getBungeeInstance().pluginManager.registerListener(null, this);
     }
 
     @Override
@@ -67,7 +68,7 @@ public class StaffChat extends Command implements Listener {
         sendMessage(e.getMessage(), senderName);
     }
 
-    private void sendMessage(final String msg, final String senderName){
+    private void sendMessage( String msg, String senderName){
         XenonCore.instance.getTaskManager().add(() ->
                 XenonCore.instance.getBungeeInstance().getPlayers().stream()
                 .filter(proxiedPlayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getStaffchat().getStaffchatperm()))

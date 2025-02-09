@@ -145,7 +145,7 @@ public class ChannelWrapper
         }
     }
 
-    public void delayedClose(final Kick kick)
+    public void delayedClose(Kick kick)
     {
         if ( !closing )
         {

@@ -12,14 +12,12 @@ import java.util.Arrays;
 
 public class KickCommand extends Command {
 
-    public KickCommand(final SQLManager sqlManagerIn) {
+    public KickCommand( SQLManager sqlManagerIn) {
         super("kick", XenonCore.instance.getConfigData().getPunishmanager().getKickperm());
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(XenonCore.instance.getConfigData().getPunishmanager().getKickperm())) return;
-
         if (args.length < 3) {
             Message.send(sender,
                     XenonCore.instance.getConfigData().getUnknownoptionmessage()

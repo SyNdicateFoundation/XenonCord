@@ -201,7 +201,7 @@ public final class ChatColor
      * @param input String to strip of color
      * @return A copy of the input string, without any coloring
      */
-    public static String stripColor(final String input)
+    public static String stripColor(String input)
     {
         if ( input == null )
         {

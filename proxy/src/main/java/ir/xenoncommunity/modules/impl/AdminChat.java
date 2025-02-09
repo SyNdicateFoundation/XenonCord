@@ -1,6 +1,7 @@
-package ir.xenoncommunity.modules.commands;
+package ir.xenoncommunity.modules.impl;
 
 import ir.xenoncommunity.XenonCore;
+import ir.xenoncommunity.annotations.ModuleListener;
 import ir.xenoncommunity.utils.Message;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -10,47 +11,46 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.command.ConsoleCommandSender;
 import net.md_5.bungee.event.EventHandler;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @SuppressWarnings("unused")
+@ModuleListener(isExtended = true, isImplemented = true)
 public class AdminChat extends Command implements Listener {
-    public static ArrayList<String> toggles;
+    public static final Set<String> toggles = new HashSet<>();
+
     public AdminChat() {
         super("adminchat", XenonCore.instance.getConfigData().getAdminchat().getAdminchatperm(), "ac");
-        toggles = new ArrayList<>();
-        XenonCore.instance.getBungeeInstance().pluginManager.registerListener(null, this);
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(XenonCore.instance.getConfigData().getAdminchat().getAdminchatperm())) return;
-
-        final String senderName = sender.getName();
-
-        if(args.length == 0) {
-            if(sender instanceof ConsoleCommandSender) return;
-
-            if(toggles.contains(senderName)) {
-                Message.send(sender, XenonCore.instance.getConfigData().getAdminchat().getTogglemessage()
-                        .replace("STATE", "disabled"), false);
-                toggles.remove(senderName);
-            }
-            else {
-                Message.send(sender, XenonCore.instance.getConfigData().getAdminchat().getTogglemessage()
-                        .replace("STATE", "enabled"), false);
-                toggles.add(senderName);
-            }
-
+        if (args.length == 0) {
+            handleToggle(sender);
             return;
         }
-            final StringBuilder stringBuilder = new StringBuilder();
-            Arrays.stream(args).forEach(string -> stringBuilder.append(string).append(" "));
-            sendMessage(stringBuilder.toString(), senderName);
+        sendMessage(String.join(" ", args), sender.getName());
+    }
+
+    private void handleToggle(CommandSender sender) {
+        if (sender instanceof ConsoleCommandSender) return;
+
+        String senderName = sender.getName();
+        boolean isEnabled = toggles.contains(senderName);
+        String state = isEnabled ? "disabled" : "enabled";
+
+        Message.send(sender, XenonCore.instance.getConfigData().getAdminchat().getTogglemessage().replace("STATE", state), false);
+        if (isEnabled) {
+            toggles.remove(senderName);
+        } else {
+            toggles.add(senderName);
+        }
     }
 
     @EventHandler
-    public void onChat(ChatEvent e){
+    public void onChat(ChatEvent e) {
+        if (!(e.getSender() instanceof ProxiedPlayer)) return;
+
         final ProxiedPlayer sender = (ProxiedPlayer) e.getSender();
         final String senderName = sender.getName();
 
@@ -62,19 +62,19 @@ public class AdminChat extends Command implements Listener {
 
         e.setCancelled(true);
 
-        if(StaffChat.toggles != null && StaffChat.toggles.contains(senderName)) return;
+        if (StaffChat.toggles != null && StaffChat.toggles.contains(senderName)) return;
 
         sendMessage(e.getMessage(), senderName);
     }
 
-    private void sendMessage(final String msg, final String senderName){
-        XenonCore.instance.getTaskManager().add(() ->
-                XenonCore.instance.getBungeeInstance().getPlayers().stream()
+    private void sendMessage(String msg, String senderName) {
+        XenonCore.instance.getTaskManager().add(() -> XenonCore.instance.getBungeeInstance().getPlayers().stream()
                 .filter(proxiedPlayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getAdminchat().getAdminchatperm()))
                 .forEach(proxiedPlayer -> Message.send(proxiedPlayer,
                         XenonCore.instance.getConfigData().getAdminchat().getAdminchatmessage()
                                 .replace("PLAYER", senderName)
                                 .replace("MESSAGE", msg), false)));
+
         Message.send(XenonCore.instance.getConfigData().getAdminchat().getAdminchatmessage()
                 .replace("PLAYER", senderName)
                 .replace("MESSAGE", msg));

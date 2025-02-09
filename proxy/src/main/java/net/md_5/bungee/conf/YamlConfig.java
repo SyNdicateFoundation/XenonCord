@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import ir.xenoncommunity.XenonCore;
-import ir.xenoncommunity.modules.listeners.MotdChanger;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.ChatColor;

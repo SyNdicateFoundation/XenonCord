@@ -147,12 +147,12 @@ public class BungeeServerInfo implements ServerInfo
     }
 
     @Override
-    public void ping(final Callback<ServerPing> callback)
+    public void ping( Callback<ServerPing> callback)
     {
         ping( callback, ProxyServer.getInstance().getProtocolVersion() );
     }
 
-    public void ping(final Callback<ServerPing> callback, final int protocolVersion)
+    public void ping( Callback<ServerPing> callback, int protocolVersion)
     {
         Preconditions.checkNotNull( callback, "callback" );
 
