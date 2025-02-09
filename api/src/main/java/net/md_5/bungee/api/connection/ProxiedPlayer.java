@@ -19,32 +19,6 @@ import java.util.concurrent.CompletableFuture;
 public interface ProxiedPlayer extends Connection, CommandSender {
 
     /**
-     * Represents the player's chat state.
-     */
-    public enum ChatMode {
-
-        /**
-         * The player will see all chat.
-         */
-        SHOWN,
-        /**
-         * The player will only see everything except messages marked as chat.
-         */
-        COMMANDS_ONLY,
-        /**
-         * The chat is completely disabled, the player won't see anything.
-         */
-        HIDDEN;
-
-    }
-
-    public enum MainHand {
-
-        LEFT,
-        RIGHT;
-    }
-
-    /**
      * Gets this player's display name.
      *
      * @return the players current display name
@@ -121,8 +95,6 @@ public interface ProxiedPlayer extends Connection, CommandSender {
      */
     void connect(ServerInfo target, Callback<Boolean> callback);
 
-    // Waterfall start
-
     /**
      * Connects / transfers this user to the specified connection, gracefully
      * closing the current one. Depending on the implementation, this method
@@ -152,7 +124,8 @@ public interface ProxiedPlayer extends Connection, CommandSender {
      *                 target server
      */
     void connect(ServerInfo target, Callback<Boolean> callback, boolean retry, int timeout);
-    // Waterfall end
+
+    // Waterfall start
 
     /**
      * Connects / transfers this user to the specified connection, gracefully
@@ -166,8 +139,6 @@ public interface ProxiedPlayer extends Connection, CommandSender {
      * @param reason   the reason for connecting to the new server
      */
     void connect(ServerInfo target, Callback<Boolean> callback, ServerConnectEvent.Reason reason);
-
-    // Waterfall start
 
     /**
      * Connects / transfers this user to the specified connection, gracefully
@@ -196,12 +167,15 @@ public interface ProxiedPlayer extends Connection, CommandSender {
      */
     void connect(ServerConnectRequest request);
 
+    // Waterfall start
+
     /**
      * Gets the server this player is connected to.
      *
      * @return the server this player is connected to
      */
     Server getServer();
+    // Waterfall end
 
     /**
      * Gets the ping time between the proxy and this connection.
@@ -428,4 +402,30 @@ public interface ProxiedPlayer extends Connection, CommandSender {
      */
     @ApiStatus.Experimental
     void transfer(String host, int port);
+
+    /**
+     * Represents the player's chat state.
+     */
+    public enum ChatMode {
+
+        /**
+         * The player will see all chat.
+         */
+        SHOWN,
+        /**
+         * The player will only see everything except messages marked as chat.
+         */
+        COMMANDS_ONLY,
+        /**
+         * The chat is completely disabled, the player won't see anything.
+         */
+        HIDDEN;
+
+    }
+
+    public enum MainHand {
+
+        LEFT,
+        RIGHT;
+    }
 }

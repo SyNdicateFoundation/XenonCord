@@ -1,5 +1,6 @@
 package ir.xenoncommunity;
 
+import ir.xenoncommunity.antibot.AntibotManager;
 import ir.xenoncommunity.gui.SwingManager;
 import ir.xenoncommunity.modules.ModuleManager;
 import ir.xenoncommunity.utils.Configuration;
@@ -17,16 +18,20 @@ import java.util.List;
 
 @Getter
 public class XenonCore {
+    /**
+     * Declare all required variables
+     */
     public static XenonCore instance;
-    @Setter
-    private boolean isProxyCompletlyLoaded;
     private final Logger logger;
     private final TaskManager taskManager;
     private final BungeeCord bungeeInstance;
     private final Configuration configuration;
+    private final ModuleManager moduleManager;
+    private final AntibotManager antibotManager;
+    @Setter
+    private boolean isProxyCompletlyLoaded;
     @Setter
     private Configuration.ConfigData configData;
-    private final ModuleManager moduleManager;
     @Setter
     private String currentMotd;
 
@@ -40,6 +45,7 @@ public class XenonCore {
         this.bungeeInstance = BungeeCord.getInstance();
         this.configuration = new Configuration();
         this.moduleManager = new ModuleManager();
+        this.antibotManager = new AntibotManager();
     }
 
     /**
@@ -49,7 +55,7 @@ public class XenonCore {
         getLogger().info("Loading the proxy server itself has been done. took: {}ms", System.currentTimeMillis() - startTime);
         getTaskManager().async(() -> {
             while (!isProxyCompletlyLoaded)
-                bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(ChatColor.translateAlternateColorCodes('&', configData.getLoadingmessage())));
+                bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(configData.getLoadingmessage()));
 
             moduleManager.init();
             SwingManager.createAndShowGUI();
@@ -61,23 +67,37 @@ public class XenonCore {
      * Called when proxy is shutting down.
      */
     public void shutdown() {
+        getTaskManager().shutdown();
     }
 
+    /**
+     * Returns a list of online players names
+     */
     public List<String> getPlayerNames() {
         List<String> players = new ArrayList<>();
         bungeeInstance.getPlayers().forEach(player -> players.add(player.getName()));
         return players;
     }
 
+    /**
+     * Returns XenonCord's version
+     * TODO: add github integration
+     */
     public String getVersion() {
         return "V1";
     }
 
+    /**
+     * checks config data for debugging.
+     */
     public void logdebuginfo(String msg) {
         if (configData.isDebug())
             logger.info(msg);
     }
 
+    /**
+     * checks config data for debugging.
+     */
     public void logdebugerror(String msg) {
         if (configData.isDebug())
             logger.error(msg);

@@ -10,7 +10,8 @@ import net.md_5.bungee.api.plugin.Command;
  * Command to terminate the proxy instance. May only be used by the console by
  * default.
  */
-@SuppressWarnings("unused") public class CommandEnd extends Command {
+@SuppressWarnings("unused")
+public class CommandEnd extends Command {
 
     public CommandEnd() {
         super("end", "bungeecord.command.end");

@@ -20,7 +20,7 @@ public class MotdChanger implements Listener {
 
         XenonCore.instance.setCurrentMotd(motd);
 
-        serverPing.setDescriptionComponent(new TextComponent(ChatColor.translateAlternateColorCodes('&', motd)));
+        serverPing.setDescriptionComponent(new TextComponent(motd));
 
         if (XenonCore.instance.getConfigData().getMotdchanger().getOnemoreplayer())
             serverPing.getPlayers().setMax(XenonCore.instance.getBungeeInstance().getOnlineCount() + 1);

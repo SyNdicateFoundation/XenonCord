@@ -20,15 +20,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class NativeCipherTest {
 
+    private static final int BENCHMARK_COUNT = 4096;
+    //
+    private static final NativeCode<BungeeCipher> factory = new NativeCode<>("native-cipher", JavaCipher::new, NativeCipher::new);
     private final byte[] plainBytes = "This is a test".getBytes();
     private final byte[] cipheredBytes = new byte[]
             {
                     50, -7, 89, 1, -11, -32, -118, -48, -2, -72, 105, 97, -70, -81
             };
     private final SecretKey secret = new SecretKeySpec(new byte[16], "AES");
-    private static final int BENCHMARK_COUNT = 4096;
-    //
-    private static final NativeCode<BungeeCipher> factory = new NativeCode<>("native-cipher", JavaCipher::new, NativeCipher::new);
 
     @Test
     public void testNative() throws Exception {

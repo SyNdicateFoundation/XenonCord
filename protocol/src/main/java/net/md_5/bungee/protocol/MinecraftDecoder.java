@@ -14,15 +14,26 @@ import java.util.List;
 @AllArgsConstructor
 public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
 
+    // Waterfall start: Additional DoS mitigations, courtesy of Velocity
+    public static final boolean DEBUG = Boolean.getBoolean("waterfall.packet-decode-logging");
+    // Cached Exceptions:
+    private static final CorruptedFrameException PACKET_LENGTH_OVERSIZED =
+            new CorruptedFrameException("A packet could not be decoded because it was too large. For more "
+                    + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
+    private static final CorruptedFrameException PACKET_LENGTH_UNDERSIZED =
+            new CorruptedFrameException("A packet could not be decoded because it was smaller than allowed. For more "
+                    + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
+    private static final BadPacketException PACKET_NOT_READ_TO_END =
+            new BadPacketException("Couldn't read all bytes from a packet. For more "
+                    + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
+    private final boolean server;
     @Getter
     @Setter
     private Protocol protocol;
-    private final boolean server;
     @Setter
     private int protocolVersion;
     @Setter
     private boolean supportsForge = false;
-
     public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion) {
         this.protocol = protocol;
         this.server = server;
@@ -107,21 +118,6 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
             }
         }
     }
-
-    // Waterfall start: Additional DoS mitigations, courtesy of Velocity
-    public static final boolean DEBUG = Boolean.getBoolean("waterfall.packet-decode-logging");
-
-    // Cached Exceptions:
-    private static final CorruptedFrameException PACKET_LENGTH_OVERSIZED =
-            new CorruptedFrameException("A packet could not be decoded because it was too large. For more "
-                    + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
-    private static final CorruptedFrameException PACKET_LENGTH_UNDERSIZED =
-            new CorruptedFrameException("A packet could not be decoded because it was smaller than allowed. For more "
-                    + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
-    private static final BadPacketException PACKET_NOT_READ_TO_END =
-            new BadPacketException("Couldn't read all bytes from a packet. For more "
-                    + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
-
 
     private void doLengthSanityChecks(ByteBuf buf, DefinedPacket packet,
                                       ProtocolConstants.Direction direction, int packetId) throws Exception {

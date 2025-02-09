@@ -1,19 +1,14 @@
 package net.md_5.bungee.protocol.packet;
 
 import io.netty.buffer.ByteBuf;
-
-import java.util.Locale;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.protocol.AbstractPacketHandler;
-import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.Either;
-import net.md_5.bungee.protocol.NumberFormat;
-import net.md_5.bungee.protocol.ProtocolConstants;
+import net.md_5.bungee.protocol.*;
+
+import java.util.Locale;
 
 @Data
 @NoArgsConstructor
@@ -74,13 +69,13 @@ public class ScoreboardObjective extends DefinedPacket {
 
         INTEGER, HEARTS;
 
+        public static HealthDisplay fromString(String s) {
+            return valueOf(s.toUpperCase(Locale.ROOT));
+        }
+
         @Override
         public String toString() {
             return super.toString().toLowerCase(Locale.ROOT);
-        }
-
-        public static HealthDisplay fromString(String s) {
-            return valueOf(s.toUpperCase(Locale.ROOT));
         }
     }
 }

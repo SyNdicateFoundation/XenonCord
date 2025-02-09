@@ -20,14 +20,6 @@ public class ChatChain extends DefinedPacket {
     private List<ChainLink> seen;
     private List<ChainLink> received;
 
-    @Override
-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
-        seen = readLinks(buf);
-        if (buf.readBoolean()) {
-            received = readLinks(buf);
-        }
-    }
-
     private static List<ChainLink> readLinks(ByteBuf buf) {
         int cnt = readVarInt(buf);
         Preconditions.checkArgument(cnt <= 5, "Too many entries");
@@ -38,6 +30,22 @@ public class ChatChain extends DefinedPacket {
         return chain;
     }
 
+    private static void writeLinks(List<ChainLink> links, ByteBuf buf) {
+        writeVarInt(links.size(), buf);
+        for (ChainLink link : links) {
+            writeUUID(link.sender, buf);
+            writeArray(link.signature, buf);
+        }
+    }
+
+    @Override
+    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        seen = readLinks(buf);
+        if (buf.readBoolean()) {
+            received = readLinks(buf);
+        }
+    }
+
     @Override
     public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
         writeLinks(seen, buf);
@@ -46,14 +54,6 @@ public class ChatChain extends DefinedPacket {
             writeLinks(received, buf);
         } else {
             buf.writeBoolean(false);
-        }
-    }
-
-    private static void writeLinks(List<ChainLink> links, ByteBuf buf) {
-        writeVarInt(links.size(), buf);
-        for (ChainLink link : links) {
-            writeUUID(link.sender, buf);
-            writeArray(link.signature, buf);
         }
     }
 

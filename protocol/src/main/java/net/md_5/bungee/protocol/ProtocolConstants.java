@@ -6,7 +6,6 @@ import java.util.List;
 
 public class ProtocolConstants {
 
-    private static final boolean SNAPSHOT_SUPPORT = Boolean.getBoolean("net.md_5.bungee.protocol.snapshot");
     public static final int MINECRAFT_1_8 = 47;
     public static final int MINECRAFT_1_9 = 107;
     public static final int MINECRAFT_1_9_1 = 108;
@@ -52,6 +51,7 @@ public class ProtocolConstants {
     public static final int MINECRAFT_1_21_5 = 1073742057;
     public static final List<String> SUPPORTED_VERSIONS;
     public static final List<Integer> SUPPORTED_VERSION_IDS;
+    private static final boolean SNAPSHOT_SUPPORT = Boolean.getBoolean("net.md_5.bungee.protocol.snapshot");
 
     static {
         ImmutableList.Builder<String> supportedVersions = ImmutableList.<String>builder().add(
@@ -116,7 +116,7 @@ public class ProtocolConstants {
         );
 
         if (SNAPSHOT_SUPPORT) {
-            supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_21_5 );
+            supportedVersionIds.add(ProtocolConstants.MINECRAFT_1_21_5);
         }
 
         SUPPORTED_VERSIONS = supportedVersions.build();

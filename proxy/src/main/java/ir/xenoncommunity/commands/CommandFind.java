@@ -13,7 +13,8 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.util.Collections;
 
-@SuppressWarnings({"unused", "deprecation"}) public class CommandFind extends Command implements TabExecutor {
+@SuppressWarnings({"unused", "deprecation"})
+public class CommandFind extends Command implements TabExecutor {
 
     public CommandFind() {
         super("find", "bungeecord.command.find");

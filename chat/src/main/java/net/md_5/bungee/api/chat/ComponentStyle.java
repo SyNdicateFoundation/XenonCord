@@ -54,6 +54,34 @@ public final class ComponentStyle implements Cloneable {
     private Boolean obfuscated;
 
     /**
+     * Get a new {@link ComponentStyleBuilder}.
+     *
+     * @return the builder
+     */
+    public static ComponentStyleBuilder builder() {
+        return new ComponentStyleBuilder();
+    }
+
+    /**
+     * Get a new {@link ComponentStyleBuilder} with values initialized to the
+     * style values of the supplied {@link ComponentStyle}.
+     *
+     * @param other the component style whose values to copy into the builder
+     * @return the builder
+     */
+    public static ComponentStyleBuilder builder(ComponentStyle other) {
+        return new ComponentStyleBuilder()
+                .color(other.color)
+                .shadowColor(other.shadowColor)
+                .font(other.font)
+                .bold(other.bold)
+                .italic(other.italic)
+                .underlined(other.underlined)
+                .strikethrough(other.strikethrough)
+                .obfuscated(other.obfuscated);
+    }
+
+    /**
      * Returns the color of this style. May return null.
      *
      * @return the color of this style, or null if default color
@@ -211,33 +239,5 @@ public final class ComponentStyle implements Cloneable {
     @Override
     public ComponentStyle clone() {
         return new ComponentStyle(color, shadowColor, font, bold, italic, underlined, strikethrough, obfuscated);
-    }
-
-    /**
-     * Get a new {@link ComponentStyleBuilder}.
-     *
-     * @return the builder
-     */
-    public static ComponentStyleBuilder builder() {
-        return new ComponentStyleBuilder();
-    }
-
-    /**
-     * Get a new {@link ComponentStyleBuilder} with values initialized to the
-     * style values of the supplied {@link ComponentStyle}.
-     *
-     * @param other the component style whose values to copy into the builder
-     * @return the builder
-     */
-    public static ComponentStyleBuilder builder(ComponentStyle other) {
-        return new ComponentStyleBuilder()
-                .color(other.color)
-                .shadowColor(other.shadowColor)
-                .font(other.font)
-                .bold(other.bold)
-                .italic(other.italic)
-                .underlined(other.underlined)
-                .strikethrough(other.strikethrough)
-                .obfuscated(other.obfuscated);
     }
 }

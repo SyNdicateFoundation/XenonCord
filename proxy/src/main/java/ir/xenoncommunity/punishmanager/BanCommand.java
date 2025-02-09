@@ -63,11 +63,10 @@ public class BanCommand extends Command {
 
                 XenonCore.instance.getBungeeInstance().getPlayers().forEach(player -> {
                     if (player.getName().equals(playerName)) player.disconnect(
-                            ChatColor.translateAlternateColorCodes('&',
                                     XenonCore.instance.getConfigData().getPunishmanager().getBandisconnectmessage()
                                             .replace("PLAYER", playerName)
                                             .replace("REASON", reason)
-                                            .replace("DURATION", String.valueOf(banDuration / 60000))));
+                                            .replace("DURATION", String.valueOf(banDuration / 60000)));
                     Message.send(player, XenonCore.instance.getConfigData().getPunishmanager().getBanannouncemessage()
                             .replace("PLAYER1", sender.getName())
                             .replace("PLAYER2", playerName)

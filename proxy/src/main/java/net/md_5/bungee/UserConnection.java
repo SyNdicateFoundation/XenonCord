@@ -60,6 +60,26 @@ public final class UserConnection implements ProxiedPlayer {
     private final String name;
     @Getter
     private final InitialHandler pendingConnection;
+    @Getter
+    private final Collection<ServerInfo> pendingConnects = new HashSet<>();
+    /*========================================================================*/
+    private final Collection<String> groups = new CaseInsensitiveSet();
+    private final Collection<String> permissions = new CaseInsensitiveSet();
+    @Getter
+    private final Scoreboard serverSentScoreboard = new Scoreboard();
+    @Getter
+    private final Collection<UUID> sentBossBars = new HashSet<>();
+    // Waterfall start
+    @Getter
+    private final Multimap<Integer, Integer> potions = HashMultimap.create();
+    /*========================================================================*/
+    private final Queue<DefinedPacket> packetQueue = new ArrayDeque<>();
+    private final Unsafe unsafe = new Unsafe() {
+        @Override
+        public void sendPacket(DefinedPacket packet) {
+            ch.write(packet);
+        }
+    };
     /*========================================================================*/
     @Getter
     @Setter
@@ -70,8 +90,6 @@ public final class UserConnection implements ProxiedPlayer {
     @Getter
     @Setter
     private boolean dimensionChange = true;
-    @Getter
-    private final Collection<ServerInfo> pendingConnects = new HashSet<>();
     /*========================================================================*/
     @Getter
     @Setter
@@ -90,9 +108,6 @@ public final class UserConnection implements ProxiedPlayer {
     @Setter
     private Queue<String> serverJoinQueue;
     /*========================================================================*/
-    private final Collection<String> groups = new CaseInsensitiveSet();
-    private final Collection<String> permissions = new CaseInsensitiveSet();
-    /*========================================================================*/
     @Getter
     @Setter
     private int clientEntityId;
@@ -101,13 +116,6 @@ public final class UserConnection implements ProxiedPlayer {
     private int serverEntityId;
     @Getter
     private ClientSettings settings;
-    @Getter
-    private final Scoreboard serverSentScoreboard = new Scoreboard();
-    @Getter
-    private final Collection<UUID> sentBossBars = new HashSet<>();
-    // Waterfall start
-    @Getter
-    private final Multimap<Integer, Integer> potions = HashMultimap.create();
     // Waterfall end
     @Getter
     @Setter
@@ -125,14 +133,6 @@ public final class UserConnection implements ProxiedPlayer {
     @Getter
     @Setter
     private ForgeServerHandler forgeServerHandler;
-    /*========================================================================*/
-    private final Queue<DefinedPacket> packetQueue = new ArrayDeque<>();
-    private final Unsafe unsafe = new Unsafe() {
-        @Override
-        public void sendPacket(DefinedPacket packet) {
-            ch.write(packet);
-        }
-    };
 
     public boolean init() {
         this.entityRewrite = EntityMap.getEntityMap(getPendingConnection().getVersion());

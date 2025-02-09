@@ -45,6 +45,8 @@ public class BungeeServerInfo implements ServerInfo {
     private final boolean restricted;
     @Getter
     private final Queue<DefinedPacket> packetQueue = new LinkedList<>();
+    private long lastPing;
+    private ServerPing cachedPing;
 
     @Synchronized("players")
     public void addPlayer(ProxiedPlayer player) {
@@ -108,9 +110,6 @@ public class BungeeServerInfo implements ServerInfo {
         }
         return false;
     }
-
-    private long lastPing;
-    private ServerPing cachedPing;
 
     public void cachePing(ServerPing serverPing) {
         if (!(ProxyServer.getInstance().getConfig().getRemotePingCache() > 0)) return;

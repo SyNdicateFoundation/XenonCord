@@ -26,11 +26,6 @@ public class ServerConnectEvent extends Event implements Cancellable {
      */
     private final ProxiedPlayer player;
     /**
-     * Server the player will be connected to.
-     */
-    @NonNull
-    private ServerInfo target;
-    /**
      * Reason for connecting to a new server.
      */
     private final Reason reason;
@@ -38,6 +33,11 @@ public class ServerConnectEvent extends Event implements Cancellable {
      * Request used to connect to given server.
      */
     private final ServerConnectRequest request;
+    /**
+     * Server the player will be connected to.
+     */
+    @NonNull
+    private ServerInfo target;
     /**
      * Cancelled state.
      */

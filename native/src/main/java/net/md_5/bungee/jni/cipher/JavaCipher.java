@@ -12,17 +12,9 @@ import java.security.GeneralSecurityException;
 
 public class JavaCipher implements BungeeCipher {
 
-    private final Cipher cipher;
     private static final FastThreadLocal<byte[]> heapInLocal = new EmptyByteThreadLocal();
     private static final FastThreadLocal<byte[]> heapOutLocal = new EmptyByteThreadLocal();
-
-    private static class EmptyByteThreadLocal extends FastThreadLocal<byte[]> {
-
-        @Override
-        protected byte[] initialValue() {
-            return new byte[0];
-        }
-    }
+    private final Cipher cipher;
 
     public JavaCipher() {
         try {
@@ -81,5 +73,13 @@ public class JavaCipher implements BungeeCipher {
     @Override
     public boolean allowComposite() {
         return true;
+    }
+
+    private static class EmptyByteThreadLocal extends FastThreadLocal<byte[]> {
+
+        @Override
+        protected byte[] initialValue() {
+            return new byte[0];
+        }
     }
 }

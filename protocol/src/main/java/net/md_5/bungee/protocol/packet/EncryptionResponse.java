@@ -47,13 +47,6 @@ public class EncryptionResponse extends DefinedPacket {
         handler.handle(this);
     }
 
-    @Data
-    public static class EncryptionData {
-
-        private final long salt;
-        private final byte[] signature;
-    }
-
     // Waterfall start: Additional DoS mitigations, courtesy of Velocity
     public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
         // It turns out these come out to the same length, whether we're talking >=1.8 or not.
@@ -64,6 +57,13 @@ public class EncryptionResponse extends DefinedPacket {
 
     public int expectedMinLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
         return expectedMaxLength(buf, direction, protocolVersion);
+    }
+
+    @Data
+    public static class EncryptionData {
+
+        private final long salt;
+        private final byte[] signature;
     }
     // Waterfall end
 }

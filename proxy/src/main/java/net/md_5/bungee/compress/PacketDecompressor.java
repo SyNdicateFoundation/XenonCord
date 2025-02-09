@@ -36,9 +36,8 @@ public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf> {
         } else {
             Preconditions.checkArgument(size >= compressionThreshold, "Decompressed size %s less than compression threshold %s", size, compressionThreshold);
 
-            if ( size > MAX_DECOMPRESSED_LEN )
-            {
-                throw new OverflowPacketException( "Packet may not be larger than " + MAX_DECOMPRESSED_LEN + " bytes" );
+            if (size > MAX_DECOMPRESSED_LEN) {
+                throw new OverflowPacketException("Packet may not be larger than " + MAX_DECOMPRESSED_LEN + " bytes");
             }
 
             ByteBuf decompressed = ctx.alloc().directBuffer(size, MAX_DECOMPRESSED_LEN);

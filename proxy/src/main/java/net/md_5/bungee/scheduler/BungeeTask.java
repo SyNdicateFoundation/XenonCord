@@ -1,15 +1,15 @@
 package net.md_5.bungee.scheduler;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-
 import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
 import io.github.waterfallmc.waterfall.exception.ProxySchedulerException;
 import lombok.Data;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 
 @Data
 public class BungeeTask implements Runnable, ScheduledTask {

@@ -50,9 +50,9 @@ public final class PluginManager {
     private final MutableGraph<String> dependencyGraph = GraphBuilder.directed().build();
     private final LibraryLoader libraryLoader;
     private final Map<String, Command> commandMap = new java.util.concurrent.ConcurrentHashMap<>();
-    private Map<String, PluginDescription> toLoad = new HashMap<>();
     private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create();
     private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
+    private Map<String, PluginDescription> toLoad = new HashMap<>();
 
     @SuppressWarnings("unchecked")
     public PluginManager(ProxyServer proxy) {

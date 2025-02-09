@@ -30,6 +30,9 @@ public class ModuleManager {
             }
         }));
 
+        if (Arrays.asList(XenonCore.instance.getConfigData().getModules().getEnables()).contains("Antibot"))
+            XenonCore.instance.getAntibotManager().init();
+
         XenonCore.instance.getLogger().info("Successfully Initialized!");
     }
 }

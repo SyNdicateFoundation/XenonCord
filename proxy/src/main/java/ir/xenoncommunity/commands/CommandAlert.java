@@ -8,7 +8,8 @@ import net.md_5.bungee.api.plugin.Command;
 
 import java.util.Locale;
 
-@SuppressWarnings({"unused", "deprecation"}) public class CommandAlert extends Command {
+@SuppressWarnings({"unused", "deprecation"})
+public class CommandAlert extends Command {
 
     public CommandAlert() {
         super("alert", "bungeecord.command.alert");

@@ -25,22 +25,16 @@ import java.util.function.BiConsumer;
 @RequiredArgsConstructor
 public abstract class DefinedPacket {
 
-    public <T> T readNullable(Function<ByteBuf, T> reader, ByteBuf buf) {
-        return buf.readBoolean() ? reader.apply(buf) : null;
-    }
-
-    public <T> void writeNullable(T t0, BiConsumer<T, ByteBuf> writer, ByteBuf buf) {
-        if (t0 != null) {
-            buf.writeBoolean(true);
-            writer.accept(t0, buf);
-        } else {
-            buf.writeBoolean(false);
-        }
-    }
-
     public static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
     private static final OverflowPacketException OVERSIZED_VAR_INT_EXCEPTION = new OverflowPacketException("VarInt too big");
     private static final BadPacketException NO_MORE_BYTES_EXCEPTION = new BadPacketException("No more bytes reading varint");
+    // Waterfall start: Additional DoS mitigations, courtesy of Velocity
+    private static final OverflowPacketException STRING_TOO_LONG_EXCEPTION
+            = new OverflowPacketException("A string was longer than allowed. For more "
+            + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
+    private static final OverflowPacketException STRING_TOO_MANY_BYTES_EXCEPTION
+            = new OverflowPacketException("A string had more data than allowed. For more "
+            + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
 
     public static void writeString(String s, ByteBuf buf) {
         writeString(s, buf, Short.MAX_VALUE);
@@ -64,11 +58,10 @@ public abstract class DefinedPacket {
         return readString(buf, Short.MAX_VALUE);
     }
 
-    public static <T> T readStringMapKey(ByteBuf buf, Map<String, T> map)
-    {
-        String string = readString( buf );
-        T result = map.get( string );
-        Preconditions.checkArgument( result != null, "Unknown string key %s", string );
+    public static <T> T readStringMapKey(ByteBuf buf, Map<String, T> map) {
+        String string = readString(buf);
+        T result = map.get(string);
+        Preconditions.checkArgument(result != null, "Unknown string key %s", string);
         return result;
     }
 
@@ -438,6 +431,19 @@ public abstract class DefinedPacket {
         buf.writeBytes(Arrays.copyOf(bits.toByteArray(), (size + 7) >> 3));
     }
 
+    public <T> T readNullable(Function<ByteBuf, T> reader, ByteBuf buf) {
+        return buf.readBoolean() ? reader.apply(buf) : null;
+    }
+
+    public <T> void writeNullable(T t0, BiConsumer<T, ByteBuf> writer, ByteBuf buf) {
+        if (t0 != null) {
+            buf.writeBoolean(true);
+            writer.accept(t0, buf);
+        } else {
+            buf.writeBoolean(false);
+        }
+    }
+
     public void read(ByteBuf buf) {
         throw new UnsupportedOperationException("Packet must implement read method");
     }
@@ -476,14 +482,6 @@ public abstract class DefinedPacket {
 
     @Override
     public abstract String toString();
-
-    // Waterfall start: Additional DoS mitigations, courtesy of Velocity
-    private static final OverflowPacketException STRING_TOO_LONG_EXCEPTION
-            = new OverflowPacketException("A string was longer than allowed. For more "
-            + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
-    private static final OverflowPacketException STRING_TOO_MANY_BYTES_EXCEPTION
-            = new OverflowPacketException("A string had more data than allowed. For more "
-            + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
 
     public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
         return -1;

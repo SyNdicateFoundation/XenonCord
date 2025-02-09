@@ -20,13 +20,6 @@ public class BungeeTitle implements Title {
     private TitlePacketHolder<ClearTitles> clear;
     private TitlePacketHolder<ClearTitles> reset;
 
-    @Data
-    private static class TitlePacketHolder<T extends DefinedPacket> {
-
-        private final net.md_5.bungee.protocol.packet.Title oldPacket;
-        private final T newPacket;
-    }
-
     private static TitlePacketHolder<TitleTimes> createAnimationPacket() {
         final TitlePacketHolder<TitleTimes> title = new TitlePacketHolder<>(new net.md_5.bungee.protocol.packet.Title(Action.TIMES), new TitleTimes());
 
@@ -39,6 +32,17 @@ public class BungeeTitle implements Title {
         title.newPacket.setFadeOut(20);
 
         return title;
+    }
+
+    private static void sendPacket(ProxiedPlayer player, TitlePacketHolder packet) {
+        if (packet == null) return;
+
+        if (player.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_17) {
+            ((UserConnection) player).sendPacketQueued(packet.newPacket);
+        } else {
+            player.unsafe().sendPacket(packet.oldPacket);
+        }
+
     }
 
     @Override
@@ -131,17 +135,6 @@ public class BungeeTitle implements Title {
         return this;
     }
 
-    private static void sendPacket(ProxiedPlayer player, TitlePacketHolder packet) {
-        if (packet == null) return;
-
-        if (player.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_17) {
-            ((UserConnection) player).sendPacketQueued(packet.newPacket);
-        } else {
-            player.unsafe().sendPacket(packet.oldPacket);
-        }
-
-    }
-
     @Override
     public Title send(ProxiedPlayer player) {
         sendPacket(player, clear);
@@ -150,5 +143,12 @@ public class BungeeTitle implements Title {
         sendPacket(player, subtitle);
         sendPacket(player, title);
         return this;
+    }
+
+    @Data
+    private static class TitlePacketHolder<T extends DefinedPacket> {
+
+        private final net.md_5.bungee.protocol.packet.Title oldPacket;
+        private final T newPacket;
     }
 }

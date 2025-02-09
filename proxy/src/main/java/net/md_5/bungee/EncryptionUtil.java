@@ -26,10 +26,10 @@ import java.util.UUID;
 
 public class EncryptionUtil {
 
-    private static final Random random = new Random();
-    private static final Base64.Encoder MIME_ENCODER = Base64.getMimeEncoder(76, "\n".getBytes(StandardCharsets.UTF_8));
     public static final KeyPair keys;
     public static final NativeCode<BungeeCipher> nativeFactory = new NativeCode<>("native-cipher", JavaCipher::new, NativeCipher::new);
+    private static final Random random = new Random();
+    private static final Base64.Encoder MIME_ENCODER = Base64.getMimeEncoder(76, "\n".getBytes(StandardCharsets.UTF_8));
     private static final PublicKey MOJANG_KEY;
 
     static {

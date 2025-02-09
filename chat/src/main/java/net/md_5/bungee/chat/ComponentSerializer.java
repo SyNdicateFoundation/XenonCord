@@ -1,37 +1,15 @@
 package net.md_5.bungee.chat;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
+import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.chat.hover.content.*;
 
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentStyle;
-import net.md_5.bungee.api.chat.ItemTag;
-import net.md_5.bungee.api.chat.KeybindComponent;
-import net.md_5.bungee.api.chat.ScoreComponent;
-import net.md_5.bungee.api.chat.SelectorComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
-import net.md_5.bungee.api.chat.hover.content.Content;
-import net.md_5.bungee.api.chat.hover.content.Entity;
-import net.md_5.bungee.api.chat.hover.content.EntitySerializer;
-import net.md_5.bungee.api.chat.hover.content.Item;
-import net.md_5.bungee.api.chat.hover.content.ItemSerializer;
-import net.md_5.bungee.api.chat.hover.content.Text;
-import net.md_5.bungee.api.chat.hover.content.TextSerializer;
-
 public class ComponentSerializer implements JsonDeserializer<BaseComponent> {
 
+    public static final ThreadLocal<Set<BaseComponent>> serializedComponents = new ThreadLocal<Set<BaseComponent>>();
     private static final Gson gson = new GsonBuilder().
             registerTypeAdapter(BaseComponent.class, new ComponentSerializer()).
             registerTypeAdapter(TextComponent.class, new TextComponentSerializer()).
@@ -45,8 +23,6 @@ public class ComponentSerializer implements JsonDeserializer<BaseComponent> {
             registerTypeAdapter(Item.class, new ItemSerializer()).
             registerTypeAdapter(ItemTag.class, new ItemTag.Serializer()).
             create();
-
-    public static final ThreadLocal<Set<BaseComponent>> serializedComponents = new ThreadLocal<Set<BaseComponent>>();
 
     /**
      * Parse a JSON-compliant String as an array of base components. The input

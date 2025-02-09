@@ -23,14 +23,11 @@ public class ForgeServerHandler {
 
     @Getter(AccessLevel.PACKAGE)
     private final ServerInfo serverInfo;
-
+    private final ArrayDeque<PluginMessage> packetQueue = new ArrayDeque<PluginMessage>();
     @Getter
     private ForgeServerHandshakeState state = ForgeServerHandshakeState.START;
-
     @Getter
     private boolean serverForge = false;
-
-    private final ArrayDeque<PluginMessage> packetQueue = new ArrayDeque<PluginMessage>();
 
     /**
      * Handles any {@link PluginMessage} that contains a FML Handshake or Forge

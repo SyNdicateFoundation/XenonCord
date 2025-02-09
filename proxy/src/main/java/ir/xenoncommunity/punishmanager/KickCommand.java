@@ -45,12 +45,9 @@ public class KickCommand extends Command {
                 XenonCore.instance.getBungeeInstance().getPlayers().forEach(player -> {
                     if (player.getName().equals(playerName)) player.disconnect(
                             new TextComponent(
-                                    ChatColor.translateAlternateColorCodes(
-                                            '&',
                                             XenonCore.instance.getConfigData().getPunishmanager().getKickdisconnectmessage()
                                                     .replace("PLAYER", playerName)
                                                     .replace("REASON", reason)
-                                    )
                             )
                     );
 

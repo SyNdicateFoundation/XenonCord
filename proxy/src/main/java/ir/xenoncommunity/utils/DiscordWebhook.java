@@ -14,11 +14,11 @@ import java.util.*;
 
 @SuppressWarnings("unused")
 public class DiscordWebhook {
+    public final List<EmbedObject> embeds = new ArrayList<>();
     private final String url;
     private String content;
     private String username;
     private String avatarUrl;
-    public final List<EmbedObject> embeds = new ArrayList<>();
 
     public DiscordWebhook(String url) {
         this.url = url;
@@ -123,6 +123,9 @@ public class DiscordWebhook {
     private static class JSONObject {
         private final HashMap<String, Object> map = new HashMap<>();
 
+        private JSONObject() {
+        }
+
         void put(String key, Object value) {
             if (value != null) {
                 this.map.put(key, value);
@@ -160,13 +163,11 @@ public class DiscordWebhook {
         private String quote(String string) {
             return "\"" + string + "\"";
         }
-
-        private JSONObject() {
-        }
     }
 
     @Getter
     public static class EmbedObject {
+        private final List<Field> fields = new ArrayList<>();
         private String title;
         private String description;
         private String url;
@@ -175,7 +176,6 @@ public class DiscordWebhook {
         private Thumbnail thumbnail;
         private Image image;
         private Author author;
-        private final List<Field> fields = new ArrayList<>();
 
         public EmbedObject setTitle(String title) {
             this.title = title;

@@ -21,10 +21,6 @@ import java.net.SocketAddress;
 public class ClientConnectEvent extends Event implements Cancellable {
 
     /**
-     * Cancelled state.
-     */
-    private boolean cancelled;
-    /**
      * Remote address of connection.
      */
     private final SocketAddress socketAddress;
@@ -32,4 +28,8 @@ public class ClientConnectEvent extends Event implements Cancellable {
      * Listener that accepted the connection.
      */
     private final ListenerInfo listener;
+    /**
+     * Cancelled state.
+     */
+    private boolean cancelled;
 }

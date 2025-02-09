@@ -2,6 +2,7 @@ package net.md_5.bungee.conf;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import ir.xenoncommunity.XenonCore;
+import ir.xenoncommunity.utils.Message;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.ChatColor;
@@ -185,8 +186,8 @@ public class YamlConfig implements ConfigurationAdapter {
         Collection<ListenerInfo> ret = new HashSet<>();
 
         for (Map<String, Object> val : base) {
-            String loadmessage = get("motd_on_load", "&b&lPlease wait until XenonCord loads completely....", val);
-            loadmessage = ChatColor.translateAlternateColorCodes('&', loadmessage);
+            String loadmessage = get("loadmessage", "&b&lPlease wait until XenonCord loads completely....", val);
+            loadmessage = Message.translateColor(loadmessage);
 
             int maxPlayers = get("max_players", 1, val);
             boolean forceDefault = get("force_default_server", false, val);

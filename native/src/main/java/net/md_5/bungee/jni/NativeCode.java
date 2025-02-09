@@ -29,6 +29,18 @@ public final class NativeCode<T> {
         this.extendedSupportCheck = extendedSupportCheck;
     }
 
+    public static boolean isSupported() {
+        return ("Linux".equals(System.getProperty("os.name")) && (isAmd64() || isAarch64())) || ("Mac OS X".equals(System.getProperty("os.name")) && "aarch64".equals(System.getProperty("os.arch"))); // Waterfall
+    }
+
+    private static boolean isAmd64() {
+        return "amd64".equals(System.getProperty("os.arch"));
+    }
+
+    private static boolean isAarch64() {
+        return "aarch64".equals(System.getProperty("os.arch"));
+    }
+
     public T newInstance() {
         return (loaded) ? nativeImpl.get() : javaImpl.get();
     }
@@ -74,17 +86,5 @@ public final class NativeCode<T> {
         }
 
         return loaded;
-    }
-
-    public static boolean isSupported() {
-        return ("Linux".equals(System.getProperty("os.name")) && (isAmd64() || isAarch64())) || ("Mac OS X".equals(System.getProperty("os.name")) && "aarch64".equals(System.getProperty("os.arch"))); // Waterfall
-    }
-
-    private static boolean isAmd64() {
-        return "amd64".equals(System.getProperty("os.arch"));
-    }
-
-    private static boolean isAarch64() {
-        return "aarch64".equals(System.getProperty("os.arch"));
     }
 }

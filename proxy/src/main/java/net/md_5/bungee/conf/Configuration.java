@@ -31,6 +31,7 @@ import java.util.logging.Level;
 @Getter
 public abstract class Configuration implements ProxyConfig {
 
+    private final Object serversLock = new Object(); // Waterfall
     /**
      * Time before users are disconnected due to no network activity.
      */
@@ -43,7 +44,6 @@ public abstract class Configuration implements ProxyConfig {
      * Set of all listeners.
      */
     private Collection<ListenerInfo> listeners;
-    private final Object serversLock = new Object(); // Waterfall
     /**
      * Set of all servers.
      */

@@ -5,6 +5,24 @@ import java.util.Objects;
 
 public class Hex {
 
+    private static final char[] ENCODE_TABLE = new char[]{
+            '0', '1', '2', '3', '4', '5', '6', '7',
+            '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+    };
+    private static final byte[] DECODE_TABLE = new byte[128];
+
+    static {
+        Arrays.fill(DECODE_TABLE, (byte) -1);
+        for (int value = 0; value < ENCODE_TABLE.length; value++) {
+            char c = ENCODE_TABLE[value];
+            DECODE_TABLE[c] = (byte) value;
+            char upper;
+            if ((upper = Character.toUpperCase(c)) != c) {
+                DECODE_TABLE[upper] = (byte) value;
+            }
+        }
+    }
+
     public static byte[] decode(CharSequence chars) {
         byte[] bytes = new byte[chars.length() >> 1];
         decode(chars, 0, bytes, 0, bytes.length);
@@ -75,24 +93,6 @@ public class Hex {
             byte b = source[i + offset];
             chars[charIndex++] = fromDigit((byte) ((b >> 4) & 0xF));
             chars[charIndex++] = fromDigit((byte) (b & 0xF));
-        }
-    }
-
-    private static final char[] ENCODE_TABLE = new char[]{
-            '0', '1', '2', '3', '4', '5', '6', '7',
-            '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
-    };
-    private static final byte[] DECODE_TABLE = new byte[128];
-
-    static {
-        Arrays.fill(DECODE_TABLE, (byte) -1);
-        for (int value = 0; value < ENCODE_TABLE.length; value++) {
-            char c = ENCODE_TABLE[value];
-            DECODE_TABLE[c] = (byte) value;
-            char upper;
-            if ((upper = Character.toUpperCase(c)) != c) {
-                DECODE_TABLE[upper] = (byte) value;
-            }
         }
     }
 

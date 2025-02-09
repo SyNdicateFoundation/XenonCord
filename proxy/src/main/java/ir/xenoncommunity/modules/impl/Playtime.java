@@ -80,7 +80,7 @@ public class Playtime extends Command implements Listener {
     private void updatePlaytime(String username, long currentTime) throws Exception {
         @Cleanup final PreparedStatement updateStatement = sqlManager.getConnection().prepareStatement(
                 "UPDATE Players SET totalplaytime = ?, lastjoin = ? WHERE username = ?;");
-        updateStatement.setLong(1, (long) sqlManager.getData(username, "totalplaytime") +
+        updateStatement.setLong(1, (int) sqlManager.getData(username, "totalplaytime") +
                 (currentTime - (long) sqlManager.getData(username, "lastjoin")));
         updateStatement.setLong(2, currentTime);
         updateStatement.setString(3, username);

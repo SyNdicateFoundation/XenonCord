@@ -34,6 +34,27 @@ import java.util.logging.Level;
 public class PipelineUtils {
 
     public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.newInstance("ListerInfo");
+    public static final Base BASE = new Base(false);
+    public static final Base BASE_SERVERSIDE = new Base(true);
+    public static final String TIMEOUT_HANDLER = "timeout";
+    public static final String PACKET_DECODER = "packet-decoder";
+    public static final String PACKET_ENCODER = "packet-encoder";
+    public static final String BOSS_HANDLER = "inbound-boss";
+    public static final String ENCRYPT_HANDLER = "encrypt";
+    public static final String DECRYPT_HANDLER = "decrypt";
+    public static final String FRAME_DECODER = "frame-decoder";
+    public static final String FRAME_PREPENDER = "frame-prepender";
+    public static final String LEGACY_DECODER = "legacy-decoder";
+    public static final String LEGACY_KICKER = "legacy-kick";
+    private static final KickStringWriter legacyKicker = new KickStringWriter();
+    private static final Varint21LengthFieldExtraBufPrepender serverFramePrepender = new Varint21LengthFieldExtraBufPrepender();
+    private static final ChannelFactory<? extends ServerChannel> serverChannelFactory;
+    private static final ChannelFactory<? extends ServerChannel> serverChannelDomainFactory;
+    private static final ChannelFactory<? extends Channel> channelFactory;
+    private static final ChannelFactory<? extends Channel> channelDomainFactory;
+    private static final int LOW_MARK = Integer.getInteger("net.md_5.bungee.low_mark", 2 << 18);
+    private static final int HIGH_MARK = Integer.getInteger("net.md_5.bungee.high_mark", 2 << 20);
+    private static final WriteBufferWaterMark MARK = new WriteBufferWaterMark(LOW_MARK, HIGH_MARK);
     public static final ChannelInitializer<Channel> SERVER_CHILD = new ChannelInitializer<Channel>() {
         @Override
         protected void initChannel(Channel ch) throws Exception {
@@ -71,28 +92,8 @@ public class PipelineUtils {
             BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
         }
     };
-    public static final Base BASE = new Base(false);
-    public static final Base BASE_SERVERSIDE = new Base(true);
-    private static final KickStringWriter legacyKicker = new KickStringWriter();
-    private static final Varint21LengthFieldExtraBufPrepender serverFramePrepender = new Varint21LengthFieldExtraBufPrepender();
-    public static final String TIMEOUT_HANDLER = "timeout";
-    public static final String PACKET_DECODER = "packet-decoder";
-    public static final String PACKET_ENCODER = "packet-encoder";
-    public static final String BOSS_HANDLER = "inbound-boss";
-    public static final String ENCRYPT_HANDLER = "encrypt";
-    public static final String DECRYPT_HANDLER = "decrypt";
-    public static final String FRAME_DECODER = "frame-decoder";
-    public static final String FRAME_PREPENDER = "frame-prepender";
-    public static final String LEGACY_DECODER = "legacy-decoder";
-    public static final String LEGACY_KICKER = "legacy-kick";
-
     private static boolean epoll;
     private static boolean io_uring;
-
-    private static final ChannelFactory<? extends ServerChannel> serverChannelFactory;
-    private static final ChannelFactory<? extends ServerChannel> serverChannelDomainFactory;
-    private static final ChannelFactory<? extends Channel> channelFactory;
-    private static final ChannelFactory<? extends Channel> channelDomainFactory;
 
     static {
         if (!PlatformDependent.isWindows()) {
@@ -161,10 +162,6 @@ public class PipelineUtils {
     public static Class<? extends DatagramChannel> getDatagramChannel() {
         return io_uring ? IOUringDatagramChannel.class : epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
     }
-
-    private static final int LOW_MARK = Integer.getInteger("net.md_5.bungee.low_mark", 2 << 18);
-    private static final int HIGH_MARK = Integer.getInteger("net.md_5.bungee.high_mark", 2 << 20);
-    private static final WriteBufferWaterMark MARK = new WriteBufferWaterMark(LOW_MARK, HIGH_MARK);
 
     @NoArgsConstructor
     @AllArgsConstructor

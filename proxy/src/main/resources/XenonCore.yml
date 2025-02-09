@@ -4,7 +4,7 @@ debug: true
 
 # Kick message during loading process
 # Placeholders: PREFIX: your prefix
-loadingmessage: "PREFIX\n &r&cstill loading.\n\n &cYou got disconnected to prevent problems."
+loadingmessage: "PREFIX\n&r&cstill loading.\n\n&cYou got disconnected to prevent problems."
 
 # In-game branding (F3 menu)
 ingamebrandname: "XenonCord"
@@ -36,6 +36,7 @@ reloadcompletemessage: "PREFIX Reload is now complete!"
 modules:
   # Enabled Modules
   enables:
+    - Antibot # Note: Experimental
     - MotdChanger
     - CommandSpy
     - StaffChat
@@ -47,7 +48,7 @@ modules:
     - Playtime
     - PunishManager
     - ExploitPatcher
-    - StaffActivitySender
+    #- StaffActivitySender
 
 # MotdChanger Settings
 # Requires MotdChanger module to be enabled.
@@ -92,7 +93,7 @@ maintenance:
   maintenancebypassperm: "xenoncord.maintenance.bypass"
   maintenanceaddcommandmessage: "PREFIX &cAdded SERVER to maintenance mode server list.."
   maintenanceremovecommandmessage: "PREFIX &cRemoved SERVER to maintenance mode server list.."
-  maintenancedisconnectmessage: "PREFIX\n &cThe server you're trying to connect is on maintenance!\n please try later."
+  maintenancedisconnectmessage: "PREFIX\n&cThe server you're trying to connect is on maintenance!\nplease try later."
 
 # Ping Settings
 # Requires Ping module to be enabled.
@@ -130,13 +131,13 @@ punishmanager:
   mode: LiteBans
   banperm: "xenoncord.punishmanager.ban"
   banannouncemessage: "PREFIX &aPLAYER1 &cbanned &aPLAYER2 &cfor &aREASON &cuntil DURATION."
-  bandisconnectmessage: "PREFIX\n\n &cPLAYER You are banned from this server.\nReason: REASON\nduration: DURATION"
+  bandisconnectmessage: "PREFIX\n\n&cPLAYER You are banned from this server.\nReason: REASON\nduration: DURATION"
   muteperm: "xenoncord.punishmanager.mute"
   muteannouncemessage: "PREFIX &aPLAYER1 &cmuted &aPLAYER2 &cfor &aREASON &cuntil DURATION."
-  muteblockmessage: "PREFIX\n\n &cPLAYER You are muted.\nReason: REASON\nduration: DURATION"
+  muteblockmessage: "PREFIX\n\n&cPLAYER You are muted.\nReason: REASON\nduration: DURATION"
   kickperm: "xenoncord.punishmanager.kick"
   kickannouncemessage: "PREFIX &aPLAYER1 &ckicked &aPLAYER2 &cfor &aREASON."
-  kickdisconnectmessage: "PREFIX\n\n &cPLAYER You are kicked from this server.\nReason: REASON"
+  kickdisconnectmessage: "PREFIX\n\n&cPLAYER You are kicked from this server.\nReason: REASON"
   clearchatperm: "xenoncord.punishmanager.clearchat"
   globalclearchatperm: "xenoncord.punishmanager.clearchat.global"
   unbanconsolelogmessage: "PREFIX &aPLAYER1 &bgot unbanned because the ban is expired. they were banned by: &aPLAYER2"
@@ -174,3 +175,20 @@ commandwhitelist:
     default.lobby:
       commands:
         - "/spawn"
+
+antibot:
+  maxpings: 10
+  blockdurationmillis: 300
+  connectionintervalmillis: 1000
+  pingresetinterval: 60
+  slowjointhreshold: 10000
+  playerspecifiedcooldown: 5000
+  fastjointhreshold: 3000
+  disconnect_cooldown: "PREFIX\n\nYour connection is still on cooldown.\nPlease try again later."
+  disconnect_invalidusername: "PREFIX\n\nYour username is invalid.\nPlease try again with another username.\nformat should be:\nlength between 3 to 6\n^[a-zA-Z0-9_]+$"
+  disconnect_slowconnection: "PREFIX\n\nYour connection was too slow.\nPlease try again."
+  checks:
+    - CooldownHandler
+    - NameCheck
+    - JoinDelay
+    - FastJoin

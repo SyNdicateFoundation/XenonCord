@@ -43,13 +43,16 @@ public class PluginMessage extends DefinedPacket {
             return "legacy:" + tag.toLowerCase(Locale.ROOT);
         }
     };
+    private String tag;
+    private byte[] data;
+    /**
+     * Allow this packet to be sent as an "extended" packet.
+     */
+    private boolean allowExtendedPacket = false;
 
     public PluginMessage(String tag, ByteBuf data, boolean allowExtendedPacket) {
         this(tag, ByteBufUtil.getBytes(data), allowExtendedPacket);
     }
-
-    private String tag;
-    private byte[] data;
 
     public void setData(byte[] data) {
         this.data = Preconditions.checkNotNull(data, "Null data");
@@ -59,11 +62,6 @@ public class PluginMessage extends DefinedPacket {
         Preconditions.checkNotNull(buf, "Null buffer");
         setData(ByteBufUtil.getBytes(buf));
     }
-
-    /**
-     * Allow this packet to be sent as an "extended" packet.
-     */
-    private boolean allowExtendedPacket = false;
 
     @Override
     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {

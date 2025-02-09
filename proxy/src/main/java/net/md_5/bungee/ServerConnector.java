@@ -44,138 +44,13 @@ import java.util.logging.Level;
 public class ServerConnector extends PacketHandler {
 
     private final ProxyServer bungee;
-    private ChannelWrapper ch;
     private final UserConnection user;
     private final BungeeServerInfo target;
+    private ChannelWrapper ch;
     private State thisState = State.LOGIN_SUCCESS;
     @Getter
     private ForgeServerHandler handshakeHandler;
     private boolean obsolete;
-
-    private enum State {
-
-        LOGIN_SUCCESS, LOGIN, FINISHED;
-    }
-
-    @Override
-    public void exception(Throwable t) throws Exception {
-        if (obsolete) {
-            return;
-        }
-
-        final String message = ChatColor.RED + "Exception Connecting: " + Util.exception(t);
-        if (user.getServer() == null) {
-            user.disconnect(message);
-        } else {
-            user.sendMessage(message);
-        }
-    }
-
-    @Override
-    public void connected(ChannelWrapper channel) throws Exception {
-        this.ch = channel;
-
-        this.handshakeHandler = new ForgeServerHandler(user, ch, target);
-        final Handshake originalHandshake = user.getPendingConnection().getHandshake();
-        final Handshake copiedHandshake = new Handshake(originalHandshake.getProtocolVersion(), originalHandshake.getHost(), originalHandshake.getPort(), 2);
-
-        if (BungeeCord.getInstance().config.isIpForward() && user.getSocketAddress() instanceof InetSocketAddress) {
-            String newHost = copiedHandshake.getHost() + "\00" + AddressUtil.sanitizeAddress(user.getAddress()) + "\00" + user.getUUID();
-
-            final LoginResult profile = user.getPendingConnection().getLoginProfile();
-
-            // Handle properties.
-            net.md_5.bungee.protocol.Property[] properties = new net.md_5.bungee.protocol.Property[0];
-
-            if (profile != null && profile.getProperties() != null && profile.getProperties().length > 0)
-                properties = profile.getProperties();
-
-            if (user.getForgeClientHandler().isFmlTokenInHandshake()) {
-                // Get the current properties and copy them into a slightly bigger array.
-                final net.md_5.bungee.protocol.Property[] newp = Arrays.copyOf(properties, properties.length + 2);
-
-                // Add a new profile property that specifies that this user is a Forge user.
-                newp[newp.length - 2] = new net.md_5.bungee.protocol.Property(ForgeConstants.FML_LOGIN_PROFILE, "true", null);
-
-                // If we do not perform the replacement, then the IP Forwarding code in Spigot et. al. will try to split on this prematurely.
-                newp[newp.length - 1] = new net.md_5.bungee.protocol.Property(ForgeConstants.EXTRA_DATA, user.getExtraDataInHandshake().replaceAll("\0", "\1"), "");
-
-                // All done.
-                properties = newp;
-            }
-
-            // If we touched any properties, then append them
-            if (properties.length > 0) {
-                newHost += "\00" + BungeeCord.getInstance().gson.toJson(properties);
-            }
-
-            copiedHandshake.setHost(newHost);
-        } else if (!user.getExtraDataInHandshake().isEmpty()) {
-            copiedHandshake.setHost(copiedHandshake.getHost() + user.getExtraDataInHandshake());
-        }
-
-        channel.write(copiedHandshake);
-
-        channel.setProtocol(Protocol.LOGIN);
-        channel.write(new LoginRequest(user.getName(), null, user.getRewriteId()));
-    }
-
-    @Override
-    public void disconnected(ChannelWrapper channel) {
-        user.getPendingConnects().remove(target);
-
-        if (user.getServer() == null && !obsolete && user.getPendingConnects().isEmpty() && thisState == State.LOGIN_SUCCESS) {
-            // this is called if we get disconnected but not have received any response after we send the handshake
-            // in this case probably an exception was thrown because the handshake could not be read correctly
-            // because of the extra ip forward data, also we skip the disconnect if another server is also in the
-            // pendingConnects queue because we don't want to lose the player
-            user.disconnect("Unexpected disconnect during server login, did you forget to enable BungeeCord / IP forwarding on your server?");
-        }
-    }
-
-    @Override
-    public void handle(PacketWrapper packet) throws Exception {
-        if (packet.packet == null) {
-            throw new QuietException("Unexpected packet received during server login process!\n" + BufUtil.dump(packet.buf, 16));
-        }
-    }
-
-    @Override
-    public void handle(LoginSuccess loginSuccess) throws Exception {
-        Preconditions.checkState(thisState == State.LOGIN_SUCCESS, "Not expecting LOGIN_SUCCESS");
-        if (user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_20_2) {
-            cutThrough(new ServerConnection(ch, target));
-        } else {
-            ch.setProtocol(Protocol.GAME);
-            thisState = State.LOGIN;
-        }
-
-        if (user.getServer() != null && user.getForgeClientHandler().isHandshakeComplete()
-                && user.getServer().isForgeServer()) {
-            user.getForgeClientHandler().resetHandshake();
-        }
-
-        throw CancelSendSignal.INSTANCE;
-    }
-
-    @Override
-    public void handle(SetCompression setCompression) throws Exception {
-        ch.setCompressionThreshold(setCompression.getThreshold());
-    }
-
-    @Override
-    public void handle(CookieRequest cookieRequest) throws Exception {
-        user.retrieveCookie(cookieRequest.getCookie()).thenAccept((cookie) -> ch.write(new CookieResponse(cookieRequest.getCookie(), cookie)));
-    }
-
-    @Override
-    public void handle(Login login) throws Exception {
-        Preconditions.checkState(thisState == State.LOGIN, "Not expecting LOGIN");
-
-        final ServerConnection server = new ServerConnection(ch, target);
-        handleLogin(bungee, ch, user, target, handshakeHandler, server, login);
-        cutThrough(server);
-    }
 
     public static void handleLogin(ProxyServer bungee, ChannelWrapper ch, UserConnection user, BungeeServerInfo target, ForgeServerHandler handshakeHandler, ServerConnection server, Login login) throws Exception {
         if (server.isForgeServer() && user.isForgeUser()) {
@@ -317,6 +192,126 @@ public class ServerConnector extends PacketHandler {
         }
     }
 
+    @Override
+    public void exception(Throwable t) throws Exception {
+        if (obsolete) {
+            return;
+        }
+
+        final String message = ChatColor.RED + "Exception Connecting: " + Util.exception(t);
+        if (user.getServer() == null) {
+            user.disconnect(message);
+        } else {
+            user.sendMessage(message);
+        }
+    }
+
+    @Override
+    public void connected(ChannelWrapper channel) throws Exception {
+        this.ch = channel;
+
+        this.handshakeHandler = new ForgeServerHandler(user, ch, target);
+        final Handshake originalHandshake = user.getPendingConnection().getHandshake();
+        final Handshake copiedHandshake = new Handshake(originalHandshake.getProtocolVersion(), originalHandshake.getHost(), originalHandshake.getPort(), 2);
+
+        if (BungeeCord.getInstance().config.isIpForward() && user.getSocketAddress() instanceof InetSocketAddress) {
+            String newHost = copiedHandshake.getHost() + "\00" + AddressUtil.sanitizeAddress(user.getAddress()) + "\00" + user.getUUID();
+
+            final LoginResult profile = user.getPendingConnection().getLoginProfile();
+
+            // Handle properties.
+            net.md_5.bungee.protocol.Property[] properties = new net.md_5.bungee.protocol.Property[0];
+
+            if (profile != null && profile.getProperties() != null && profile.getProperties().length > 0)
+                properties = profile.getProperties();
+
+            if (user.getForgeClientHandler().isFmlTokenInHandshake()) {
+                // Get the current properties and copy them into a slightly bigger array.
+                final net.md_5.bungee.protocol.Property[] newp = Arrays.copyOf(properties, properties.length + 2);
+
+                // Add a new profile property that specifies that this user is a Forge user.
+                newp[newp.length - 2] = new net.md_5.bungee.protocol.Property(ForgeConstants.FML_LOGIN_PROFILE, "true", null);
+
+                // If we do not perform the replacement, then the IP Forwarding code in Spigot et. al. will try to split on this prematurely.
+                newp[newp.length - 1] = new net.md_5.bungee.protocol.Property(ForgeConstants.EXTRA_DATA, user.getExtraDataInHandshake().replaceAll("\0", "\1"), "");
+
+                // All done.
+                properties = newp;
+            }
+
+            // If we touched any properties, then append them
+            if (properties.length > 0) {
+                newHost += "\00" + BungeeCord.getInstance().gson.toJson(properties);
+            }
+
+            copiedHandshake.setHost(newHost);
+        } else if (!user.getExtraDataInHandshake().isEmpty()) {
+            copiedHandshake.setHost(copiedHandshake.getHost() + user.getExtraDataInHandshake());
+        }
+
+        channel.write(copiedHandshake);
+
+        channel.setProtocol(Protocol.LOGIN);
+        channel.write(new LoginRequest(user.getName(), null, user.getRewriteId()));
+    }
+
+    @Override
+    public void disconnected(ChannelWrapper channel) {
+        user.getPendingConnects().remove(target);
+
+        if (user.getServer() == null && !obsolete && user.getPendingConnects().isEmpty() && thisState == State.LOGIN_SUCCESS) {
+            // this is called if we get disconnected but not have received any response after we send the handshake
+            // in this case probably an exception was thrown because the handshake could not be read correctly
+            // because of the extra ip forward data, also we skip the disconnect if another server is also in the
+            // pendingConnects queue because we don't want to lose the player
+            user.disconnect("Unexpected disconnect during server login, did you forget to enable BungeeCord / IP forwarding on your server?");
+        }
+    }
+
+    @Override
+    public void handle(PacketWrapper packet) throws Exception {
+        if (packet.packet == null) {
+            throw new QuietException("Unexpected packet received during server login process!\n" + BufUtil.dump(packet.buf, 16));
+        }
+    }
+
+    @Override
+    public void handle(LoginSuccess loginSuccess) throws Exception {
+        Preconditions.checkState(thisState == State.LOGIN_SUCCESS, "Not expecting LOGIN_SUCCESS");
+        if (user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_20_2) {
+            cutThrough(new ServerConnection(ch, target));
+        } else {
+            ch.setProtocol(Protocol.GAME);
+            thisState = State.LOGIN;
+        }
+
+        if (user.getServer() != null && user.getForgeClientHandler().isHandshakeComplete()
+                && user.getServer().isForgeServer()) {
+            user.getForgeClientHandler().resetHandshake();
+        }
+
+        throw CancelSendSignal.INSTANCE;
+    }
+
+    @Override
+    public void handle(SetCompression setCompression) throws Exception {
+        ch.setCompressionThreshold(setCompression.getThreshold());
+    }
+
+    @Override
+    public void handle(CookieRequest cookieRequest) throws Exception {
+        user.retrieveCookie(cookieRequest.getCookie()).thenAccept((cookie) -> ch.write(new CookieResponse(cookieRequest.getCookie(), cookie)));
+    }
+
+    @Override
+    public void handle(Login login) throws Exception {
+        Preconditions.checkState(thisState == State.LOGIN, "Not expecting LOGIN");
+
+        final ServerConnection server = new ServerConnection(ch, target);
+        handleLogin(bungee, ch, user, target, handshakeHandler, server, login);
+        cutThrough(server);
+    }
+
     private void cutThrough(ServerConnection server) {
         // TODO: Fix this?
         if (!user.isActive()) {
@@ -439,5 +434,10 @@ public class ServerConnector extends PacketHandler {
     @Override
     public String toString() {
         return "[" + user.getName() + "|" + user.getAddress() + "] <-> ServerConnector [" + target.getName() + "]";
+    }
+
+    private enum State {
+
+        LOGIN_SUCCESS, LOGIN, FINISHED;
     }
 }

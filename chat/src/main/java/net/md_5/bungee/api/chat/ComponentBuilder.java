@@ -29,6 +29,8 @@ import java.util.List;
 @NoArgsConstructor
 public final class ComponentBuilder {
 
+    @Getter
+    private final List<BaseComponent> parts = new ArrayList<BaseComponent>();
     /**
      * The position for the current part to modify. Modified cursors will
      * automatically reset to the last part after appending new components.
@@ -36,8 +38,6 @@ public final class ComponentBuilder {
      */
     @Getter
     private int cursor = -1;
-    @Getter
-    private final List<BaseComponent> parts = new ArrayList<BaseComponent>();
     private BaseComponent dummy;
 
     private ComponentBuilder(BaseComponent[] parts) {

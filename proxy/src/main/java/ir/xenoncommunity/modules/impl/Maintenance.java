@@ -17,8 +17,8 @@ import java.util.Set;
 @SuppressWarnings("unused")
 @ModuleListener(isExtended = true, isImplemented = true)
 public class Maintenance extends Command implements Listener {
-    private final String prefix = XenonCore.instance.getConfigData().getPrefix();
     public static Set<String> downServers = new HashSet<>();
+    private final String prefix = XenonCore.instance.getConfigData().getPrefix();
 
     public Maintenance() {
         super("maintenance", XenonCore.instance.getConfigData().getMaintenance().getMaintenanceperm());
@@ -63,7 +63,7 @@ public class Maintenance extends Command implements Listener {
     private void disconnectPlayers(String serverName) {
         XenonCore.instance.getBungeeInstance().getPlayers().forEach(player -> {
             if (!player.hasPermission(XenonCore.instance.getConfigData().getMaintenance().getMaintenancebypassperm()) && player.getServer().getInfo().getName().equals(serverName)) {
-                player.disconnect(ChatColor.translateAlternateColorCodes('&', XenonCore.instance.getConfigData().getMaintenance().getMaintenancedisconnectmessage()));
+                player.disconnect(XenonCore.instance.getConfigData().getMaintenance().getMaintenancedisconnectmessage());
             }
         });
     }
@@ -72,7 +72,7 @@ public class Maintenance extends Command implements Listener {
     public void onJoin(PostLoginEvent e) {
         if (downServers.contains("proxy") || downServers.contains(e.getTarget().getName())) {
             if (!e.getPlayer().hasPermission(XenonCore.instance.getConfigData().getMaintenance().getMaintenancebypassperm())) {
-                e.getPlayer().disconnect(ChatColor.translateAlternateColorCodes('&', XenonCore.instance.getConfigData().getMaintenance().getMaintenancedisconnectmessage()));
+                e.getPlayer().disconnect(XenonCore.instance.getConfigData().getMaintenance().getMaintenancedisconnectmessage());
             }
         }
     }

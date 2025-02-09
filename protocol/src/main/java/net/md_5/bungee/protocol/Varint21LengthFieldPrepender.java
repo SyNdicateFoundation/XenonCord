@@ -16,22 +16,6 @@ public class Varint21LengthFieldPrepender extends MessageToMessageEncoder<ByteBu
     @Setter
     private boolean compose = true;
 
-    @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> list) throws Exception {
-        int bodyLen = msg.readableBytes();
-        int headerLen = varintSize(bodyLen);
-        if (compose) {
-            ByteBuf buf = ctx.alloc().directBuffer(headerLen);
-            DefinedPacket.writeVarInt(bodyLen, buf);
-            list.add(ctx.alloc().compositeDirectBuffer(2).addComponents(true, buf, msg.retain()));
-        } else {
-            ByteBuf buf = ctx.alloc().directBuffer(headerLen + bodyLen);
-            DefinedPacket.writeVarInt(bodyLen, buf);
-            buf.writeBytes(msg);
-            list.add(buf);
-        }
-    }
-
     static int varintSize(int paramInt) {
         if ((paramInt & 0xFFFFFF80) == 0) {
             return 1;
@@ -46,5 +30,21 @@ public class Varint21LengthFieldPrepender extends MessageToMessageEncoder<ByteBu
             return 4;
         }
         return 5;
+    }
+
+    @Override
+    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> list) throws Exception {
+        int bodyLen = msg.readableBytes();
+        int headerLen = varintSize(bodyLen);
+        if (compose) {
+            ByteBuf buf = ctx.alloc().directBuffer(headerLen);
+            DefinedPacket.writeVarInt(bodyLen, buf);
+            list.add(ctx.alloc().compositeDirectBuffer(2).addComponents(true, buf, msg.retain()));
+        } else {
+            ByteBuf buf = ctx.alloc().directBuffer(headerLen + bodyLen);
+            DefinedPacket.writeVarInt(bodyLen, buf);
+            buf.writeBytes(msg);
+            list.add(buf);
+        }
     }
 }

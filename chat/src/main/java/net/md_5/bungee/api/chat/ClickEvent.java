@@ -1,11 +1,7 @@
 package net.md_5.bungee.api.chat;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.jetbrains.annotations.ApiStatus;
-import lombok.Setter;
 
 @Getter
 @ToString

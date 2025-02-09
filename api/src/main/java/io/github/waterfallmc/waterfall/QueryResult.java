@@ -10,6 +10,11 @@ import java.util.List;
 @AllArgsConstructor
 public class QueryResult {
     /**
+     * The players currently online.
+     */
+    @NonNull
+    private final List<String> players;
+    /**
      * The message of the day to return.
      */
     @NonNull
@@ -46,11 +51,6 @@ public class QueryResult {
      */
     @NonNull
     private String gameId;
-    /**
-     * The players currently online.
-     */
-    @NonNull
-    private final List<String> players;
     /**
      * The version to return for this server.
      */

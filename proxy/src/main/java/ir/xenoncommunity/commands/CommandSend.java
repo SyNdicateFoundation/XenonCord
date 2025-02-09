@@ -16,60 +16,6 @@ import java.util.*;
 @SuppressWarnings({"unused", "deprecation"})
 public class CommandSend extends Command implements TabExecutor {
 
-    protected static class SendCallback {
-
-        private final Map<ServerConnectRequest.Result, List<String>> results = new HashMap<>();
-        private final CommandSender sender;
-        private int count = 0;
-
-        public SendCallback(CommandSender sender) {
-            this.sender = sender;
-            for (ServerConnectRequest.Result result : ServerConnectRequest.Result.values()) {
-                results.put(result, Collections.synchronizedList(new ArrayList<>()));
-            }
-        }
-
-        public void lastEntryDone() {
-            sender.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Send Results:");
-            for (Map.Entry<ServerConnectRequest.Result, List<String>> entry : results.entrySet()) {
-                ComponentBuilder builder = new ComponentBuilder("");
-                if (!entry.getValue().isEmpty()) {
-                    builder.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                            new ComponentBuilder(Joiner.on(", ").join(entry.getValue())).color(ChatColor.YELLOW).create()));
-                }
-                builder.append(entry.getKey().name() + ": ").color(ChatColor.GREEN);
-                builder.append("" + entry.getValue().size()).bold(true);
-                sender.sendMessage(builder.create());
-            }
-        }
-
-        public static class Entry implements Callback<ServerConnectRequest.Result> {
-
-            private final SendCallback callback;
-            private final ProxiedPlayer player;
-            private final ServerInfo target;
-
-            public Entry(SendCallback callback, ProxiedPlayer player, ServerInfo target) {
-                this.callback = callback;
-                this.player = player;
-                this.target = target;
-                this.callback.count++;
-            }
-
-            @Override
-            public void done(ServerConnectRequest.Result result, Throwable error) {
-                callback.results.get(result).add(player.getName());
-                if (result == ServerConnectRequest.Result.SUCCESS) {
-                    player.sendMessage(ProxyServer.getInstance().getTranslation("you_got_summoned", target.getName(), callback.sender.getName()));
-                }
-
-                if (--callback.count == 0) {
-                    callback.lastEntryDone();
-                }
-            }
-        }
-    }
-
     public CommandSend() {
         super("send", "bungeecord.command.send");
     }
@@ -153,5 +99,59 @@ public class CommandSend extends Command implements TabExecutor {
             }
         }
         return matches;
+    }
+
+    protected static class SendCallback {
+
+        private final Map<ServerConnectRequest.Result, List<String>> results = new HashMap<>();
+        private final CommandSender sender;
+        private int count = 0;
+
+        public SendCallback(CommandSender sender) {
+            this.sender = sender;
+            for (ServerConnectRequest.Result result : ServerConnectRequest.Result.values()) {
+                results.put(result, Collections.synchronizedList(new ArrayList<>()));
+            }
+        }
+
+        public void lastEntryDone() {
+            sender.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Send Results:");
+            for (Map.Entry<ServerConnectRequest.Result, List<String>> entry : results.entrySet()) {
+                ComponentBuilder builder = new ComponentBuilder("");
+                if (!entry.getValue().isEmpty()) {
+                    builder.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                            new ComponentBuilder(Joiner.on(", ").join(entry.getValue())).color(ChatColor.YELLOW).create()));
+                }
+                builder.append(entry.getKey().name() + ": ").color(ChatColor.GREEN);
+                builder.append("" + entry.getValue().size()).bold(true);
+                sender.sendMessage(builder.create());
+            }
+        }
+
+        public static class Entry implements Callback<ServerConnectRequest.Result> {
+
+            private final SendCallback callback;
+            private final ProxiedPlayer player;
+            private final ServerInfo target;
+
+            public Entry(SendCallback callback, ProxiedPlayer player, ServerInfo target) {
+                this.callback = callback;
+                this.player = player;
+                this.target = target;
+                this.callback.count++;
+            }
+
+            @Override
+            public void done(ServerConnectRequest.Result result, Throwable error) {
+                callback.results.get(result).add(player.getName());
+                if (result == ServerConnectRequest.Result.SUCCESS) {
+                    player.sendMessage(ProxyServer.getInstance().getTranslation("you_got_summoned", target.getName(), callback.sender.getName()));
+                }
+
+                if (--callback.count == 0) {
+                    callback.lastEntryDone();
+                }
+            }
+        }
     }
 }

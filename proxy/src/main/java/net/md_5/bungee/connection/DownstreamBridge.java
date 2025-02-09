@@ -225,9 +225,9 @@ public class DownstreamBridge extends PacketHandler {
             t.setPrefix(team.getPrefix().getLeftOrCompute(ComponentSerializer::toString));
             t.setSuffix(team.getSuffix().getLeftOrCompute(ComponentSerializer::toString));
             t.setFriendlyFire(team.getFriendlyFire());
-            t.setNameTagVisibility( team.getNameTagVisibility().getKey() );
-            if ( team.getCollisionRule() != null )
-                t.setCollisionRule( team.getCollisionRule().getKey() );
+            t.setNameTagVisibility(team.getNameTagVisibility().getKey());
+            if (team.getCollisionRule() != null)
+                t.setCollisionRule(team.getCollisionRule().getKey());
             t.setColor(team.getColor());
         }
 

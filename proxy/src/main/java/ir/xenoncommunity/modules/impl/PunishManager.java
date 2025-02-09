@@ -83,11 +83,10 @@ public class PunishManager implements Listener {
             }
 
             if (banDuration > 0 && currentTime - lastPunish < banDuration) {
-                e.setReason(new TextComponent(ChatColor.translateAlternateColorCodes(
-                        '&', XenonCore.instance.getConfigData().getPunishmanager().getBandisconnectmessage()
+                e.setReason(new TextComponent(XenonCore.instance.getConfigData().getPunishmanager().getBandisconnectmessage()
                                 .replace("PLAYER", username)
                                 .replace("REASON", (String) sqlManager.getData(username, "reason"))
-                                .replace("DURATION", String.valueOf(banDuration / 60000)))));
+                                .replace("DURATION", String.valueOf(banDuration / 60000))));
                 e.setCancelled(true);
                 return;
             }
@@ -133,11 +132,10 @@ public class PunishManager implements Listener {
             }
 
             if (muteDuration > 0 && currentTime - lastPunish < muteDuration) {
-                Message.send((CommandSender) e.getSender(), ChatColor.translateAlternateColorCodes(
-                                '&', XenonCore.instance.getConfigData().getPunishmanager().getMuteblockmessage()
+                Message.send((CommandSender) e.getSender(), XenonCore.instance.getConfigData().getPunishmanager().getMuteblockmessage()
                                         .replace("PLAYER", username)
                                         .replace("REASON", (String) sqlManager.getData(username, "reason"))
-                                        .replace("DURATION", String.valueOf(muteDuration / 60000))),
+                                        .replace("DURATION", String.valueOf(muteDuration / 60000)),
                         false);
                 e.setCancelled(true);
                 return;

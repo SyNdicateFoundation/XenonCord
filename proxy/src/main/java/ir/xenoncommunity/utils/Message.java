@@ -10,7 +10,7 @@ import net.md_5.bungee.command.ConsoleCommandSender;
 @UtilityClass
 public class Message {
     public void send(CommandSender senderIn, String message, boolean console) {
-        final String fmt = ChatColor.translateAlternateColorCodes('&', message);
+        final String fmt = translateColor(message);
 
         if (!(senderIn instanceof ConsoleCommandSender)) {
             senderIn.sendMessage(fmt);
@@ -22,13 +22,16 @@ public class Message {
     }
 
     public void send(String message) {
-        XenonCore.instance.getLogger().info(ChatColor.translateAlternateColorCodes('&', message));
+        XenonCore.instance.getLogger().info(translateColor(message));
     }
 
     public void sendNoPermMessage(CommandSender senderIn) {
         if ((senderIn instanceof ConsoleCommandSender)) return;
 
-        senderIn.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                XenonCore.instance.getConfigData().getCommandwhitelist().getBlockmessage()));
+        senderIn.sendMessage(translateColor(XenonCore.instance.getConfigData().getCommandwhitelist().getBlockmessage()));
+    }
+
+    public String translateColor(String msg) {
+        return ChatColor.translateAlternateColorCodes('&', msg);
     }
 }

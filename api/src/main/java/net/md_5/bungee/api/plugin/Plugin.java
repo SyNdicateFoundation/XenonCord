@@ -27,6 +27,8 @@ public class Plugin {
     private File file;
     @Getter
     private Logger logger;
+    //
+    private ExecutorService service;
 
     public Plugin() {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -41,13 +43,12 @@ public class Plugin {
 
         // init( proxy, description );
     }
+    // Waterfall end
 
     // Waterfall start - Allow plugins to use SLF4J for logging
     public org.slf4j.Logger getSLF4JLogger() {
         return org.slf4j.LoggerFactory.getLogger(logger.getName());
     }
-    // Waterfall end
-
 
     /**
      * Called when the plugin has just been loaded. Most of the proxy will not
@@ -103,9 +104,6 @@ public class Plugin {
         this.file = description.getFile();
         this.logger = Logger.getLogger(description.getName()); // Waterfall - Handle plugin prefixes in implementation
     }
-
-    //
-    private ExecutorService service;
 
     @Deprecated
     public ExecutorService getExecutorService() {

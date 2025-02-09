@@ -7,12 +7,11 @@ import net.md_5.bungee.api.chat.hover.content.Entity;
 import net.md_5.bungee.api.chat.hover.content.Item;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import net.md_5.bungee.chat.ComponentSerializer;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.jetbrains.annotations.ApiStatus;
 
 @Getter
 @ToString
@@ -40,23 +39,6 @@ public final class HoverEvent {
      */
     @ApiStatus.Internal
     private boolean v1_21_5 = false;
-    /**
-     * Set the compatibility to 1.21.5, also modifies the underlying entities.
-     *
-     * @param v1_21_5 the compatibility to set
-     */
-    @ApiStatus.Internal
-    public void setV1_21_5(boolean v1_21_5)
-    {
-        this.v1_21_5 = v1_21_5;
-        for ( Content content : contents )
-        {
-            if ( content instanceof Entity )
-            {
-                ( (Entity) content ).setV1_21_5( v1_21_5 );
-            }
-        }
-    }
 
     /**
      * Creates event with an action and a list of contents.
@@ -88,6 +70,44 @@ public final class HoverEvent {
         this.action = action;
         this.contents = new ArrayList<>(Collections.singletonList(new Text(value)));
         this.legacy = true;
+    }
+
+    /**
+     * Gets the appropriate {@link Content} class for an {@link Action} for the
+     * GSON serialization
+     *
+     * @param action the action to get for
+     * @param array  if to return the arrayed class
+     * @return the class
+     */
+    public static Class<?> getClass(HoverEvent.Action action, boolean array) {
+        Preconditions.checkArgument(action != null, "action");
+
+        switch (action) {
+            case SHOW_TEXT:
+                return (array) ? Text[].class : Text.class;
+            case SHOW_ENTITY:
+                return (array) ? Entity[].class : Entity.class;
+            case SHOW_ITEM:
+                return (array) ? Item[].class : Item.class;
+            default:
+                throw new UnsupportedOperationException("Action '" + action.name() + " not supported");
+        }
+    }
+
+    /**
+     * Set the compatibility to 1.21.5, also modifies the underlying entities.
+     *
+     * @param v1_21_5 the compatibility to set
+     */
+    @ApiStatus.Internal
+    public void setV1_21_5(boolean v1_21_5) {
+        this.v1_21_5 = v1_21_5;
+        for (Content content : contents) {
+            if (content instanceof Entity) {
+                ((Entity) content).setV1_21_5(v1_21_5);
+            }
+        }
     }
 
     @Deprecated
@@ -132,28 +152,5 @@ public final class HoverEvent {
          */
         @Deprecated
         SHOW_ACHIEVEMENT,
-    }
-
-    /**
-     * Gets the appropriate {@link Content} class for an {@link Action} for the
-     * GSON serialization
-     *
-     * @param action the action to get for
-     * @param array  if to return the arrayed class
-     * @return the class
-     */
-    public static Class<?> getClass(HoverEvent.Action action, boolean array) {
-        Preconditions.checkArgument(action != null, "action");
-
-        switch (action) {
-            case SHOW_TEXT:
-                return (array) ? Text[].class : Text.class;
-            case SHOW_ENTITY:
-                return (array) ? Entity[].class : Entity.class;
-            case SHOW_ITEM:
-                return (array) ? Item[].class : Item.class;
-            default:
-                throw new UnsupportedOperationException("Action '" + action.name() + " not supported");
-        }
     }
 }

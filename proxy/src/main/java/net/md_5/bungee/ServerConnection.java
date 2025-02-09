@@ -25,20 +25,19 @@ public class ServerConnection implements Server {
     @Getter
     private final BungeeServerInfo info;
     @Getter
-    @Setter
-    private boolean isObsolete;
-    @Getter
     private final boolean forgeServer = false;
     @Getter
     private final Queue<KeepAliveData> keepAlives = new ArrayDeque<>();
     private final Queue<DefinedPacket> packetQueue = new ArrayDeque<>();
-
     private final Unsafe unsafe = new Unsafe() {
         @Override
         public void sendPacket(DefinedPacket packet) {
             ch.write(packet);
         }
     };
+    @Getter
+    @Setter
+    private boolean isObsolete;
 
     public void sendPacketQueued(DefinedPacket packet) {
         ch.scheduleIfNecessary(() ->

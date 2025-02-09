@@ -28,12 +28,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 
+    private static io.github.waterfallmc.waterfall.utils.FastException cachedNoSessionException = new io.github.waterfallmc.waterfall.utils.FastException("No Session!");
     private final ProxyServer bungee;
     private final ListenerInfo listener;
     /*========================================================================*/
     private final Random random = new Random();
     private final Cache<InetAddress, QuerySession> sessions = CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
-    private static io.github.waterfallmc.waterfall.utils.FastException cachedNoSessionException = new io.github.waterfallmc.waterfall.utils.FastException("No Session!");
 
     private void writeShort(ByteBuf buf, int s) {
         buf.writeShortLE(s);
@@ -92,9 +92,9 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket> {
             // Waterfall start
             List<String> players = bungee.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
 
-            ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(ChatColor.translateAlternateColorCodes('&', listener.getXenonMotd()), "SMP", "Waterfall_Proxy",
-                    bungee.getOnlineCount(), listener.getMaxPlayers(), listener.getHost().getPort(),
-                    listener.getHost().getHostString(), "MINECRAFT", players, bungee.getGameVersion()));
+            ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(players, ChatColor.translateAlternateColorCodes('&', listener.getXenonMotd()), "SMP",
+                    "Waterfall_Proxy", bungee.getOnlineCount(), listener.getMaxPlayers(),
+                    listener.getHost().getPort(), listener.getHost().getHostString(), "MINECRAFT", bungee.getGameVersion()));
             QueryResult result = bungee.getPluginManager().callEvent(event).getResult();
             // Waterfall end
 

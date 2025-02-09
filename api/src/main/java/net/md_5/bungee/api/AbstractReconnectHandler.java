@@ -7,6 +7,15 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public abstract class AbstractReconnectHandler implements ReconnectHandler {
 
+    public static ServerInfo getForcedHost(PendingConnection con) {
+        String forced = (con.getVirtualHost() == null) ? null : con.getListener().getForcedHosts().get(con.getVirtualHost().getHostString());
+
+        if (forced == null && con.getListener().isForceDefault()) {
+            forced = con.getListener().getDefaultServer();
+        }
+        return (forced == null) ? null : ProxyServer.getInstance().getServerInfo(forced);
+    }
+
     @Override
     public ServerInfo getServer(ProxiedPlayer player) {
         ServerInfo server = getForcedHost(player.getPendingConnection());
@@ -20,15 +29,6 @@ public abstract class AbstractReconnectHandler implements ReconnectHandler {
         }
 
         return server;
-    }
-
-    public static ServerInfo getForcedHost(PendingConnection con) {
-        String forced = (con.getVirtualHost() == null) ? null : con.getListener().getForcedHosts().get(con.getVirtualHost().getHostString());
-
-        if (forced == null && con.getListener().isForceDefault()) {
-            forced = con.getListener().getDefaultServer();
-        }
-        return (forced == null) ? null : ProxyServer.getInstance().getServerInfo(forced);
     }
 
     protected abstract ServerInfo getStoredServer(ProxiedPlayer player);

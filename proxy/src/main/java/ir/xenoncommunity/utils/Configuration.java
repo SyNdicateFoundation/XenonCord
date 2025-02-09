@@ -53,39 +53,43 @@ public class Configuration {
             final ConfigData configData = new Yaml().loadAs(is, ConfigData.class);
             final String prefix = configData.prefix;
 
-            configData.setLoadingmessage(configData.getLoadingmessage().replace("PREFIX", prefix));
-            configData.setCannotexecasconsoleerrormessage(configData.getCannotexecasconsoleerrormessage().replace("PREFIX", prefix));
-            configData.setUnknownoptionmessage(configData.getUnknownoptionmessage().replace("PREFIX", prefix));
-            configData.setReloadmessage(configData.getReloadmessage().replace("PREFIX", prefix));
-            configData.setReloadcompletemessage(configData.getReloadcompletemessage().replace("PREFIX", prefix));
-            configData.getMotdchanger().setMotd(configData.getMotdchanger().getMotd().replace("PREFIX", prefix));
-            configData.getMotdchanger().setMaintenancemotd(configData.getMotdchanger().getMaintenancemotd().replace("PREFIX", prefix));
-            configData.getCommandspy().setSpybypass(configData.getCommandspy().getSpybypass().replace("PREFIX", prefix));
-            configData.getCommandspy().setSpymessage(configData.getCommandspy().getSpymessage().replace("PREFIX", prefix));
-            configData.getCommandspy().setSpytogglemessage(configData.getCommandspy().getSpytogglemessage().replace("PREFIX", prefix));
-            configData.getStaffchat().setStaffchatmessage(configData.getStaffchat().getStaffchatmessage().replace("PREFIX", prefix));
-            configData.getStaffchat().setTogglemessage(configData.getStaffchat().getTogglemessage().replace("PREFIX", prefix));
-            configData.getAdminchat().setAdminchatmessage(configData.getAdminchat().getAdminchatmessage().replace("PREFIX", prefix));
-            configData.getAdminchat().setTogglemessage(configData.getAdminchat().getTogglemessage().replace("PREFIX", prefix));
-            configData.getMaintenance().setMaintenanceaddcommandmessage(configData.getMaintenance().getMaintenanceaddcommandmessage().replace("PREFIX", prefix));
-            configData.getMaintenance().setMaintenanceremovecommandmessage(configData.getMaintenance().getMaintenanceremovecommandmessage().replace("PREFIX", prefix));
-            configData.getMaintenance().setMaintenancedisconnectmessage(configData.getMaintenance().getMaintenancedisconnectmessage().replace("PREFIX", prefix));
-            configData.getPing().setPingmessage(configData.getPing().getPingmessage().replace("PREFIX", prefix));
-            configData.getPing().setPingothersmessage(configData.getPing().getPingothersmessage().replace("PREFIX", prefix));
-            configData.getBplugins().setPluginisloadingmessage(configData.getBplugins().getPluginisloadingmessage().replace("PREFIX", prefix));
-            configData.getBplugins().setPluginisunloadingmessage(configData.getBplugins().getPluginisunloadingmessage().replace("PREFIX", prefix));
-            configData.getBplugins().setPlugindoesntexisterrormessage(configData.getBplugins().getPlugindoesntexisterrormessage().replace("PREFIX", prefix));
-            configData.getPlaytime().setPlaytimemessage(configData.getPlaytime().getPlaytimemessage().replace("PREFIX", prefix));
-            configData.getPlaytime().setPlaytimeothersmessage(configData.getPlaytime().getPlaytimeothersmessage().replace("PREFIX", prefix));
-            configData.getCommandwhitelist().setBlockmessage(configData.getCommandwhitelist().getBlockmessage().replace("PREFIX", prefix));
-            configData.getPunishmanager().setBanannouncemessage(configData.getPunishmanager().getBanannouncemessage().replace("PREFIX", prefix));
-            configData.getPunishmanager().setBandisconnectmessage(configData.getPunishmanager().getBandisconnectmessage().replace("PREFIX", prefix));
-            configData.getPunishmanager().setMuteannouncemessage(configData.getPunishmanager().getMuteannouncemessage().replace("PREFIX", prefix));
-            configData.getPunishmanager().setMuteblockmessage(configData.getPunishmanager().getMuteblockmessage().replace("PREFIX", prefix));
-            configData.getPunishmanager().setKickannouncemessage(configData.getPunishmanager().getKickannouncemessage().replace("PREFIX", prefix));
-            configData.getPunishmanager().setKickdisconnectmessage(configData.getPunishmanager().getKickdisconnectmessage().replace("PREFIX", prefix));
-            configData.getPunishmanager().setUnbanconsolelogmessage(configData.getPunishmanager().getUnbanconsolelogmessage().replace("PREFIX", prefix));
-            configData.getPunishmanager().setUnmuteconsolelogmessage(configData.getPunishmanager().getUnmuteconsolelogmessage().replace("PREFIX", prefix));
+            configData.setLoadingmessage(Message.translateColor(configData.getLoadingmessage().replace("PREFIX", prefix)));
+            configData.setCannotexecasconsoleerrormessage(Message.translateColor(configData.getCannotexecasconsoleerrormessage().replace("PREFIX", prefix)));
+            configData.setUnknownoptionmessage(Message.translateColor(configData.getUnknownoptionmessage().replace("PREFIX", prefix)));
+            configData.setReloadmessage(Message.translateColor(configData.getReloadmessage().replace("PREFIX", prefix)));
+            configData.setReloadcompletemessage(Message.translateColor(configData.getReloadcompletemessage().replace("PREFIX", prefix)));
+            configData.getMotdchanger().setMotd(Message.translateColor(configData.getMotdchanger().getMotd().replace("PREFIX", prefix)));
+            configData.getMotdchanger().setMaintenancemotd(Message.translateColor(configData.getMotdchanger().getMaintenancemotd().replace("PREFIX", prefix)));
+            configData.getCommandspy().setSpybypass(Message.translateColor(configData.getCommandspy().getSpybypass().replace("PREFIX", prefix)));
+            configData.getCommandspy().setSpymessage(Message.translateColor(configData.getCommandspy().getSpymessage().replace("PREFIX", prefix)));
+            configData.getCommandspy().setSpytogglemessage(Message.translateColor(configData.getCommandspy().getSpytogglemessage().replace("PREFIX", prefix)));
+            configData.getStaffchat().setStaffchatmessage(Message.translateColor(configData.getStaffchat().getStaffchatmessage().replace("PREFIX", prefix)));
+            configData.getStaffchat().setTogglemessage(Message.translateColor(configData.getStaffchat().getTogglemessage().replace("PREFIX", prefix)));
+            configData.getAdminchat().setAdminchatmessage(Message.translateColor(configData.getAdminchat().getAdminchatmessage().replace("PREFIX", prefix)));
+            configData.getAdminchat().setTogglemessage(Message.translateColor(configData.getAdminchat().getTogglemessage().replace("PREFIX", prefix)));
+            configData.getMaintenance().setMaintenanceaddcommandmessage(Message.translateColor(configData.getMaintenance().getMaintenanceaddcommandmessage().replace("PREFIX", prefix)));
+            configData.getMaintenance().setMaintenanceremovecommandmessage(Message.translateColor(configData.getMaintenance().getMaintenanceremovecommandmessage().replace("PREFIX", prefix)));
+            configData.getMaintenance().setMaintenancedisconnectmessage(Message.translateColor(configData.getMaintenance().getMaintenancedisconnectmessage().replace("PREFIX", prefix)));
+            configData.getPing().setPingmessage(Message.translateColor(configData.getPing().getPingmessage().replace("PREFIX", prefix)));
+            configData.getPing().setPingothersmessage(Message.translateColor(configData.getPing().getPingothersmessage().replace("PREFIX", prefix)));
+            configData.getBplugins().setPluginisloadingmessage(Message.translateColor(configData.getBplugins().getPluginisloadingmessage().replace("PREFIX", prefix)));
+            configData.getBplugins().setPluginisunloadingmessage(Message.translateColor(configData.getBplugins().getPluginisunloadingmessage().replace("PREFIX", prefix)));
+            configData.getBplugins().setPlugindoesntexisterrormessage(Message.translateColor(configData.getBplugins().getPlugindoesntexisterrormessage().replace("PREFIX", prefix)));
+            configData.getPlaytime().setPlaytimemessage(Message.translateColor(configData.getPlaytime().getPlaytimemessage().replace("PREFIX", prefix)));
+            configData.getPlaytime().setPlaytimeothersmessage(Message.translateColor(configData.getPlaytime().getPlaytimeothersmessage().replace("PREFIX", prefix)));
+            configData.getCommandwhitelist().setBlockmessage(Message.translateColor(configData.getCommandwhitelist().getBlockmessage().replace("PREFIX", prefix)));
+            configData.getPunishmanager().setBanannouncemessage(Message.translateColor(configData.getPunishmanager().getBanannouncemessage().replace("PREFIX", prefix)));
+            configData.getPunishmanager().setBandisconnectmessage(Message.translateColor(configData.getPunishmanager().getBandisconnectmessage().replace("PREFIX", prefix)));
+            configData.getPunishmanager().setMuteannouncemessage(Message.translateColor(configData.getPunishmanager().getMuteannouncemessage().replace("PREFIX", prefix)));
+            configData.getPunishmanager().setMuteblockmessage(Message.translateColor(configData.getPunishmanager().getMuteblockmessage().replace("PREFIX", prefix)));
+            configData.getPunishmanager().setKickannouncemessage(Message.translateColor(configData.getPunishmanager().getKickannouncemessage().replace("PREFIX", prefix)));
+            configData.getPunishmanager().setKickdisconnectmessage(Message.translateColor(configData.getPunishmanager().getKickdisconnectmessage().replace("PREFIX", prefix)));
+            configData.getPunishmanager().setUnbanconsolelogmessage(Message.translateColor(configData.getPunishmanager().getUnbanconsolelogmessage().replace("PREFIX", prefix)));
+            configData.getPunishmanager().setUnmuteconsolelogmessage(Message.translateColor(configData.getPunishmanager().getUnmuteconsolelogmessage().replace("PREFIX", prefix)));
+            configData.getAntibot().setDisconnect_cooldown(Message.translateColor(configData.getAntibot().getDisconnect_cooldown().replace("PREFIX", prefix)));
+            configData.getAntibot().setDisconnect_invalidusername(Message.translateColor(configData.getAntibot().getDisconnect_invalidusername().replace("PREFIX", prefix)));
+            configData.getAntibot().setDisconnect_slowconnection(Message.translateColor(configData.getAntibot().getDisconnect_slowconnection().replace("PREFIX", prefix)));
+
 
             logger.info("Successfully Initialized!");
 
@@ -115,6 +119,7 @@ public class Configuration {
         private PunishManagerData punishmanager;
         private StaffActivityData staffactivity;
         private CommandWhitelistData commandwhitelist;
+        private AntiBotData antibot;
     }
 
     @Getter
@@ -192,7 +197,7 @@ public class Configuration {
     @Getter
     @Setter
     public static class StaffActivityData {
-        private String staffusernames[];
+        private String[] staffusernames;
         private int sendtime;
     }
 
@@ -207,5 +212,13 @@ public class Configuration {
     @Setter
     public static class GroupData {
         private String[] commands;
+    }
+
+    @Getter
+    @Setter
+    public static class AntiBotData {
+        private int maxpings, blockdurationmillis, connectionintervalmillis, pingresetinterval, slowjointhreshold, playerspecifiedcooldown, fastjointhreshold;
+        private String disconnect_cooldown, disconnect_invalidusername, disconnect_slowconnection;
+        private String[] checks;
     }
 }

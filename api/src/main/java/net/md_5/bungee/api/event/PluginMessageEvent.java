@@ -15,10 +15,6 @@ import net.md_5.bungee.api.plugin.Cancellable;
 public class PluginMessageEvent extends TargetedEvent implements Cancellable {
 
     /**
-     * Cancelled state.
-     */
-    private boolean cancelled;
-    /**
      * Tag specified for this plugin message.
      */
     private final String tag;
@@ -26,6 +22,10 @@ public class PluginMessageEvent extends TargetedEvent implements Cancellable {
      * Data contained in this plugin message.
      */
     private final byte[] data;
+    /**
+     * Cancelled state.
+     */
+    private boolean cancelled;
 
     public PluginMessageEvent(Connection sender, Connection receiver, String tag, byte[] data) {
         super(sender, receiver);

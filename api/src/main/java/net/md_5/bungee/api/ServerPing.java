@@ -22,7 +22,58 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ServerPing {
 
+    // Right now, we don't get the mods from the user, so we just use a stock ModInfo object to
+    // create the server ping. Vanilla clients will ignore this.
+    private final ModInfo modinfo = new ModInfo();
     private Protocol version;
+    private Players players;
+    private BaseComponent description;
+    private Favicon favicon;
+
+    @Deprecated
+    public ServerPing(Protocol version, Players players, String description, String favicon) {
+        this(version, players, TextComponent.fromLegacy(description), favicon == null ? null : Favicon.create(favicon));
+    }
+    @Deprecated
+    public ServerPing(Protocol version, Players players, String description, Favicon favicon) {
+        this(version, players, TextComponent.fromLegacy(description), favicon);
+    }
+
+    @Deprecated
+    public String getFavicon() {
+        return getFaviconObject() == null ? null : getFaviconObject().getEncoded();
+    }
+
+    @Deprecated
+    public void setFavicon(String favicon) {
+        setFavicon(favicon == null ? null : Favicon.create(favicon));
+    }
+
+    public void setFavicon(Favicon favicon) {
+        this.favicon = favicon;
+    }
+
+    public Favicon getFaviconObject() {
+        return this.favicon;
+    }
+
+    @Deprecated
+    public String getDescription() {
+        return BaseComponent.toLegacyText(description);
+    }
+
+    @Deprecated
+    public void setDescription(String description) {
+        this.description = TextComponent.fromLegacy(description);
+    }
+
+    public BaseComponent getDescriptionComponent() {
+        return description;
+    }
+
+    public void setDescriptionComponent(BaseComponent description) {
+        this.description = description;
+    }
 
     @Data
     @AllArgsConstructor
@@ -31,8 +82,6 @@ public class ServerPing {
         private String name;
         private int protocol;
     }
-
-    private Players players;
 
     @Data
     @AllArgsConstructor
@@ -47,14 +96,17 @@ public class ServerPing {
     @AllArgsConstructor
     public static class PlayerInfo {
 
+        private static final UUID md5UUID = Util.getUUID("af74a02d19cb445bb07f6866a861f783");
         private String name;
         private UUID uniqueId;
-
-        private static final UUID md5UUID = Util.getUUID("af74a02d19cb445bb07f6866a861f783");
 
         public PlayerInfo(String name, String id) {
             setName(name);
             setId(id);
+        }
+
+        public String getId() {
+            return io.github.waterfallmc.waterfall.utils.UUIDUtils.undash(uniqueId.toString()); // Waterfall
         }
 
         public void setId(String id) {
@@ -65,14 +117,7 @@ public class ServerPing {
                 uniqueId = md5UUID;
             }
         }
-
-        public String getId() {
-            return io.github.waterfallmc.waterfall.utils.UUIDUtils.undash(uniqueId.toString()); // Waterfall
-        }
     }
-
-    private BaseComponent description;
-    private Favicon favicon;
 
     @Data
     public static class ModInfo {
@@ -87,55 +132,5 @@ public class ServerPing {
 
         private String modid;
         private String version;
-    }
-
-    // Right now, we don't get the mods from the user, so we just use a stock ModInfo object to
-    // create the server ping. Vanilla clients will ignore this.
-    private final ModInfo modinfo = new ModInfo();
-
-    @Deprecated
-    public ServerPing(Protocol version, Players players, String description, String favicon) {
-        this(version, players, TextComponent.fromLegacy(description), favicon == null ? null : Favicon.create(favicon));
-    }
-
-    @Deprecated
-    public ServerPing(Protocol version, Players players, String description, Favicon favicon) {
-        this(version, players, TextComponent.fromLegacy(description), favicon);
-    }
-
-    @Deprecated
-    public String getFavicon() {
-        return getFaviconObject() == null ? null : getFaviconObject().getEncoded();
-    }
-
-    public Favicon getFaviconObject() {
-        return this.favicon;
-    }
-
-    @Deprecated
-    public void setFavicon(String favicon) {
-        setFavicon(favicon == null ? null : Favicon.create(favicon));
-    }
-
-    public void setFavicon(Favicon favicon) {
-        this.favicon = favicon;
-    }
-
-    @Deprecated
-    public void setDescription(String description) {
-        this.description = TextComponent.fromLegacy(description);
-    }
-
-    @Deprecated
-    public String getDescription() {
-        return BaseComponent.toLegacyText(description);
-    }
-
-    public void setDescriptionComponent(BaseComponent description) {
-        this.description = description;
-    }
-
-    public BaseComponent getDescriptionComponent() {
-        return description;
     }
 }

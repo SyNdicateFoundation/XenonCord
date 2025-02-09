@@ -14,14 +14,6 @@ import java.util.Map;
 public class Scoreboard {
 
     /**
-     * Unique name for this scoreboard.
-     */
-    private String name;
-    /**
-     * Position of this scoreboard.
-     */
-    private Position position;
-    /**
      * Objectives for this scoreboard.
      */
     private final Map<String, Objective> objectives = new HashMap<>();
@@ -33,6 +25,14 @@ public class Scoreboard {
      * Teams on this board.
      */
     private final Map<String, Team> teams = new HashMap<>();
+    /**
+     * Unique name for this scoreboard.
+     */
+    private String name;
+    /**
+     * Position of this scoreboard.
+     */
+    private Position position;
 
     public Collection<Objective> getObjectives() {
         return Collections.unmodifiableCollection(objectives.values());

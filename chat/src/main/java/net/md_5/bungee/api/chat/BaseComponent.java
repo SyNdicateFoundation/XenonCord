@@ -73,6 +73,35 @@ public abstract class BaseComponent {
     }
 
     /**
+     * Converts the components to a string that uses the old formatting codes
+     * ({@link net.md_5.bungee.api.ChatColor#COLOR_CHAR}
+     *
+     * @param components the components to convert
+     * @return the string in the old format
+     */
+    public static String toLegacyText(BaseComponent... components) {
+        StringBuilder builder = new StringBuilder();
+        for (BaseComponent msg : components) {
+            builder.append(msg.toLegacyText());
+        }
+        return builder.toString();
+    }
+
+    /**
+     * Converts the components into a string without any formatting
+     *
+     * @param components the components to convert
+     * @return the string as plain text
+     */
+    public static String toPlainText(BaseComponent... components) {
+        StringBuilder builder = new StringBuilder();
+        for (BaseComponent msg : components) {
+            builder.append(msg.toPlainText());
+        }
+        return builder.toString();
+    }
+
+    /**
      * Copies the events and formatting of a BaseComponent. Already set
      * formatting will be replaced.
      *
@@ -184,35 +213,6 @@ public abstract class BaseComponent {
     }
 
     /**
-     * Converts the components to a string that uses the old formatting codes
-     * ({@link net.md_5.bungee.api.ChatColor#COLOR_CHAR}
-     *
-     * @param components the components to convert
-     * @return the string in the old format
-     */
-    public static String toLegacyText(BaseComponent... components) {
-        StringBuilder builder = new StringBuilder();
-        for (BaseComponent msg : components) {
-            builder.append(msg.toLegacyText());
-        }
-        return builder.toString();
-    }
-
-    /**
-     * Converts the components into a string without any formatting
-     *
-     * @param components the components to convert
-     * @return the string as plain text
-     */
-    public static String toPlainText(BaseComponent... components) {
-        StringBuilder builder = new StringBuilder();
-        for (BaseComponent msg : components) {
-            builder.append(msg.toPlainText());
-        }
-        return builder.toString();
-    }
-
-    /**
      * Set the {@link ComponentStyle} for this component.
      * <p>
      * Unlike {@link #applyStyle(ComponentStyle)}, this method will overwrite
@@ -222,18 +222,6 @@ public abstract class BaseComponent {
      */
     public void setStyle(ComponentStyle style) {
         this.style = (style != null) ? style.clone() : new ComponentStyle();
-    }
-
-    /**
-     * Set this component's color.
-     * <p>
-     * <b>Warning: This should be a color, not formatting code (ie,
-     * {@link ChatColor#(ChatColor)} should not be null).</b>
-     *
-     * @param color the component color, or null to use the default
-     */
-    public void setColor(ChatColor color) {
-        this.style.setColor(color);
     }
 
     /**
@@ -254,6 +242,18 @@ public abstract class BaseComponent {
     }
 
     /**
+     * Set this component's color.
+     * <p>
+     * <b>Warning: This should be a color, not formatting code (ie,
+     * {@link ChatColor#(ChatColor)} should not be null).</b>
+     *
+     * @param color the component color, or null to use the default
+     */
+    public void setColor(ChatColor color) {
+        this.style.setColor(color);
+    }
+
+    /**
      * Returns the color of this component without checking the parents color.
      * May return null
      *
@@ -261,15 +261,6 @@ public abstract class BaseComponent {
      */
     public ChatColor getColorRaw() {
         return style.getColor();
-    }
-
-    /**
-     * Set this component's shadow color.
-     *
-     * @param color the component shadow color, or null to use the default
-     */
-    public void setShadowColor(Color color) {
-        this.style.setShadowColor(color);
     }
 
     /**
@@ -289,6 +280,15 @@ public abstract class BaseComponent {
     }
 
     /**
+     * Set this component's shadow color.
+     *
+     * @param color the component shadow color, or null to use the default
+     */
+    public void setShadowColor(Color color) {
+        this.style.setShadowColor(color);
+    }
+
+    /**
      * Returns the shadow color of this component without checking the parents
      * shadow color. May return null
      *
@@ -296,15 +296,6 @@ public abstract class BaseComponent {
      */
     public Color getShadowColorRaw() {
         return style.getShadowColor();
-    }
-
-    /**
-     * Set this component's font.
-     *
-     * @param font the font to set, or null to use the default
-     */
-    public void setFont(String font) {
-        this.style.setFont(font);
     }
 
     /**
@@ -324,6 +315,15 @@ public abstract class BaseComponent {
     }
 
     /**
+     * Set this component's font.
+     *
+     * @param font the font to set, or null to use the default
+     */
+    public void setFont(String font) {
+        this.style.setFont(font);
+    }
+
+    /**
      * Returns the font of this component without checking the parents font. May
      * return null
      *
@@ -331,15 +331,6 @@ public abstract class BaseComponent {
      */
     public String getFontRaw() {
         return style.getFont();
-    }
-
-    /**
-     * Set whether or not this component is bold.
-     *
-     * @param bold the new bold state, or null to use the default
-     */
-    public void setBold(Boolean bold) {
-        this.style.setBold(bold);
     }
 
     /**
@@ -357,6 +348,15 @@ public abstract class BaseComponent {
     }
 
     /**
+     * Set whether or not this component is bold.
+     *
+     * @param bold the new bold state, or null to use the default
+     */
+    public void setBold(Boolean bold) {
+        this.style.setBold(bold);
+    }
+
+    /**
      * Returns whether this component is bold without checking the parents
      * setting. May return null
      *
@@ -364,15 +364,6 @@ public abstract class BaseComponent {
      */
     public Boolean isBoldRaw() {
         return style.isBoldRaw();
-    }
-
-    /**
-     * Set whether or not this component is italic.
-     *
-     * @param italic the new italic state, or null to use the default
-     */
-    public void setItalic(Boolean italic) {
-        this.style.setItalic(italic);
     }
 
     /**
@@ -390,6 +381,15 @@ public abstract class BaseComponent {
     }
 
     /**
+     * Set whether or not this component is italic.
+     *
+     * @param italic the new italic state, or null to use the default
+     */
+    public void setItalic(Boolean italic) {
+        this.style.setItalic(italic);
+    }
+
+    /**
      * Returns whether this component is italic without checking the parents
      * setting. May return null
      *
@@ -397,15 +397,6 @@ public abstract class BaseComponent {
      */
     public Boolean isItalicRaw() {
         return style.isItalicRaw();
-    }
-
-    /**
-     * Set whether or not this component is underlined.
-     *
-     * @param underlined the new underlined state, or null to use the default
-     */
-    public void setUnderlined(Boolean underlined) {
-        this.style.setUnderlined(underlined);
     }
 
     /**
@@ -423,6 +414,15 @@ public abstract class BaseComponent {
     }
 
     /**
+     * Set whether or not this component is underlined.
+     *
+     * @param underlined the new underlined state, or null to use the default
+     */
+    public void setUnderlined(Boolean underlined) {
+        this.style.setUnderlined(underlined);
+    }
+
+    /**
      * Returns whether this component is underlined without checking the parents
      * setting. May return null
      *
@@ -430,16 +430,6 @@ public abstract class BaseComponent {
      */
     public Boolean isUnderlinedRaw() {
         return style.isUnderlinedRaw();
-    }
-
-    /**
-     * Set whether or not this component is strikethrough.
-     *
-     * @param strikethrough the new strikethrough state, or null to use the
-     *                      default
-     */
-    public void setStrikethrough(Boolean strikethrough) {
-        this.style.setStrikethrough(strikethrough);
     }
 
     /**
@@ -457,6 +447,16 @@ public abstract class BaseComponent {
     }
 
     /**
+     * Set whether or not this component is strikethrough.
+     *
+     * @param strikethrough the new strikethrough state, or null to use the
+     *                      default
+     */
+    public void setStrikethrough(Boolean strikethrough) {
+        this.style.setStrikethrough(strikethrough);
+    }
+
+    /**
      * Returns whether this component is strikethrough without checking the
      * parents setting. May return null
      *
@@ -464,15 +464,6 @@ public abstract class BaseComponent {
      */
     public Boolean isStrikethroughRaw() {
         return style.isStrikethroughRaw();
-    }
-
-    /**
-     * Set whether or not this component is obfuscated.
-     *
-     * @param obfuscated the new obfuscated state, or null to use the default
-     */
-    public void setObfuscated(Boolean obfuscated) {
-        this.style.setObfuscated(obfuscated);
     }
 
     /**
@@ -487,6 +478,15 @@ public abstract class BaseComponent {
             return parent != null && parent.isObfuscated();
         }
         return style.isObfuscated();
+    }
+
+    /**
+     * Set whether or not this component is obfuscated.
+     *
+     * @param obfuscated the new obfuscated state, or null to use the default
+     */
+    public void setObfuscated(Boolean obfuscated) {
+        this.style.setObfuscated(obfuscated);
     }
 
     /**

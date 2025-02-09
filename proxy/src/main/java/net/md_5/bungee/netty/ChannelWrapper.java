@@ -145,7 +145,7 @@ public class ChannelWrapper {
     }
 
     public void setCompressionThreshold(int compressionThreshold) {
-        if(compressionThreshold >= 0){
+        if (compressionThreshold >= 0) {
             if (ch.pipeline().get(PacketCompressor.class) == null) {
                 addBefore(PipelineUtils.PACKET_ENCODER, "compress", new PacketCompressor());
             }

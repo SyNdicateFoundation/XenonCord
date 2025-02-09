@@ -75,24 +75,6 @@ public final class HexFormattingConverter extends LogEventPatternConverter {
         this.ansi = !strip;
     }
 
-    @Override
-    public void format(LogEvent event, StringBuilder toAppendTo) {
-        int start = toAppendTo.length();
-        //noinspection ForLoopReplaceableByForEach
-        for (int i = 0, size = formatters.size(); i < size; i++) {
-            formatters.get(i).format(event, toAppendTo);
-        }
-
-        if (KEEP_FORMATTING || toAppendTo.length() == start) {
-            // Skip replacement if disabled or if the content is empty
-            return;
-        }
-
-        boolean useAnsi = ansi && TerminalConsoleAppender.isAnsiSupported();
-        String content = useAnsi ? convertRGBColors(toAppendTo.substring(start)) : stripRGBColors(toAppendTo.substring(start));
-        format(content, toAppendTo, start, useAnsi);
-    }
-
     private static String convertRGBColors(String input) {
         Matcher matcher = RGB_PATTERN.matcher(input);
         StringBuffer buffer = new StringBuffer();
@@ -171,6 +153,24 @@ public final class HexFormattingConverter extends LogEventPatternConverter {
         List<PatternFormatter> formatters = parser.parse(options[0]);
         boolean strip = options.length > 1 && "strip".equals(options[1]);
         return new HexFormattingConverter(formatters, strip);
+    }
+
+    @Override
+    public void format(LogEvent event, StringBuilder toAppendTo) {
+        int start = toAppendTo.length();
+        //noinspection ForLoopReplaceableByForEach
+        for (int i = 0, size = formatters.size(); i < size; i++) {
+            formatters.get(i).format(event, toAppendTo);
+        }
+
+        if (KEEP_FORMATTING || toAppendTo.length() == start) {
+            // Skip replacement if disabled or if the content is empty
+            return;
+        }
+
+        boolean useAnsi = ansi && TerminalConsoleAppender.isAnsiSupported();
+        String content = useAnsi ? convertRGBColors(toAppendTo.substring(start)) : stripRGBColors(toAppendTo.substring(start));
+        format(content, toAppendTo, start, useAnsi);
     }
 
 }

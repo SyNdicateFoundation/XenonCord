@@ -13,16 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ThrottleTest {
 
-    private class FixedTicker extends Ticker {
-
-        private long value;
-
-        @Override
-        public long read() {
-            return value;
-        }
-    }
-
     @Test
     public void testThrottle() throws InterruptedException, UnknownHostException {
         FixedTicker ticker = new FixedTicker();
@@ -48,5 +38,15 @@ public class ThrottleTest {
         // Now test expiration
         ticker.value += TimeUnit.MILLISECONDS.toNanos(50);
         assertFalse(throttle.throttle(address), "Address should not be throttled");
+    }
+
+    private class FixedTicker extends Ticker {
+
+        private long value;
+
+        @Override
+        public long read() {
+            return value;
+        }
     }
 }

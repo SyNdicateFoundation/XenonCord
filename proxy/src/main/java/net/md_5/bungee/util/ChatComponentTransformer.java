@@ -34,6 +34,10 @@ public final class ChatComponentTransformer {
      */
     private static final Pattern SELECTOR_PATTERN = Pattern.compile("^@([pares])(?:\\[([^ ]*)\\])?$");
 
+    public static ChatComponentTransformer getInstance() {
+        return INSTANCE;
+    }
+
     public BaseComponent legacyHoverTransform(ProxiedPlayer player, BaseComponent next) {
         if (player.getPendingConnection().getVersion() < ProtocolConstants.MINECRAFT_1_16) {
             if (next.getHoverEvent() == null || next.getHoverEvent().isLegacy()) {
@@ -46,7 +50,7 @@ public final class ChatComponentTransformer {
                 next.getHoverEvent().getContents().clear();
                 next.getHoverEvent().getContents().add(exception);
             }
-        } else if ( player.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_21_5 ) {
+        } else if (player.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_21_5) {
             if (next.getHoverEvent() != null && !next.getHoverEvent().isV1_21_5()) {
                 next = next.duplicate();
                 next.getHoverEvent().setV1_21_5(true);
@@ -58,11 +62,7 @@ public final class ChatComponentTransformer {
         }
 
 
-            return next;
-    }
-
-    public static ChatComponentTransformer getInstance() {
-        return INSTANCE;
+        return next;
     }
 
     /**

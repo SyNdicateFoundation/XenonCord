@@ -18,16 +18,13 @@ public class ForgeClientHandler {
 
     @NonNull
     private final UserConnection con;
-
+    private final ArrayDeque<PluginMessage> packetQueue = new ArrayDeque<PluginMessage>();
     /**
      * The users' mod list.
      */
     @Getter
     @Setter(AccessLevel.PACKAGE)
     private Map<String, String> clientModList = null;
-
-    private final ArrayDeque<PluginMessage> packetQueue = new ArrayDeque<PluginMessage>();
-
     @NonNull
     @Setter(AccessLevel.PACKAGE)
     private ForgeClientHandshakeState state = ForgeClientHandshakeState.HELLO;

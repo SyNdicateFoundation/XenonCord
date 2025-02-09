@@ -23,6 +23,10 @@ import net.md_5.bungee.api.plugin.Cancellable;
 public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancellable {
 
     /**
+     * Connection attempting to login.
+     */
+    private final PendingConnection connection;
+    /**
      * Cancelled state.
      */
     private boolean cancelled;
@@ -30,10 +34,6 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
      * Message to use when kicking if this event is canceled.
      */
     private BaseComponent reason;
-    /**
-     * Connection attempting to login.
-     */
-    private final PendingConnection connection;
 
     public PreLoginEvent(PendingConnection connection, Callback<PreLoginEvent> done) {
         super(done);
@@ -59,6 +59,15 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
     }
 
     /**
+     * @param cancelReason reason to be displayed
+     * @deprecated use single component methods instead
+     */
+    @Deprecated
+    public void setCancelReason(BaseComponent... cancelReason) {
+        setReason(TextComponent.fromArray(cancelReason));
+    }
+
+    /**
      * @return reason to be displayed
      * @deprecated use single component methods instead
      */
@@ -68,14 +77,5 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
                 {
                         getReason()
                 };
-    }
-
-    /**
-     * @param cancelReason reason to be displayed
-     * @deprecated use single component methods instead
-     */
-    @Deprecated
-    public void setCancelReason(BaseComponent... cancelReason) {
-        setReason(TextComponent.fromArray(cancelReason));
     }
 }

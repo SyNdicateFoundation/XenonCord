@@ -17,10 +17,6 @@ import java.util.List;
 public class TabCompleteEvent extends TargetedEvent implements Cancellable {
 
     /**
-     * Cancelled state.
-     */
-    private boolean cancelled;
-    /**
      * The message the player has already entered.
      */
     private final String cursor;
@@ -29,6 +25,10 @@ public class TabCompleteEvent extends TargetedEvent implements Cancellable {
      * this list is empty, the request will be forwarded to the server.
      */
     private final List<String> suggestions;
+    /**
+     * Cancelled state.
+     */
+    private boolean cancelled;
 
     public TabCompleteEvent(Connection sender, Connection receiver, String cursor, List<String> suggestions) {
         super(sender, receiver);

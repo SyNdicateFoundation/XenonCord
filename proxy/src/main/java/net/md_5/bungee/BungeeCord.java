@@ -63,28 +63,34 @@ import java.util.logging.Logger;
 public class BungeeCord extends ProxyServer {
 
     /**
-     * Current operation state.
-     */
-    public volatile boolean isRunning;
-    /**
      * Configuration.
      */
     @Getter
     public final Configuration config = new WaterfallConfiguration();
     /**
-     * Localization formats.
+     * Plugin manager.
      */
-    private Map<String, Format> messageFormats;
-    public EventLoopGroup bossEventLoopGroup, workerEventLoopGroup;
+    @Getter
+    public final PluginManager pluginManager;
+    public final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(BaseComponent.class, new ComponentSerializer())
+            .registerTypeAdapter(TextComponent.class, new TextComponentSerializer())
+            .registerTypeAdapter(TranslatableComponent.class, new TranslatableComponentSerializer())
+            .registerTypeAdapter(KeybindComponent.class, new KeybindComponentSerializer())
+            .registerTypeAdapter(ScoreComponent.class, new ScoreComponentSerializer())
+            .registerTypeAdapter(SelectorComponent.class, new SelectorComponentSerializer())
+            .registerTypeAdapter(ComponentStyle.class, new ComponentStyleSerializer())
+            .registerTypeAdapter(ServerPing.PlayerInfo.class, new PlayerInfoSerializer())
+            .registerTypeAdapter(Favicon.class, Favicon.getFaviconTypeAdapter()).create();
     /**
      * locations.yml save thread.
      */
     private final Timer saveThread = new Timer("Reconnect Saver");
-    // private final Timer metricsThread = new Timer( "Metrics Thread" ); // Waterfall: Disable Metrics
     /**
      * Server socket listener.
      */
     private final Collection<Channel> listeners = new HashSet<>();
+    // private final Timer metricsThread = new Timer( "Metrics Thread" ); // Waterfall: Disable Metrics
     /**
      * Fully qualified connections.
      */
@@ -98,17 +104,6 @@ public class BungeeCord extends ProxyServer {
      * from multiple sources.
      */
     private final ReentrantLock shutdownLock = new ReentrantLock();
-    /**
-     * Plugin manager.
-     */
-    @Getter
-    public final PluginManager pluginManager;
-    @Getter
-    @Setter
-    private ReconnectHandler reconnectHandler;
-    @Getter
-    @Setter
-    private ConfigurationAdapter configurationAdapter = new YamlConfig();
     private final Collection<String> pluginChannels = new HashSet<>();
     @Getter
     private final File pluginsFolder = new File("plugins");
@@ -122,26 +117,26 @@ public class BungeeCord extends ProxyServer {
     // Waterfall end
     @Getter
     private final Logger logger;
-
     @Getter
     private final XenonCore xenonInstance;
-    public final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(BaseComponent.class, new ComponentSerializer())
-            .registerTypeAdapter(TextComponent.class, new TextComponentSerializer())
-            .registerTypeAdapter(TranslatableComponent.class, new TranslatableComponentSerializer())
-            .registerTypeAdapter(KeybindComponent.class, new KeybindComponentSerializer())
-            .registerTypeAdapter(ScoreComponent.class, new ScoreComponentSerializer())
-            .registerTypeAdapter(SelectorComponent.class, new SelectorComponentSerializer())
-            .registerTypeAdapter(ComponentStyle.class, new ComponentStyleSerializer())
-            .registerTypeAdapter(ServerPing.PlayerInfo.class, new PlayerInfoSerializer())
-            .registerTypeAdapter(Favicon.class, Favicon.getFaviconTypeAdapter()).create();
+    /**
+     * Current operation state.
+     */
+    public volatile boolean isRunning;
+    public EventLoopGroup bossEventLoopGroup, workerEventLoopGroup;
+    /**
+     * Localization formats.
+     */
+    private Map<String, Format> messageFormats;
+    @Getter
+    @Setter
+    private ReconnectHandler reconnectHandler;
+    @Getter
+    @Setter
+    private ConfigurationAdapter configurationAdapter = new YamlConfig();
     @Getter
     private ConnectionThrottle connectionThrottle;
 
-
-    public static BungeeCord getInstance() {
-        return (BungeeCord) ProxyServer.getInstance();
-    }
 
     @SuppressFBWarnings("DM_DEFAULT_ENCODING")
     public BungeeCord() throws IOException {
@@ -175,6 +170,9 @@ public class BungeeCord extends ProxyServer {
         }
     }
 
+    public static BungeeCord getInstance() {
+        return (BungeeCord) ProxyServer.getInstance();
+    }
 
     /**
      * Start this proxy instance by loading the configuration, plugins and

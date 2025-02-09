@@ -19,24 +19,23 @@ import net.md_5.bungee.connection.LoginResult;
 public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable {
 
     /**
+     * Connection attempting to login.
+     */
+    private final PendingConnection connection;
+    /**
      * Cancelled state.
      */
     private boolean cancelled;
+    // Waterfall start - adding the LoginResult variable to provide access to it, when calling the login event
     /**
      * Message to use when kicking if this event is canceled.
      */
     private BaseComponent reason;
-    // Waterfall start - adding the LoginResult variable to provide access to it, when calling the login event
+    // Waterfall end
     /**
      * The player's login result containing his textures
      */
     private LoginResult loginResult;
-    // Waterfall end
-
-    /**
-     * Connection attempting to login.
-     */
-    private final PendingConnection connection;
 
     public LoginEvent(PendingConnection connection, Callback<LoginEvent> done) {
         super(done);
@@ -70,6 +69,15 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable {
     }
 
     /**
+     * @param cancelReason reason to be displayed
+     * @deprecated use single component methods instead
+     */
+    @Deprecated
+    public void setCancelReason(BaseComponent... cancelReason) {
+        setReason(TextComponent.fromArray(cancelReason));
+    }
+
+    /**
      * @return reason to be displayed
      * @deprecated use single component methods instead
      */
@@ -79,14 +87,5 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable {
                 {
                         getReason()
                 };
-    }
-
-    /**
-     * @param cancelReason reason to be displayed
-     * @deprecated use single component methods instead
-     */
-    @Deprecated
-    public void setCancelReason(BaseComponent... cancelReason) {
-        setReason(TextComponent.fromArray(cancelReason));
     }
 }

@@ -6,11 +6,17 @@ import java.util.concurrent.*;
 
 @SuppressWarnings("unused")
 public class TaskManager {
+    /**
+     * Declare all required variables
+     */
     private final ExecutorService queueExecutorService;
     private final ExecutorService executorService;
     private final ExecutorService cachedExecutorService;
     private final ScheduledExecutorService scheduledExecutor;
 
+    /**
+     * Initialize all required variables
+     */
     public TaskManager() {
         this.queueExecutorService = new ThreadPoolExecutor(
                 Runtime.getRuntime().availableProcessors(),
@@ -23,6 +29,11 @@ public class TaskManager {
         this.scheduledExecutor = Executors.newScheduledThreadPool(4);
     }
 
+    /**
+     * add a task into execution list
+     *
+     * @param runnableIn a runnable to be run by task
+     */
     public void add(Runnable runnableIn) {
         queueExecutorService.submit(() -> {
             try {
@@ -35,6 +46,11 @@ public class TaskManager {
         });
     }
 
+    /**
+     * run a task asynchronously
+     *
+     * @param runnableIn a runnable to be run by task
+     */
     public void async(Runnable runnableIn) {
         executorService.submit(() -> {
             try {
@@ -45,6 +61,11 @@ public class TaskManager {
         });
     }
 
+    /**
+     * run a task asynchronously with cachedExecution
+     *
+     * @param runnableIn a runnable to be run by task
+     */
     public void cachedAsync(Runnable runnableIn) {
         cachedExecutorService.submit(() -> {
             try {
@@ -55,10 +76,22 @@ public class TaskManager {
         });
     }
 
+    /**
+     * run a repeating task
+     *
+     * @param task         a runnable to be run by task
+     * @param initialDelay initial delay of loop
+     * @param period       period of loop
+     * @param unit         time unit of time variables
+     * @return
+     */
     public ScheduledFuture<?> repeatingTask(Runnable task, long initialDelay, long period, TimeUnit unit) {
         return scheduledExecutor.scheduleAtFixedRate(task, initialDelay, period, unit);
     }
 
+    /**
+     * Shuts down all executors
+     */
     public void shutdown() {
         executorService.shutdown();
         cachedExecutorService.shutdown();

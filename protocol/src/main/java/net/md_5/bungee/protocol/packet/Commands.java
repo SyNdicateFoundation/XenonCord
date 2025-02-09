@@ -45,6 +45,19 @@ public class Commands extends DefinedPacket {
     //
     private RootCommandNode root;
 
+    private static byte binaryFlag(boolean first, boolean second) {
+        byte ret = 0;
+
+        if (first) {
+            ret = (byte) (ret | 0x1);
+        }
+        if (second) {
+            ret = (byte) (ret | 0x2);
+        }
+
+        return ret;
+    }
+
     @Override
     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
         int nodeCount = readVarInt(buf);
@@ -768,61 +781,61 @@ public class Commands extends DefinedPacket {
                     };
             IDS_1_21_5 = new ArgumentSerializer[]
                     {
-                            get( "brigadier:bool", VOID ),
-                            get( "brigadier:float", FLOAT_RANGE ),
-                            get( "brigadier:double", DOUBLE_RANGE ),
-                            get( "brigadier:integer", INTEGER_RANGE ),
-                            get( "brigadier:long", LONG_RANGE ),
-                            get( "brigadier:string", STRING ),
-                            get( "minecraft:entity", BYTE ),
-                            get( "minecraft:game_profile", VOID ),
-                            get( "minecraft:block_pos", VOID ),
-                            get( "minecraft:column_pos", VOID ),
-                            get( "minecraft:vec3", VOID ),
-                            get( "minecraft:vec2", VOID ),
-                            get( "minecraft:block_state", VOID ),
-                            get( "minecraft:block_predicate", VOID ),
-                            get( "minecraft:item_stack", VOID ),
-                            get( "minecraft:item_predicate", VOID ),
-                            get( "minecraft:color", VOID ),
-                            get( "minecraft:component", VOID ),
-                            get( "minecraft:style", VOID ),
-                            get( "minecraft:message", VOID ),
-                            get( "minecraft:nbt_compound_tag", VOID ),
-                            get( "minecraft:nbt_tag", VOID ),
-                            get( "minecraft:nbt_path", VOID ),
-                            get( "minecraft:objective", VOID ),
-                            get( "minecraft:objective_criteria", VOID ),
-                            get( "minecraft:operation", VOID ),
-                            get( "minecraft:particle", VOID ),
-                            get( "minecraft:angle", VOID ),
-                            get( "minecraft:rotation", VOID ),
-                            get( "minecraft:scoreboard_slot", VOID ),
-                            get( "minecraft:score_holder", BYTE ),
-                            get( "minecraft:swizzle", VOID ),
-                            get( "minecraft:team", VOID ),
-                            get( "minecraft:item_slot", VOID ),
-                            get( "minecraft:item_slots", VOID ),
-                            get( "minecraft:resource_location", VOID ),
-                            get( "minecraft:function", VOID ),
-                            get( "minecraft:entity_anchor", VOID ),
-                            get( "minecraft:int_range", VOID ),
-                            get( "minecraft:float_range", VOID ),
-                            get( "minecraft:dimension", VOID ),
-                            get( "minecraft:gamemode", VOID ),
-                            get( "minecraft:time", INTEGER ),
-                            get( "minecraft:resource_or_tag", RAW_STRING ),
-                            get( "minecraft:resource_or_tag_key", RAW_STRING ),
-                            get( "minecraft:resource", RAW_STRING ),
-                            get( "minecraft:resource_key", RAW_STRING ),
-                            get( "minecraft:resource_selector", RAW_STRING ),
-                            get( "minecraft:template_mirror", VOID ),
-                            get( "minecraft:template_rotation", VOID ),
-                            get( "minecraft:uuid", VOID ),
-                            get( "minecraft:heightmap", VOID ),
-                            get( "minecraft:loot_table", VOID ),
-                            get( "minecraft:loot_predicate", VOID ),
-                            get( "minecraft:loot_modifier", VOID )
+                            get("brigadier:bool", VOID),
+                            get("brigadier:float", FLOAT_RANGE),
+                            get("brigadier:double", DOUBLE_RANGE),
+                            get("brigadier:integer", INTEGER_RANGE),
+                            get("brigadier:long", LONG_RANGE),
+                            get("brigadier:string", STRING),
+                            get("minecraft:entity", BYTE),
+                            get("minecraft:game_profile", VOID),
+                            get("minecraft:block_pos", VOID),
+                            get("minecraft:column_pos", VOID),
+                            get("minecraft:vec3", VOID),
+                            get("minecraft:vec2", VOID),
+                            get("minecraft:block_state", VOID),
+                            get("minecraft:block_predicate", VOID),
+                            get("minecraft:item_stack", VOID),
+                            get("minecraft:item_predicate", VOID),
+                            get("minecraft:color", VOID),
+                            get("minecraft:component", VOID),
+                            get("minecraft:style", VOID),
+                            get("minecraft:message", VOID),
+                            get("minecraft:nbt_compound_tag", VOID),
+                            get("minecraft:nbt_tag", VOID),
+                            get("minecraft:nbt_path", VOID),
+                            get("minecraft:objective", VOID),
+                            get("minecraft:objective_criteria", VOID),
+                            get("minecraft:operation", VOID),
+                            get("minecraft:particle", VOID),
+                            get("minecraft:angle", VOID),
+                            get("minecraft:rotation", VOID),
+                            get("minecraft:scoreboard_slot", VOID),
+                            get("minecraft:score_holder", BYTE),
+                            get("minecraft:swizzle", VOID),
+                            get("minecraft:team", VOID),
+                            get("minecraft:item_slot", VOID),
+                            get("minecraft:item_slots", VOID),
+                            get("minecraft:resource_location", VOID),
+                            get("minecraft:function", VOID),
+                            get("minecraft:entity_anchor", VOID),
+                            get("minecraft:int_range", VOID),
+                            get("minecraft:float_range", VOID),
+                            get("minecraft:dimension", VOID),
+                            get("minecraft:gamemode", VOID),
+                            get("minecraft:time", INTEGER),
+                            get("minecraft:resource_or_tag", RAW_STRING),
+                            get("minecraft:resource_or_tag_key", RAW_STRING),
+                            get("minecraft:resource", RAW_STRING),
+                            get("minecraft:resource_key", RAW_STRING),
+                            get("minecraft:resource_selector", RAW_STRING),
+                            get("minecraft:template_mirror", VOID),
+                            get("minecraft:template_rotation", VOID),
+                            get("minecraft:uuid", VOID),
+                            get("minecraft:heightmap", VOID),
+                            get("minecraft:loot_table", VOID),
+                            get("minecraft:loot_predicate", VOID),
+                            get("minecraft:loot_modifier", VOID)
                     };
         }
 
@@ -840,8 +853,7 @@ public class Commands extends DefinedPacket {
 
             if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19) {
                 key = readVarInt(buf);
-                if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_21_5 )
-                {
+                if (protocolVersion >= ProtocolConstants.MINECRAFT_1_21_5) {
                     reader = IDS_1_21_5[(Integer) key];
                 } else if (protocolVersion >= ProtocolConstants.MINECRAFT_1_20_5) {
                     reader = IDS_1_20_5[(Integer) key];
@@ -956,18 +968,5 @@ public class Commands extends DefinedPacket {
                 return builder.buildFuture();
             }
         }
-    }
-
-    private static byte binaryFlag(boolean first, boolean second) {
-        byte ret = 0;
-
-        if (first) {
-            ret = (byte) (ret | 0x1);
-        }
-        if (second) {
-            ret = (byte) (ret | 0x2);
-        }
-
-        return ret;
     }
 }

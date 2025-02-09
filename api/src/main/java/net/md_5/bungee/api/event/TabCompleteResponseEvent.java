@@ -20,15 +20,14 @@ import java.util.List;
 public class TabCompleteResponseEvent extends TargetedEvent implements Cancellable {
 
     /**
-     * Whether the event is cancelled.
-     */
-    private boolean cancelled;
-
-    /**
      * Mutable list of suggestions sent back to the player. If this list is
      * empty, an empty list is sent back to the client.
      */
     private final List<String> suggestions;
+    /**
+     * Whether the event is cancelled.
+     */
+    private boolean cancelled;
 
     public TabCompleteResponseEvent(Connection sender, Connection receiver, List<String> suggestions) {
         super(sender, receiver);

@@ -15,20 +15,6 @@ public abstract class TabList {
 
     protected final ProxiedPlayer player;
 
-    public abstract void onUpdate(PlayerListItem playerListItem);
-
-    public abstract void onUpdate(PlayerListItemRemove playerListItem);
-
-    public abstract void onUpdate(PlayerListItemUpdate playerListItem);
-
-    public abstract void onPingChange(int ping);
-
-    public abstract void onServerChange();
-
-    public abstract void onConnect();
-
-    public abstract void onDisconnect();
-
     public static PlayerListItem rewrite(PlayerListItem playerListItem) {
         for (PlayerListItem.Item item : playerListItem.getItems()) {
             rewrite(item);
@@ -84,4 +70,18 @@ public abstract class TabList {
             }
         }
     }
+
+    public abstract void onUpdate(PlayerListItem playerListItem);
+
+    public abstract void onUpdate(PlayerListItemRemove playerListItem);
+
+    public abstract void onUpdate(PlayerListItemUpdate playerListItem);
+
+    public abstract void onPingChange(int ping);
+
+    public abstract void onServerChange();
+
+    public abstract void onConnect();
+
+    public abstract void onDisconnect();
 }

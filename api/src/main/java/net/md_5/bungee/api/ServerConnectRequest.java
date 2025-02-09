@@ -15,6 +15,38 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
 public class ServerConnectRequest {
 
     /**
+     * Target server to connect to.
+     */
+    @NonNull
+    private final ServerInfo target;
+    /**
+     * Reason for connecting to server.
+     */
+    @NonNull
+    private final ServerConnectEvent.Reason reason;
+    /**
+     * Callback to execute post request.
+     */
+    private final Callback<Result> callback;
+    /**
+     * Timeout in milliseconds for request.
+     */
+    @Setter
+    private int connectTimeout;
+    /**
+     * Should the player be attempted to connect to the next server in their
+     * queue if the initial request fails.
+     */
+    @Setter
+    private boolean retry;
+    /**
+     * Should feedback from the request be sent to players, allows plugins
+     * to silently deal with the outcome on their own
+     */
+    @Setter
+    private boolean sendFeedback;
+    // Waterfall start
+    /**
      * The result from this callback after request has been executed by proxy.
      */
     public enum Result {
@@ -40,39 +72,6 @@ public class ServerConnectRequest {
          */
         FAIL
     }
-
-    /**
-     * Target server to connect to.
-     */
-    @NonNull
-    private final ServerInfo target;
-    /**
-     * Reason for connecting to server.
-     */
-    @NonNull
-    private final ServerConnectEvent.Reason reason;
-    /**
-     * Callback to execute post request.
-     */
-    private final Callback<Result> callback;
-    /**
-     * Timeout in milliseconds for request.
-     */
-    @Setter
-    private int connectTimeout;
-    /**
-     * Should the player be attempted to connect to the next server in their
-     * queue if the initial request fails.
-     */
-    @Setter
-    private boolean retry;
-    // Waterfall start
-    /**
-     * Should feedback from the request be sent to players, allows plugins
-     * to silently deal with the outcome on their own
-     */
-    @Setter
-    private boolean sendFeedback;
     // Waterfall end
 
     /**

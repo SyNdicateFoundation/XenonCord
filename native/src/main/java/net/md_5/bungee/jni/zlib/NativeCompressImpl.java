@@ -4,12 +4,12 @@ import net.md_5.bungee.jni.NativeCodeException;
 
 public class NativeCompressImpl {
 
-    int consumed;
-    boolean finished;
-
     static {
         initFields();
     }
+
+    int consumed;
+    boolean finished;
 
     static native void initFields();
 

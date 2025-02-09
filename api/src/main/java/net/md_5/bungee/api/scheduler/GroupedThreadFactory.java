@@ -11,14 +11,6 @@ public class GroupedThreadFactory implements ThreadFactory {
 
     private final ThreadGroup group;
 
-    public static final class BungeeGroup extends ThreadGroup {
-
-        private BungeeGroup(String name) {
-            super(name);
-        }
-
-    }
-
     public GroupedThreadFactory(Plugin plugin, String name) {
         this.group = new BungeeGroup(name);
     }
@@ -26,5 +18,13 @@ public class GroupedThreadFactory implements ThreadFactory {
     @Override
     public Thread newThread(Runnable r) {
         return new Thread(group, r);
+    }
+
+    public static final class BungeeGroup extends ThreadGroup {
+
+        private BungeeGroup(String name) {
+            super(name);
+        }
+
     }
 }

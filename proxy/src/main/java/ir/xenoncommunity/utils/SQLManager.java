@@ -12,8 +12,8 @@ import java.sql.*;
 @SuppressWarnings({"unused", "unsafe"})
 @Getter
 public class SQLManager {
-    private Connection connection;
     private final Logger logger = XenonCore.instance.getLogger();
+    private Connection connection;
     private File databaseFile;
     private String updateCMD;
 

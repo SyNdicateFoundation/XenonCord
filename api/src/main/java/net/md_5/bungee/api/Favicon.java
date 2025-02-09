@@ -44,17 +44,16 @@ public class Favicon {
             return enc == null ? null : create(enc);
         }
     };
-
-    public static TypeAdapter<Favicon> getFaviconTypeAdapter() {
-        return FAVICON_TYPE_ADAPTER;
-    }
-
     /**
      * The base64 encoded favicon, including MIME header.
      */
     @NonNull
     @Getter
     private final String encoded;
+
+    public static TypeAdapter<Favicon> getFaviconTypeAdapter() {
+        return FAVICON_TYPE_ADAPTER;
+    }
 
     /**
      * Creates a favicon from an image.
