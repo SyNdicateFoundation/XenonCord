@@ -1,11 +1,12 @@
 package net.md_5.bungee.api.chat;
 
-import java.awt.Color;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
+
+import java.awt.*;
 
 /**
  * Represents a style that may be applied to a {@link BaseComponent}.
@@ -14,8 +15,7 @@ import net.md_5.bungee.api.ChatColor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public final class ComponentStyle implements Cloneable
-{
+public final class ComponentStyle implements Cloneable {
 
     /**
      * The color of this style.
@@ -58,8 +58,7 @@ public final class ComponentStyle implements Cloneable
      *
      * @return the color of this style, or null if default color
      */
-    public ChatColor getColor()
-    {
+    public ChatColor getColor() {
         return color;
     }
 
@@ -68,9 +67,8 @@ public final class ComponentStyle implements Cloneable
      *
      * @return whether a color is set
      */
-    public boolean hasColor()
-    {
-        return ( color != null );
+    public boolean hasColor() {
+        return (color != null);
     }
 
     /**
@@ -78,8 +76,7 @@ public final class ComponentStyle implements Cloneable
      *
      * @return the shadow color of this style, or null if default color
      */
-    public Color getShadowColor()
-    {
+    public Color getShadowColor() {
         return shadowColor;
     }
 
@@ -88,9 +85,8 @@ public final class ComponentStyle implements Cloneable
      *
      * @return whether a shadow color is set
      */
-    public boolean hasShadowColor()
-    {
-        return ( shadowColor != null );
+    public boolean hasShadowColor() {
+        return (shadowColor != null);
     }
 
     /**
@@ -98,8 +94,7 @@ public final class ComponentStyle implements Cloneable
      *
      * @return the font of this style, or null if default font
      */
-    public String getFont()
-    {
+    public String getFont() {
         return font;
     }
 
@@ -108,9 +103,8 @@ public final class ComponentStyle implements Cloneable
      *
      * @return whether a font is set
      */
-    public boolean hasFont()
-    {
-        return ( font != null );
+    public boolean hasFont() {
+        return (font != null);
     }
 
     /**
@@ -118,9 +112,8 @@ public final class ComponentStyle implements Cloneable
      *
      * @return whether the style is bold
      */
-    public boolean isBold()
-    {
-        return ( bold != null ) && bold.booleanValue();
+    public boolean isBold() {
+        return (bold != null) && bold.booleanValue();
     }
 
     /**
@@ -128,8 +121,7 @@ public final class ComponentStyle implements Cloneable
      *
      * @return whether the style is bold, or null if not set
      */
-    public Boolean isBoldRaw()
-    {
+    public Boolean isBoldRaw() {
         return bold;
     }
 
@@ -138,9 +130,8 @@ public final class ComponentStyle implements Cloneable
      *
      * @return whether the style is italic
      */
-    public boolean isItalic()
-    {
-        return ( italic != null ) && italic.booleanValue();
+    public boolean isItalic() {
+        return (italic != null) && italic.booleanValue();
     }
 
     /**
@@ -148,8 +139,7 @@ public final class ComponentStyle implements Cloneable
      *
      * @return whether the style is italic, or null if not set
      */
-    public Boolean isItalicRaw()
-    {
+    public Boolean isItalicRaw() {
         return italic;
     }
 
@@ -158,9 +148,8 @@ public final class ComponentStyle implements Cloneable
      *
      * @return whether the style is underlined
      */
-    public boolean isUnderlined()
-    {
-        return ( underlined != null ) && underlined.booleanValue();
+    public boolean isUnderlined() {
+        return (underlined != null) && underlined.booleanValue();
     }
 
     /**
@@ -168,8 +157,7 @@ public final class ComponentStyle implements Cloneable
      *
      * @return whether the style is underlined, or null if not set
      */
-    public Boolean isUnderlinedRaw()
-    {
+    public Boolean isUnderlinedRaw() {
         return underlined;
     }
 
@@ -178,9 +166,8 @@ public final class ComponentStyle implements Cloneable
      *
      * @return whether the style is strikethrough
      */
-    public boolean isStrikethrough()
-    {
-        return ( strikethrough != null ) && strikethrough.booleanValue();
+    public boolean isStrikethrough() {
+        return (strikethrough != null) && strikethrough.booleanValue();
     }
 
     /**
@@ -188,8 +175,7 @@ public final class ComponentStyle implements Cloneable
      *
      * @return whether the style is strikethrough, or null if not set
      */
-    public Boolean isStrikethroughRaw()
-    {
+    public Boolean isStrikethroughRaw() {
         return strikethrough;
     }
 
@@ -198,9 +184,8 @@ public final class ComponentStyle implements Cloneable
      *
      * @return whether the style is obfuscated
      */
-    public boolean isObfuscated()
-    {
-        return ( obfuscated != null ) && obfuscated.booleanValue();
+    public boolean isObfuscated() {
+        return (obfuscated != null) && obfuscated.booleanValue();
     }
 
     /**
@@ -208,8 +193,7 @@ public final class ComponentStyle implements Cloneable
      *
      * @return whether the style is obfuscated, or null if not set
      */
-    public Boolean isObfuscatedRaw()
-    {
+    public Boolean isObfuscatedRaw() {
         return obfuscated;
     }
 
@@ -218,17 +202,15 @@ public final class ComponentStyle implements Cloneable
      *
      * @return true if no value is set, false if at least one is set
      */
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return color == null && shadowColor == null && font == null && bold == null
                 && italic == null && underlined == null
                 && strikethrough == null && obfuscated == null;
     }
 
     @Override
-    public ComponentStyle clone()
-    {
-        return new ComponentStyle( color, shadowColor, font, bold, italic, underlined, strikethrough, obfuscated );
+    public ComponentStyle clone() {
+        return new ComponentStyle(color, shadowColor, font, bold, italic, underlined, strikethrough, obfuscated);
     }
 
     /**
@@ -236,8 +218,7 @@ public final class ComponentStyle implements Cloneable
      *
      * @return the builder
      */
-    public static ComponentStyleBuilder builder()
-    {
+    public static ComponentStyleBuilder builder() {
         return new ComponentStyleBuilder();
     }
 
@@ -248,16 +229,15 @@ public final class ComponentStyle implements Cloneable
      * @param other the component style whose values to copy into the builder
      * @return the builder
      */
-    public static ComponentStyleBuilder builder(ComponentStyle other)
-    {
+    public static ComponentStyleBuilder builder(ComponentStyle other) {
         return new ComponentStyleBuilder()
-                .color( other.color )
-                .shadowColor( other.shadowColor )
-                .font( other.font )
-                .bold( other.bold )
-                .italic( other.italic )
-                .underlined( other.underlined )
-                .strikethrough( other.strikethrough )
-                .obfuscated( other.obfuscated );
+                .color(other.color)
+                .shadowColor(other.shadowColor)
+                .font(other.font)
+                .bold(other.bold)
+                .italic(other.italic)
+                .underlined(other.underlined)
+                .strikethrough(other.strikethrough)
+                .obfuscated(other.obfuscated);
     }
 }

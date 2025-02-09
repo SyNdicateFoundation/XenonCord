@@ -1,12 +1,12 @@
 package net.md_5.bungee.protocol;
 
 import com.google.common.collect.ImmutableList;
+
 import java.util.List;
 
-public class ProtocolConstants
-{
+public class ProtocolConstants {
 
-    private static final boolean SNAPSHOT_SUPPORT = Boolean.getBoolean( "net.md_5.bungee.protocol.snapshot" );
+    private static final boolean SNAPSHOT_SUPPORT = Boolean.getBoolean("net.md_5.bungee.protocol.snapshot");
     public static final int MINECRAFT_1_8 = 47;
     public static final int MINECRAFT_1_9 = 107;
     public static final int MINECRAFT_1_9_1 = 108;
@@ -52,8 +52,7 @@ public class ProtocolConstants
     public static final List<String> SUPPORTED_VERSIONS;
     public static final List<Integer> SUPPORTED_VERSION_IDS;
 
-    static
-    {
+    static {
         ImmutableList.Builder<String> supportedVersions = ImmutableList.<String>builder().add(
                 "1.8.x",
                 "1.9.x",
@@ -115,8 +114,7 @@ public class ProtocolConstants
                 ProtocolConstants.MINECRAFT_1_21_4
         );
 
-        if ( SNAPSHOT_SUPPORT )
-        {
+        if (SNAPSHOT_SUPPORT) {
             // supportedVersions.add( "1.21.x" );
             // supportedVersionIds.add( ProtocolConstants.MINECRAFT_1_21_4 );
         }
@@ -125,18 +123,15 @@ public class ProtocolConstants
         SUPPORTED_VERSION_IDS = supportedVersionIds.build();
     }
 
-    public static final boolean isBeforeOrEq(int before, int other)
-    {
-            return before <= other;
+    public static final boolean isBeforeOrEq(int before, int other) {
+        return before <= other;
     }
 
-    public static final boolean isAfterOrEq(int after, int other)
-    {
-            return after >= other;
+    public static final boolean isAfterOrEq(int after, int other) {
+        return after >= other;
     }
 
-    public enum Direction
-    {
+    public enum Direction {
 
         TO_CLIENT, TO_SERVER;
     }

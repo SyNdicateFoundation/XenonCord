@@ -13,8 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class ClientSettings extends DefinedPacket
-{
+public class ClientSettings extends DefinedPacket {
 
     private String locale;
     private byte viewDistance;
@@ -28,71 +27,57 @@ public class ClientSettings extends DefinedPacket
     private ParticleStatus particleStatus;
 
     @Override
-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        locale = readString( buf, 16 );
+    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        locale = readString(buf, 16);
         viewDistance = buf.readByte();
-        chatFlags = protocolVersion >= ProtocolConstants.MINECRAFT_1_9 ? DefinedPacket.readVarInt( buf ) : buf.readUnsignedByte();
+        chatFlags = protocolVersion >= ProtocolConstants.MINECRAFT_1_9 ? DefinedPacket.readVarInt(buf) : buf.readUnsignedByte();
         chatColours = buf.readBoolean();
         skinParts = buf.readByte();
-        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
-        {
-            mainHand = DefinedPacket.readVarInt( buf );
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_9) {
+            mainHand = DefinedPacket.readVarInt(buf);
         }
-        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_17 )
-        {
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_17) {
             disableTextFiltering = buf.readBoolean();
         }
-        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_18 )
-        {
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_18) {
             allowServerListing = buf.readBoolean();
         }
-        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_21_2 )
-        {
-            particleStatus = ParticleStatus.values()[readVarInt( buf )];
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_21_2) {
+            particleStatus = ParticleStatus.values()[readVarInt(buf)];
         }
     }
 
     @Override
-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        writeString( locale, buf );
-        buf.writeByte( viewDistance );
-        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
-        {
-            DefinedPacket.writeVarInt( chatFlags, buf );
-        } else
-        {
-            buf.writeByte( chatFlags );
+    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        writeString(locale, buf);
+        buf.writeByte(viewDistance);
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_9) {
+            DefinedPacket.writeVarInt(chatFlags, buf);
+        } else {
+            buf.writeByte(chatFlags);
         }
-        buf.writeBoolean( chatColours );
-        buf.writeByte( skinParts );
-        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
-        {
-            DefinedPacket.writeVarInt( mainHand, buf );
+        buf.writeBoolean(chatColours);
+        buf.writeByte(skinParts);
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_9) {
+            DefinedPacket.writeVarInt(mainHand, buf);
         }
-        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_17 )
-        {
-            buf.writeBoolean( disableTextFiltering );
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_17) {
+            buf.writeBoolean(disableTextFiltering);
         }
-        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_18 )
-        {
-            buf.writeBoolean( allowServerListing );
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_18) {
+            buf.writeBoolean(allowServerListing);
         }
-        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_21_2 )
-        {
-            writeVarInt( particleStatus.ordinal(), buf );
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_21_2) {
+            writeVarInt(particleStatus.ordinal(), buf);
         }
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 
-    public enum ParticleStatus
-    {
+    public enum ParticleStatus {
         ALL,
         DECREASED,
         MINIMAL;

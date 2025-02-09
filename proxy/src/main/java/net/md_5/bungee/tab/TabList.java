@@ -11,8 +11,7 @@ import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
 
 @RequiredArgsConstructor
-public abstract class TabList
-{
+public abstract class TabList {
 
     protected final ProxiedPlayer player;
 
@@ -30,22 +29,17 @@ public abstract class TabList
 
     public abstract void onDisconnect();
 
-    public static PlayerListItem rewrite(PlayerListItem playerListItem)
-    {
-        for ( PlayerListItem.Item item : playerListItem.getItems() )
-        {
-            rewrite( item );
+    public static PlayerListItem rewrite(PlayerListItem playerListItem) {
+        for (PlayerListItem.Item item : playerListItem.getItems()) {
+            rewrite(item);
         }
         return playerListItem;
     }
 
-    public static PlayerListItemRemove rewrite(PlayerListItemRemove playerListItem)
-    {
-        for ( int i = 0; i < playerListItem.getUuids().length; i++ )
-        {
-            UserConnection player = BungeeCord.getInstance().getPlayerByOfflineUUID( playerListItem.getUuids()[i] );
-            if ( player != null )
-            {
+    public static PlayerListItemRemove rewrite(PlayerListItemRemove playerListItem) {
+        for (int i = 0; i < playerListItem.getUuids().length; i++) {
+            UserConnection player = BungeeCord.getInstance().getPlayerByOfflineUUID(playerListItem.getUuids()[i]);
+            if (player != null) {
                 playerListItem.getUuids()[i] = player.getRewriteId();
 
             }
@@ -54,49 +48,39 @@ public abstract class TabList
         return playerListItem;
     }
 
-    public static PlayerListItemUpdate rewrite(PlayerListItemUpdate playerListItem)
-    {
-        for ( PlayerListItem.Item item : playerListItem.getItems() )
-        {
-            rewrite( item );
+    public static PlayerListItemUpdate rewrite(PlayerListItemUpdate playerListItem) {
+        for (PlayerListItem.Item item : playerListItem.getItems()) {
+            rewrite(item);
         }
         return playerListItem;
     }
 
-    private static void rewrite(PlayerListItem.Item item)
-    {
-        if ( item.getUuid() == null ) // Old style ping
+    private static void rewrite(PlayerListItem.Item item) {
+        if (item.getUuid() == null) // Old style ping
         {
             return;
         }
-        UserConnection player = BungeeCord.getInstance().getPlayerByOfflineUUID( item.getUuid() );
-        if ( player != null )
-        {
-            item.setUuid( player.getRewriteId() );
+        UserConnection player = BungeeCord.getInstance().getPlayerByOfflineUUID(item.getUuid());
+        if (player != null) {
+            item.setUuid(player.getRewriteId());
 
-            if ( item.getProperties() != null )
-            {
+            if (item.getProperties() != null) {
                 LoginResult loginResult = player.getPendingConnection().getLoginProfile();
-                if ( loginResult != null && loginResult.getProperties() != null )
-                {
-                    Property[] props = new Property[ loginResult.getProperties().length ];
-                    for ( int i = 0; i < props.length; i++ )
-                    {
-                        props[i] = new Property( loginResult.getProperties()[i].getName(), loginResult.getProperties()[i].getValue(), loginResult.getProperties()[i].getSignature() );
+                if (loginResult != null && loginResult.getProperties() != null) {
+                    Property[] props = new Property[loginResult.getProperties().length];
+                    for (int i = 0; i < props.length; i++) {
+                        props[i] = new Property(loginResult.getProperties()[i].getName(), loginResult.getProperties()[i].getValue(), loginResult.getProperties()[i].getSignature());
                     }
-                    item.setProperties( props );
-                } else
-                {
-                    item.setProperties( new Property[ 0 ] );
+                    item.setProperties(props);
+                } else {
+                    item.setProperties(new Property[0]);
                 }
             }
-            if ( item.getGamemode() != null )
-            {
-                player.setGamemode( item.getGamemode() );
+            if (item.getGamemode() != null) {
+                player.setGamemode(item.getGamemode());
             }
-            if ( item.getPing() != null )
-            {
-                player.setPing( item.getPing() );
+            if (item.getPing() != null) {
+                player.setPing(item.getPing());
             }
         }
     }

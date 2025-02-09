@@ -67,7 +67,7 @@ public class WaterfallConfiguration extends Configuration {
         super.load();
         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
         config.load(false); // Load, but no permissions
-        logInitialHandlerConnections = config.getBoolean( "log_initial_handler_connections", logInitialHandlerConnections );
+        logInitialHandlerConnections = config.getBoolean("log_initial_handler_connections", logInitialHandlerConnections);
         gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
         useNettyDnsResolver = config.getBoolean("use_netty_dns_resolver", useNettyDnsResolver);
         // Throttling options

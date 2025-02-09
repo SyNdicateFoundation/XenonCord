@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 public class KickCommand extends Command {
 
-    public KickCommand( SQLManager sqlManagerIn) {
+    public KickCommand(SQLManager sqlManagerIn) {
         super("kick", XenonCore.instance.getConfigData().getPunishmanager().getKickperm());
     }
 
@@ -25,7 +25,7 @@ public class KickCommand extends Command {
             return;
         }
 
-        if(args[1].toLowerCase().equals("console")) {
+        if (args[1].toLowerCase().equals("console")) {
             Message.send(sender,
                     XenonCore.instance.getConfigData().getCannotexecasconsoleerrormessage(), false);
             return;
@@ -37,13 +37,13 @@ public class KickCommand extends Command {
 
         Arrays.stream(args).forEach(word -> sb.append(word).append(" "));
 
-        final String reason = sb.toString().replace(args[0] , "").substring(1);
+        final String reason = sb.toString().replace(args[0], "").substring(1);
 
         XenonCore.instance.getTaskManager().add(() -> {
             try {
 
-                XenonCore.instance.getBungeeInstance().getPlayers().forEach(player ->{
-                    if(player.getName().equals(playerName)) player.disconnect(
+                XenonCore.instance.getBungeeInstance().getPlayers().forEach(player -> {
+                    if (player.getName().equals(playerName)) player.disconnect(
                             new TextComponent(
                                     ChatColor.translateAlternateColorCodes(
                                             '&',
@@ -58,7 +58,7 @@ public class KickCommand extends Command {
                             .replace("PLAYER1", sender.getName())
                             .replace("PLAYER2", playerName)
                             .replace("REASON", reason), false);
-            });
+                });
                 Message.send(XenonCore.instance.getConfigData().getPunishmanager().getKickannouncemessage()
                         .replace("PLAYER1", sender.getName())
                         .replace("PLAYER2", playerName)

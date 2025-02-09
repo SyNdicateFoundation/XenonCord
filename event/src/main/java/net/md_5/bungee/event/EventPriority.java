@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
  * are called in order of their Priority.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class EventPriority
-{
+public class EventPriority {
 
     public static final byte LOWEST = -64;
     public static final byte LOW = -32;

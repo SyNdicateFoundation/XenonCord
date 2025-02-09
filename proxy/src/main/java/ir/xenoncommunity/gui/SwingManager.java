@@ -6,6 +6,7 @@ THANKS FOR SUPPORTING XENON COMMUNITY.
  */
 
 package ir.xenoncommunity.gui;
+
 import com.sun.management.OperatingSystemMXBean;
 import ir.xenoncommunity.XenonCore;
 import lombok.experimental.UtilityClass;

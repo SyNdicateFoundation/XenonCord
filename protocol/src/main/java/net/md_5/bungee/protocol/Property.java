@@ -5,15 +5,13 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Property
-{
+public class Property {
 
     private String name;
     private String value;
     private String signature;
 
-    public Property(String name, String value)
-    {
-        this( name, value, null );
+    public Property(String name, String value) {
+        this(name, value, null);
     }
 }

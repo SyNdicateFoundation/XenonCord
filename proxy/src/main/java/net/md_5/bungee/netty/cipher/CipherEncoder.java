@@ -8,21 +8,18 @@ import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.jni.cipher.BungeeCipher;
 
 @RequiredArgsConstructor
-public class CipherEncoder extends MessageToByteEncoder<ByteBuf>
-{
+public class CipherEncoder extends MessageToByteEncoder<ByteBuf> {
 
     @Getter
     private final BungeeCipher cipher;
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) throws Exception
-    {
-        cipher.cipher( in, out );
+    protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) throws Exception {
+        cipher.cipher(in, out);
     }
 
     @Override
-    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception
-    {
+    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         cipher.free();
     }
 }

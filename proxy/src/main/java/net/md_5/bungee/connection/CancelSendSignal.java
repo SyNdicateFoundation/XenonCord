@@ -4,20 +4,17 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class CancelSendSignal extends Error
-{
+public class CancelSendSignal extends Error {
 
     public static final CancelSendSignal INSTANCE = new CancelSendSignal();
 
     @Override
-    public Throwable initCause(Throwable cause)
-    {
+    public Throwable initCause(Throwable cause) {
         return this;
     }
 
     @Override
-    public Throwable fillInStackTrace()
-    {
+    public Throwable fillInStackTrace() {
         return this;
     }
 }

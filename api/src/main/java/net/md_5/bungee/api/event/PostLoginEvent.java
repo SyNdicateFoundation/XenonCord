@@ -14,8 +14,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 @Data
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class PostLoginEvent extends AsyncEvent<PostLoginEvent>
-{
+public class PostLoginEvent extends AsyncEvent<PostLoginEvent> {
 
     /**
      * The player involved with this event.
@@ -26,9 +25,8 @@ public class PostLoginEvent extends AsyncEvent<PostLoginEvent>
      */
     private ServerInfo target;
 
-    public PostLoginEvent(ProxiedPlayer player, ServerInfo target, Callback<PostLoginEvent> done)
-    {
-        super( done );
+    public PostLoginEvent(ProxiedPlayer player, ServerInfo target, Callback<PostLoginEvent> done) {
+        super(done);
         this.player = player;
         this.target = target;
     }

@@ -12,8 +12,7 @@ import net.md_5.bungee.protocol.DefinedPacket;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class EntityStatus extends DefinedPacket
-{
+public class EntityStatus extends DefinedPacket {
 
     public static final byte DEBUG_INFO_REDUCED = 22;
     public static final byte DEBUG_INFO_NORMAL = 23;
@@ -22,22 +21,19 @@ public class EntityStatus extends DefinedPacket
     private byte status;
 
     @Override
-    public void read(ByteBuf buf)
-    {
+    public void read(ByteBuf buf) {
         entityId = buf.readInt();
         status = buf.readByte();
     }
 
     @Override
-    public void write(ByteBuf buf)
-    {
-        buf.writeInt( entityId );
-        buf.writeByte( status );
+    public void write(ByteBuf buf) {
+        buf.writeInt(entityId);
+        buf.writeByte(status);
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 }

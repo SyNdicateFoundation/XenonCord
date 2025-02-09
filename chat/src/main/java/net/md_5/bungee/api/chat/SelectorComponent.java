@@ -1,10 +1,6 @@
 package net.md_5.bungee.api.chat;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * This component processes a target selector into a pre-formatted set of
@@ -24,8 +20,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public final class SelectorComponent extends BaseComponent
-{
+public final class SelectorComponent extends BaseComponent {
 
     /**
      * An entity target selector (@p, @a, @r, @e, or @s) and, optionally,
@@ -45,11 +40,10 @@ public final class SelectorComponent extends BaseComponent
      *
      * @param original the original for the new selector component
      */
-    public SelectorComponent(SelectorComponent original)
-    {
-        super( original );
-        setSelector( original.getSelector() );
-        setSeparator( original.getSeparator() );
+    public SelectorComponent(SelectorComponent original) {
+        super(original);
+        setSelector(original.getSelector());
+        setSeparator(original.getSeparator());
     }
 
     /**
@@ -57,29 +51,25 @@ public final class SelectorComponent extends BaseComponent
      *
      * @param selector the selector as a String
      */
-    public SelectorComponent(String selector)
-    {
-        setSelector( selector );
+    public SelectorComponent(String selector) {
+        setSelector(selector);
     }
 
     @Override
-    public SelectorComponent duplicate()
-    {
-        return new SelectorComponent( this );
+    public SelectorComponent duplicate() {
+        return new SelectorComponent(this);
     }
 
     @Override
-    protected void toPlainText(StringBuilder builder)
-    {
-        builder.append( this.selector );
-        super.toPlainText( builder );
+    protected void toPlainText(StringBuilder builder) {
+        builder.append(this.selector);
+        super.toPlainText(builder);
     }
 
     @Override
-    protected void toLegacyText(StringBuilder builder)
-    {
-        addFormat( builder );
-        builder.append( this.selector );
-        super.toLegacyText( builder );
+    protected void toLegacyText(StringBuilder builder) {
+        addFormat(builder);
+        builder.append(this.selector);
+        super.toLegacyText(builder);
     }
 }

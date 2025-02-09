@@ -35,7 +35,7 @@ public class CommandWhitelist implements Listener {
     }
 
     @EventHandler
-    public void onTabComplete( TabCompleteEvent e) {
+    public void onTabComplete(TabCompleteEvent e) {
         if (!(e.getSender() instanceof ProxiedPlayer) || ((ProxiedPlayer) e.getSender()).hasPermission(whitelistData.getBypass())) {
             return;
         }

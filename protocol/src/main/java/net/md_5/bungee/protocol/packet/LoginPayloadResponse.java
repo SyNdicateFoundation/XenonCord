@@ -13,46 +13,38 @@ import net.md_5.bungee.protocol.OverflowPacketException;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class LoginPayloadResponse extends DefinedPacket
-{
+public class LoginPayloadResponse extends DefinedPacket {
 
     private int id;
     private byte[] data;
 
     @Override
-    public void read(ByteBuf buf)
-    {
-        id = readVarInt( buf );
+    public void read(ByteBuf buf) {
+        id = readVarInt(buf);
 
-        if ( buf.readBoolean() )
-        {
+        if (buf.readBoolean()) {
             int len = buf.readableBytes();
-            if ( len > 1048576 )
-            {
-                throw new OverflowPacketException( "Payload may not be larger than 1048576 bytes" );
+            if (len > 1048576) {
+                throw new OverflowPacketException("Payload may not be larger than 1048576 bytes");
             }
-            data = new byte[ len ];
-            buf.readBytes( data );
+            data = new byte[len];
+            buf.readBytes(data);
         }
     }
 
     @Override
-    public void write(ByteBuf buf)
-    {
-        writeVarInt( id, buf );
-        if ( data != null )
-        {
-            buf.writeBoolean( true );
-            buf.writeBytes( data );
-        } else
-        {
-            buf.writeBoolean( false );
+    public void write(ByteBuf buf) {
+        writeVarInt(id, buf);
+        if (data != null) {
+            buf.writeBoolean(true);
+            buf.writeBytes(data);
+        } else {
+            buf.writeBoolean(false);
         }
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 }

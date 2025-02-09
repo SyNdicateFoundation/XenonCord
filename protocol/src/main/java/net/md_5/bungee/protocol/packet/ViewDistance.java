@@ -12,26 +12,22 @@ import net.md_5.bungee.protocol.DefinedPacket;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class ViewDistance extends DefinedPacket
-{
+public class ViewDistance extends DefinedPacket {
 
     private int distance;
 
     @Override
-    public void read(ByteBuf buf)
-    {
-        distance = DefinedPacket.readVarInt( buf );
+    public void read(ByteBuf buf) {
+        distance = DefinedPacket.readVarInt(buf);
     }
 
     @Override
-    public void write(ByteBuf buf)
-    {
-        DefinedPacket.writeVarInt( distance, buf );
+    public void write(ByteBuf buf) {
+        DefinedPacket.writeVarInt(distance, buf);
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 }

@@ -2,6 +2,17 @@ package net.md_5.bungee;
 
 import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Longs;
+import net.md_5.bungee.jni.NativeCode;
+import net.md_5.bungee.jni.cipher.BungeeCipher;
+import net.md_5.bungee.jni.cipher.JavaCipher;
+import net.md_5.bungee.jni.cipher.NativeCipher;
+import net.md_5.bungee.protocol.PlayerPublicKey;
+import net.md_5.bungee.protocol.packet.EncryptionRequest;
+import net.md_5.bungee.protocol.packet.EncryptionResponse;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -12,16 +23,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Random;
 import java.util.UUID;
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import net.md_5.bungee.jni.NativeCode;
-import net.md_5.bungee.jni.cipher.BungeeCipher;
-import net.md_5.bungee.jni.cipher.JavaCipher;
-import net.md_5.bungee.jni.cipher.NativeCipher;
-import net.md_5.bungee.protocol.PlayerPublicKey;
-import net.md_5.bungee.protocol.packet.EncryptionRequest;
-import net.md_5.bungee.protocol.packet.EncryptionResponse;
 
 public class EncryptionUtil {
 

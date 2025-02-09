@@ -12,14 +12,12 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
  */
 @Getter
 @Builder(builderClassName = "Builder")
-public class ServerConnectRequest
-{
+public class ServerConnectRequest {
 
     /**
      * The result from this callback after request has been executed by proxy.
      */
-    public enum Result
-    {
+    public enum Result {
 
         /**
          * ServerConnectEvent to the new server was canceled.
@@ -81,8 +79,7 @@ public class ServerConnectRequest
      * Class that sets default properties/adds methods to the lombok builder
      * generated class.
      */
-    public static class Builder
-    {
+    public static class Builder {
 
         private int connectTimeout = ProxyServer.getInstance().getConfig().getServerConnectTimeout();
         private boolean isSendFeedback = true; // Waterfall # God. f##king. lombok.

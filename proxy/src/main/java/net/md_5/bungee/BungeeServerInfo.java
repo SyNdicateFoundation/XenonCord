@@ -2,18 +2,8 @@ package net.md_5.bungee;
 
 import com.google.common.base.Preconditions;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.Queue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
@@ -31,15 +21,18 @@ import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.PluginMessage;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.*;
+
 // CHECKSTYLE:OFF
 @RequiredArgsConstructor
 @ToString(of =
-{
-    "name", "socketAddress", "restricted"
-})
+        {
+                "name", "socketAddress", "restricted"
+        })
 // CHECKSTYLE:ON
-public class BungeeServerInfo implements ServerInfo
-{
+public class BungeeServerInfo implements ServerInfo {
 
     @Getter
     private final String name;
@@ -54,76 +47,63 @@ public class BungeeServerInfo implements ServerInfo
     private final Queue<DefinedPacket> packetQueue = new LinkedList<>();
 
     @Synchronized("players")
-    public void addPlayer(ProxiedPlayer player)
-    {
-        players.add( player );
+    public void addPlayer(ProxiedPlayer player) {
+        players.add(player);
     }
 
     @Synchronized("players")
-    public void removePlayer(ProxiedPlayer player)
-    {
-        players.remove( player );
+    public void removePlayer(ProxiedPlayer player) {
+        players.remove(player);
     }
 
     @Synchronized("players")
     @Override
-    public Collection<ProxiedPlayer> getPlayers()
-    {
-        return Collections.unmodifiableCollection( new HashSet<>( players ) );
+    public Collection<ProxiedPlayer> getPlayers() {
+        return Collections.unmodifiableCollection(new HashSet<>(players));
     }
 
     @Override
-    public String getPermission()
-    {
+    public String getPermission() {
         return "bungeecord.server." + name;
     }
 
     @Override
-    public boolean canAccess(CommandSender player)
-    {
-        Preconditions.checkNotNull( player, "player" );
-        return !restricted || player.hasPermission( getPermission() );
+    public boolean canAccess(CommandSender player) {
+        Preconditions.checkNotNull(player, "player");
+        return !restricted || player.hasPermission(getPermission());
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        return ( obj instanceof ServerInfo ) && Objects.equals( getAddress(), ( (ServerInfo) obj ).getAddress() );
+    public boolean equals(Object obj) {
+        return (obj instanceof ServerInfo) && Objects.equals(getAddress(), ((ServerInfo) obj).getAddress());
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return socketAddress.hashCode();
     }
 
     @Override
-    public void sendData(String channel, byte[] data)
-    {
-        sendData( channel, data, true );
+    public void sendData(String channel, byte[] data) {
+        sendData(channel, data, true);
     }
 
     @Override
-    public boolean sendData(String channel, byte[] data, boolean queue)
-    {
-        Preconditions.checkNotNull( channel, "channel" );
-        Preconditions.checkNotNull( data, "data" );
+    public boolean sendData(String channel, byte[] data, boolean queue) {
+        Preconditions.checkNotNull(channel, "channel");
+        Preconditions.checkNotNull(data, "data");
 
         Server server;
-        synchronized ( players )
-        {
-            server = ( players.isEmpty() ) ? null : players.iterator().next().getServer();
+        synchronized (players) {
+            server = (players.isEmpty()) ? null : players.iterator().next().getServer();
         }
 
-        if ( server != null )
-        {
-            server.sendData( channel, data );
+        if (server != null) {
+            server.sendData(channel, data);
             return true;
-        } else if ( queue )
-        {
-            synchronized ( packetQueue )
-            {
-                packetQueue.add( new PluginMessage( channel, data, false ) );
+        } else if (queue) {
+            synchronized (packetQueue) {
+                packetQueue.add(new PluginMessage(channel, data, false));
             }
         }
         return false;
@@ -132,58 +112,50 @@ public class BungeeServerInfo implements ServerInfo
     private long lastPing;
     private ServerPing cachedPing;
 
-    public void cachePing(ServerPing serverPing)
-    {
-        if ( !(ProxyServer.getInstance().getConfig().getRemotePingCache() > 0) ) return;
+    public void cachePing(ServerPing serverPing) {
+        if (!(ProxyServer.getInstance().getConfig().getRemotePingCache() > 0)) return;
 
         this.cachedPing = serverPing;
         this.lastPing = System.currentTimeMillis();
     }
 
     @Override
-    public InetSocketAddress getAddress()
-    {
+    public InetSocketAddress getAddress() {
         return (InetSocketAddress) socketAddress;
     }
 
     @Override
-    public void ping( Callback<ServerPing> callback)
-    {
-        ping( callback, ProxyServer.getInstance().getProtocolVersion() );
+    public void ping(Callback<ServerPing> callback) {
+        ping(callback, ProxyServer.getInstance().getProtocolVersion());
     }
 
-    public void ping( Callback<ServerPing> callback, int protocolVersion)
-    {
-        Preconditions.checkNotNull( callback, "callback" );
+    public void ping(Callback<ServerPing> callback, int protocolVersion) {
+        Preconditions.checkNotNull(callback, "callback");
 
         int pingCache = ProxyServer.getInstance().getConfig().getRemotePingCache();
-        if ( pingCache > 0 && cachedPing != null && ( System.currentTimeMillis() - lastPing ) > pingCache )
-        {
+        if (pingCache > 0 && cachedPing != null && (System.currentTimeMillis() - lastPing) > pingCache) {
             cachedPing = null;
         }
 
-        if ( cachedPing != null )
-        {
-            callback.done( cachedPing, null );
+        if (cachedPing != null) {
+            callback.done(cachedPing, null);
             return;
         }
 
         ChannelFutureListener listener = future -> {
-            if ( future.isSuccess() )
-            {
-                future.channel().pipeline().get( HandlerBoss.class ).setHandler( new PingHandler( BungeeServerInfo.this, callback, protocolVersion ) );
-            } else
-            {
-                callback.done( null, future.cause() );
+            if (future.isSuccess()) {
+                future.channel().pipeline().get(HandlerBoss.class).setHandler(new PingHandler(BungeeServerInfo.this, callback, protocolVersion));
+            } else {
+                callback.done(null, future.cause());
             }
         };
         new Bootstrap()
-                .channelFactory( PipelineUtils.getChannelFactory( socketAddress ) ) // Waterfall - netty reflection -> factory
-                .group( BungeeCord.getInstance().workerEventLoopGroup )
-                .handler( PipelineUtils.BASE_SERVERSIDE )
-                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().getConfig().getRemotePingTimeout() )
-                .remoteAddress( socketAddress )
+                .channelFactory(PipelineUtils.getChannelFactory(socketAddress)) // Waterfall - netty reflection -> factory
+                .group(BungeeCord.getInstance().workerEventLoopGroup)
+                .handler(PipelineUtils.BASE_SERVERSIDE)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().getConfig().getRemotePingTimeout())
+                .remoteAddress(socketAddress)
                 .connect()
-                .addListener( listener );
+                .addListener(listener);
     }
 }

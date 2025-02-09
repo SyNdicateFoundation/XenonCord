@@ -18,18 +18,22 @@ import java.util.List;
 @Getter
 public class XenonCore {
     public static XenonCore instance;
-    @Setter private boolean isProxyCompletlyLoaded;
+    @Setter
+    private boolean isProxyCompletlyLoaded;
     private final Logger logger;
     private final TaskManager taskManager;
     private final BungeeCord bungeeInstance;
     private final Configuration configuration;
-    @Setter private Configuration.ConfigData configData;
+    @Setter
+    private Configuration.ConfigData configData;
     private final ModuleManager moduleManager;
-    @Setter private String currentMotd;
+    @Setter
+    private String currentMotd;
+
     /**
      * Initializes all required variables.
      */
-    public XenonCore(){
+    public XenonCore() {
         instance = this;
         this.logger = LogManager.getLogger(this.getClass().getSimpleName());
         this.taskManager = new TaskManager();
@@ -37,13 +41,14 @@ public class XenonCore {
         this.configuration = new Configuration();
         this.moduleManager = new ModuleManager();
     }
+
     /**
      * Called when proxy is loaded.
      */
-    public void init(long startTime){
+    public void init(long startTime) {
         getLogger().info("Loading the proxy server itself has been done. took: {}ms", System.currentTimeMillis() - startTime);
         getTaskManager().async(() -> {
-            while(!isProxyCompletlyLoaded)
+            while (!isProxyCompletlyLoaded)
                 bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(ChatColor.translateAlternateColorCodes('&', configData.getLoadingmessage())));
 
             moduleManager.init();
@@ -55,23 +60,26 @@ public class XenonCore {
     /**
      * Called when proxy is shutting down.
      */
-    public void shutdown(){
+    public void shutdown() {
     }
-    public List<String> getPlayerNames(){
+
+    public List<String> getPlayerNames() {
         List<String> players = new ArrayList<>();
         bungeeInstance.getPlayers().forEach(player -> players.add(player.getName()));
         return players;
     }
 
-    public String getVersion(){
+    public String getVersion() {
         return "V1";
     }
-    public void logdebuginfo(String msg){
-        if(configData.isDebug())
+
+    public void logdebuginfo(String msg) {
+        if (configData.isDebug())
             logger.info(msg);
     }
-    public void logdebugerror(String msg){
-        if(configData.isDebug())
+
+    public void logdebugerror(String msg) {
+        if (configData.isDebug())
             logger.error(msg);
     }
 }

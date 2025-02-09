@@ -13,8 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class EncryptionRequest extends DefinedPacket
-{
+public class EncryptionRequest extends DefinedPacket {
 
     private String serverId;
     private byte[] publicKey;
@@ -22,32 +21,27 @@ public class EncryptionRequest extends DefinedPacket
     private boolean shouldAuthenticate;
 
     @Override
-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        serverId = readString( buf );
-        publicKey = readArray( buf );
-        verifyToken = readArray( buf );
-        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_20_5 )
-        {
+    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        serverId = readString(buf);
+        publicKey = readArray(buf);
+        verifyToken = readArray(buf);
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_20_5) {
             shouldAuthenticate = buf.readBoolean();
         }
     }
 
     @Override
-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        writeString( serverId, buf );
-        writeArray( publicKey, buf );
-        writeArray( verifyToken, buf );
-        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_20_5 )
-        {
-            buf.writeBoolean( shouldAuthenticate );
+    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        writeString(serverId, buf);
+        writeArray(publicKey, buf);
+        writeArray(verifyToken, buf);
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_20_5) {
+            buf.writeBoolean(shouldAuthenticate);
         }
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 }

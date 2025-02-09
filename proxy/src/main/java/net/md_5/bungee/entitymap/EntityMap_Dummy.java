@@ -1,4 +1,3 @@
-
 package net.md_5.bungee.entitymap;
 
 import io.netty.buffer.ByteBuf;

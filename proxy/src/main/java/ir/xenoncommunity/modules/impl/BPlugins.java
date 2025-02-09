@@ -6,7 +6,10 @@ import ir.xenoncommunity.utils.Message;
 import lombok.SneakyThrows;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.plugin.*;
+import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginDescription;
+import net.md_5.bungee.api.plugin.PluginManager;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -56,11 +59,11 @@ public class BPlugins extends Command {
 
     private void handlePluginAction(String action, File plFile, CommandSender sender, PluginManager manager) {
         try {
-            if(action.equalsIgnoreCase("load")){
+            if (action.equalsIgnoreCase("load")) {
                 loadPlugin(plFile, sender, manager);
-            } else if (action.equalsIgnoreCase("unload")){
+            } else if (action.equalsIgnoreCase("unload")) {
                 unloadPlugin(plFile, sender, manager);
-            } else{
+            } else {
                 Message.send(sender, XenonCore.instance.getConfigData().getUnknownoptionmessage().replace("OPTIONS", "load, unload, blank (to see plugins list)"), false);
             }
         } catch (Exception e) {
@@ -77,8 +80,7 @@ public class BPlugins extends Command {
         yamlField.setAccessible(true);
         toLoadField.setAccessible(true);
 
-        @SuppressWarnings("unchecked")
-        final Map<String, PluginDescription> toLoad = Optional.ofNullable((Map<String, PluginDescription>) toLoadField.get(manager)).orElse(new HashMap<>());
+        @SuppressWarnings("unchecked") final Map<String, PluginDescription> toLoad = Optional.ofNullable((Map<String, PluginDescription>) toLoadField.get(manager)).orElse(new HashMap<>());
 
         final PluginDescription desc = ((Yaml) yamlField.get(manager)).loadAs(
                 jar.getInputStream(Optional.ofNullable(jar.getJarEntry("bungee.yml")).orElse(jar.getJarEntry("plugin.yml"))),
@@ -109,8 +111,7 @@ public class BPlugins extends Command {
 
         final Field pluginsField = PluginManager.class.getDeclaredField("plugins");
         pluginsField.setAccessible(true);
-        @SuppressWarnings("unchecked")
-        final Map<String, Plugin> plugins = (Map<String, Plugin>) pluginsField.get(manager);
+        @SuppressWarnings("unchecked") final Map<String, Plugin> plugins = (Map<String, Plugin>) pluginsField.get(manager);
         plugins.remove(plugin.getDescription().getName());
 
         final ClassLoader cl = plugin.getClass().getClassLoader();

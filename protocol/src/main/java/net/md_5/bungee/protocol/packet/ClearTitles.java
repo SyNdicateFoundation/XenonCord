@@ -13,26 +13,22 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class ClearTitles extends DefinedPacket
-{
+public class ClearTitles extends DefinedPacket {
 
     private boolean reset;
 
     @Override
-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
+    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
         reset = buf.readBoolean();
     }
 
     @Override
-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        buf.writeBoolean( reset );
+    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        buf.writeBoolean(reset);
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 }

@@ -13,29 +13,25 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class CookieResponse extends DefinedPacket
-{
+public class CookieResponse extends DefinedPacket {
 
     private String cookie;
     private byte[] data;
 
     @Override
-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        cookie = readString( buf );
-        data = readNullable( read -> DefinedPacket.readArray( read, 5120 ), buf );
+    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        cookie = readString(buf);
+        data = readNullable(read -> DefinedPacket.readArray(read, 5120), buf);
     }
 
     @Override
-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        writeString( cookie, buf );
-        writeNullable( data, DefinedPacket::writeArray, buf );
+    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        writeString(cookie, buf);
+        writeNullable(data, DefinedPacket::writeArray, buf);
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 }

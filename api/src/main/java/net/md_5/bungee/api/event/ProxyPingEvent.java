@@ -13,8 +13,7 @@ import net.md_5.bungee.api.connection.PendingConnection;
 @Data
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class ProxyPingEvent extends AsyncEvent<ProxyPingEvent>
-{
+public class ProxyPingEvent extends AsyncEvent<ProxyPingEvent> {
 
     /**
      * The connection asking for a ping response.
@@ -25,9 +24,8 @@ public class ProxyPingEvent extends AsyncEvent<ProxyPingEvent>
      */
     private ServerPing response;
 
-    public ProxyPingEvent(PendingConnection connection, ServerPing response, Callback<ProxyPingEvent> done)
-    {
-        super( done );
+    public ProxyPingEvent(PendingConnection connection, ServerPing response, Callback<ProxyPingEvent> done) {
+        super(done);
         this.connection = connection;
         this.response = response;
     }

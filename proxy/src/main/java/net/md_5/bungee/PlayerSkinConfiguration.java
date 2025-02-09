@@ -17,53 +17,45 @@ import net.md_5.bungee.api.SkinConfiguration;
  * The most significant bit (bit 7, 0x80) appears to be unused.
  */
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
-public class PlayerSkinConfiguration implements SkinConfiguration
-{
+public class PlayerSkinConfiguration implements SkinConfiguration {
 
     // 127 = 01111111
-    static final SkinConfiguration SKIN_SHOW_ALL = new PlayerSkinConfiguration( (byte) 127 );
+    static final SkinConfiguration SKIN_SHOW_ALL = new PlayerSkinConfiguration((byte) 127);
     //
     private final byte bitmask;
 
     @Override
-    public boolean hasCape()
-    {
-        return ( ( bitmask >> 0 ) & 1 ) == 1;
+    public boolean hasCape() {
+        return ((bitmask >> 0) & 1) == 1;
     }
 
     @Override
-    public boolean hasJacket()
-    {
-        return ( ( bitmask >> 1 ) & 1 ) == 1;
+    public boolean hasJacket() {
+        return ((bitmask >> 1) & 1) == 1;
     }
 
     @Override
-    public boolean hasLeftSleeve()
-    {
-        return ( ( bitmask >> 2 ) & 1 ) == 1;
+    public boolean hasLeftSleeve() {
+        return ((bitmask >> 2) & 1) == 1;
     }
 
     @Override
-    public boolean hasRightSleeve()
-    {
-        return ( ( bitmask >> 3 ) & 1 ) == 1;
+    public boolean hasRightSleeve() {
+        return ((bitmask >> 3) & 1) == 1;
     }
 
     @Override
-    public boolean hasLeftPants()
-    {
-        return ( ( bitmask >> 4 ) & 1 ) == 1;
+    public boolean hasLeftPants() {
+        return ((bitmask >> 4) & 1) == 1;
     }
 
     @Override
-    public boolean hasRightPants()
-    {
-        return ( ( bitmask >> 5 ) & 1 ) == 1;
+    public boolean hasRightPants() {
+        return ((bitmask >> 5) & 1) == 1;
     }
 
     @Override
-    public boolean hasHat()
-    {
-        return ( ( bitmask >> 6 ) & 1 ) == 1;
+    public boolean hasHat() {
+        return ((bitmask >> 6) & 1) == 1;
     }
 }

@@ -1,11 +1,12 @@
 package net.md_5.bungee.api.event;
 
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import net.md_5.bungee.api.connection.Connection;
 import net.md_5.bungee.api.plugin.Cancellable;
+
+import java.util.List;
 
 /**
  * Event called when a player uses tab completion.
@@ -13,8 +14,7 @@ import net.md_5.bungee.api.plugin.Cancellable;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class TabCompleteEvent extends TargetedEvent implements Cancellable
-{
+public class TabCompleteEvent extends TargetedEvent implements Cancellable {
 
     /**
      * Cancelled state.
@@ -30,9 +30,8 @@ public class TabCompleteEvent extends TargetedEvent implements Cancellable
      */
     private final List<String> suggestions;
 
-    public TabCompleteEvent(Connection sender, Connection receiver, String cursor, List<String> suggestions)
-    {
-        super( sender, receiver );
+    public TabCompleteEvent(Connection sender, Connection receiver, String cursor, List<String> suggestions) {
+        super(sender, receiver);
         this.cursor = cursor;
         this.suggestions = suggestions;
     }

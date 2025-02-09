@@ -4,8 +4,7 @@ package net.md_5.bungee.api;
  * Represents a player's skin settings. These settings can be changed by the
  * player under Skin Configuration in the Options menu.
  */
-public interface SkinConfiguration
-{
+public interface SkinConfiguration {
 
     boolean hasCape();
 

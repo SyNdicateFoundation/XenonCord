@@ -15,11 +15,13 @@ public class PacketReceiveEvent extends Event implements Cancellable {
     private PacketWrapper packet;
     private ProxiedPlayer player;
     private boolean cancelled;
-    public PacketReceiveEvent(PacketWrapper packetIn, ProxiedPlayer playerIn){
+
+    public PacketReceiveEvent(PacketWrapper packetIn, ProxiedPlayer playerIn) {
         this.packet = packetIn;
         this.player = playerIn;
     }
-    public PacketReceiveEvent(PacketWrapper packetIn){
+
+    public PacketReceiveEvent(PacketWrapper packetIn) {
         this.packet = packetIn;
         this.player = null;
     }

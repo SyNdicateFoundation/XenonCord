@@ -1,10 +1,6 @@
 package net.md_5.bungee.api.chat;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * This component displays the score based on a player score on the scoreboard.
@@ -28,8 +24,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public final class ScoreComponent extends BaseComponent
-{
+public final class ScoreComponent extends BaseComponent {
 
     /**
      * The name of the entity whose score should be displayed.
@@ -54,15 +49,14 @@ public final class ScoreComponent extends BaseComponent
      * scoreboard.<br>
      * The value defaults to an empty string.
      *
-     * @param name the name of the entity, or an entity selector, whose score
-     * should be displayed
+     * @param name      the name of the entity, or an entity selector, whose score
+     *                  should be displayed
      * @param objective the internal name of the objective the entity's score is
-     * attached to
+     *                  attached to
      */
-    public ScoreComponent(String name, String objective)
-    {
-        setName( name );
-        setObjective( objective );
+    public ScoreComponent(String name, String objective) {
+        setName(name);
+        setObjective(objective);
     }
 
     /**
@@ -70,32 +64,28 @@ public final class ScoreComponent extends BaseComponent
      *
      * @param original the original for the new score component
      */
-    public ScoreComponent(ScoreComponent original)
-    {
-        super( original );
-        setName( original.getName() );
-        setObjective( original.getObjective() );
-        setValue( original.getValue() );
+    public ScoreComponent(ScoreComponent original) {
+        super(original);
+        setName(original.getName());
+        setObjective(original.getObjective());
+        setValue(original.getValue());
     }
 
     @Override
-    public ScoreComponent duplicate()
-    {
-        return new ScoreComponent( this );
+    public ScoreComponent duplicate() {
+        return new ScoreComponent(this);
     }
 
     @Override
-    protected void toPlainText(StringBuilder builder)
-    {
-        builder.append( this.value );
-        super.toPlainText( builder );
+    protected void toPlainText(StringBuilder builder) {
+        builder.append(this.value);
+        super.toPlainText(builder);
     }
 
     @Override
-    protected void toLegacyText(StringBuilder builder)
-    {
-        addFormat( builder );
-        builder.append( this.value );
-        super.toLegacyText( builder );
+    protected void toLegacyText(StringBuilder builder) {
+        addFormat(builder);
+        builder.append(this.value);
+        super.toLegacyText(builder);
     }
 }

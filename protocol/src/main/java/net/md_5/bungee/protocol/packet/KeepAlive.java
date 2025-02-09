@@ -13,32 +13,26 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class KeepAlive extends DefinedPacket
-{
+public class KeepAlive extends DefinedPacket {
 
     private long randomId;
 
     @Override
-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        randomId = ( protocolVersion >= ProtocolConstants.MINECRAFT_1_12_2 ) ? buf.readLong() : readVarInt( buf );
+    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        randomId = (protocolVersion >= ProtocolConstants.MINECRAFT_1_12_2) ? buf.readLong() : readVarInt(buf);
     }
 
     @Override
-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_12_2 )
-        {
-            buf.writeLong( randomId );
-        } else
-        {
-            writeVarInt( (int) randomId, buf );
+    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_12_2) {
+            buf.writeLong(randomId);
+        } else {
+            writeVarInt((int) randomId, buf);
         }
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 }

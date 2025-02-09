@@ -12,26 +12,22 @@ import net.md_5.bungee.protocol.DefinedPacket;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class StatusResponse extends DefinedPacket
-{
+public class StatusResponse extends DefinedPacket {
 
     private String response;
 
     @Override
-    public void read(ByteBuf buf)
-    {
-        response = readString( buf );
+    public void read(ByteBuf buf) {
+        response = readString(buf);
     }
 
     @Override
-    public void write(ByteBuf buf)
-    {
-        writeString( response, buf );
+    public void write(ByteBuf buf) {
+        writeString(response, buf);
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 }

@@ -13,8 +13,7 @@ import net.md_5.bungee.api.plugin.Event;
 @Data
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class ServerSwitchEvent extends Event
-{
+public class ServerSwitchEvent extends Event {
 
     /**
      * Player whom the server is for.

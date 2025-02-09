@@ -6,8 +6,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 
 @ToString
 @EqualsAndHashCode
-public abstract class Content
-{
+public abstract class Content {
 
     /**
      * Required action for this content type.
@@ -22,11 +21,9 @@ public abstract class Content
      * @param input input to test
      * @throws UnsupportedOperationException if action incompatible
      */
-    public void assertAction(HoverEvent.Action input) throws UnsupportedOperationException
-    {
-        if ( input != requiredAction() )
-        {
-            throw new UnsupportedOperationException( "Action " + input + " not compatible! Expected " + requiredAction() );
+    public void assertAction(HoverEvent.Action input) throws UnsupportedOperationException {
+        if (input != requiredAction()) {
+            throw new UnsupportedOperationException("Action " + input + " not compatible! Expected " + requiredAction());
         }
     }
 }

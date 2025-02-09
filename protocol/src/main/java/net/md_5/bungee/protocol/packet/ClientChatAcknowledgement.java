@@ -13,7 +13,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class ClientChatAcknowledgement extends DefinedPacket  {
+public class ClientChatAcknowledgement extends DefinedPacket {
     private int offset;
 
     @Override

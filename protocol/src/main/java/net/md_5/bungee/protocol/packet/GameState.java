@@ -12,8 +12,7 @@ import net.md_5.bungee.protocol.DefinedPacket;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class GameState extends DefinedPacket
-{
+public class GameState extends DefinedPacket {
 
     public static final short IMMEDIATE_RESPAWN = 11;
     //
@@ -21,22 +20,19 @@ public class GameState extends DefinedPacket
     private float value;
 
     @Override
-    public void read(ByteBuf buf)
-    {
+    public void read(ByteBuf buf) {
         state = buf.readUnsignedByte();
         value = buf.readFloat();
     }
 
     @Override
-    public void write(ByteBuf buf)
-    {
-        buf.writeByte( state );
-        buf.writeFloat( value );
+    public void write(ByteBuf buf) {
+        buf.writeByte(state);
+        buf.writeFloat(value);
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 }

@@ -13,27 +13,23 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class PingPacket extends DefinedPacket
-{
+public class PingPacket extends DefinedPacket {
 
     private long time;
 
     @Override
-    public void read(ByteBuf buf)
-    {
+    public void read(ByteBuf buf) {
         time = buf.readLong();
     }
 
     @Override
-    public void write(ByteBuf buf)
-    {
-        buf.writeLong( time );
+    public void write(ByteBuf buf) {
+        buf.writeLong(time);
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 
     // Waterfall start: Additional DoS mitigations, courtesy of Velocity

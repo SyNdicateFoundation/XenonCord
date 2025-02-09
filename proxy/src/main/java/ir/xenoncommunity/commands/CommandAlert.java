@@ -8,41 +8,33 @@ import net.md_5.bungee.api.plugin.Command;
 
 import java.util.Locale;
 
-public class CommandAlert extends Command
-{
+@SuppressWarnings({"unused", "deprecation"}) public class CommandAlert extends Command {
 
-    public CommandAlert()
-    {
-        super( "alert", "bungeecord.command.alert" );
+    public CommandAlert() {
+        super("alert", "bungeecord.command.alert");
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args)
-    {
-        if ( args.length == 0 )
-        {
-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "message_needed" ) );
-        } else
-        {
+    public void execute(CommandSender sender, String[] args) {
+        if (args.length == 0) {
+            sender.sendMessage(ProxyServer.getInstance().getTranslation("message_needed"));
+        } else {
             StringBuilder builder = new StringBuilder();
-            if ( args[0].toLowerCase( Locale.ROOT ).startsWith( "&h" ) )
-            {
+            if (args[0].toLowerCase(Locale.ROOT).startsWith("&h")) {
                 // Remove &h
-                args[0] = args[0].substring( 2 );
-            } else
-            {
-                builder.append( ProxyServer.getInstance().getTranslation( "alert" ) );
+                args[0] = args[0].substring(2);
+            } else {
+                builder.append(ProxyServer.getInstance().getTranslation("alert"));
             }
 
-            for ( String s : args )
-            {
-                builder.append( ChatColor.translateAlternateColorCodes( '&', s ) );
-                builder.append( " " );
+            for (String s : args) {
+                builder.append(ChatColor.translateAlternateColorCodes('&', s));
+                builder.append(" ");
             }
 
-            String message = builder.substring( 0, builder.length() - 1 );
+            String message = builder.substring(0, builder.length() - 1);
 
-            ProxyServer.getInstance().broadcast( TextComponent.fromLegacy( message ) );
+            ProxyServer.getInstance().broadcast(TextComponent.fromLegacy(message));
         }
     }
 }

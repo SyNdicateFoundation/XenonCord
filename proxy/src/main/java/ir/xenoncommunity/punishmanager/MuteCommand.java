@@ -13,7 +13,7 @@ import java.util.Arrays;
 public class MuteCommand extends Command {
     private final SQLManager sqlManager;
 
-    public MuteCommand( SQLManager sqlManagerIn) {
+    public MuteCommand(SQLManager sqlManagerIn) {
         super("mute", XenonCore.instance.getConfigData().getPunishmanager().getMuteperm());
         this.sqlManager = sqlManagerIn;
     }
@@ -27,7 +27,7 @@ public class MuteCommand extends Command {
             return;
         }
 
-        if(args[1].toLowerCase().equals("console")) {
+        if (args[1].toLowerCase().equals("console")) {
             Message.send(sender,
                     XenonCore.instance.getConfigData().getCannotexecasconsoleerrormessage(), false);
             return;
@@ -41,7 +41,7 @@ public class MuteCommand extends Command {
 
         Arrays.stream(args).forEach(word -> sb.append(word).append(" "));
 
-        final String reason = sb.toString().replace(args[0] , "").replace(args[1], "").substring(2);
+        final String reason = sb.toString().replace(args[0], "").replace(args[1], "").substring(2);
 
         XenonCore.instance.getTaskManager().add(() -> {
             try {
@@ -61,10 +61,10 @@ public class MuteCommand extends Command {
 
                 XenonCore.instance.getBungeeInstance().getPlayers().forEach(player ->
                         Message.send(player, XenonCore.instance.getConfigData().getPunishmanager().getMuteannouncemessage()
-                        .replace("PLAYER1", sender.getName())
-                        .replace("PLAYER2", playerName)
-                        .replace("REASON", reason)
-                        .replace("DURATION", String.valueOf(muteDuration / 60000)), false));
+                                .replace("PLAYER1", sender.getName())
+                                .replace("PLAYER2", playerName)
+                                .replace("REASON", reason)
+                                .replace("DURATION", String.valueOf(muteDuration / 60000)), false));
 
 
                 Message.send(XenonCore.instance.getConfigData().getPunishmanager().getMuteannouncemessage()

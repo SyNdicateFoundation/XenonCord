@@ -10,23 +10,18 @@ import net.md_5.bungee.api.plugin.Command;
  * Command to terminate the proxy instance. May only be used by the console by
  * default.
  */
-public class CommandEnd extends Command
-{
+@SuppressWarnings("unused") public class CommandEnd extends Command {
 
-    public CommandEnd()
-    {
-        super( "end", "bungeecord.command.end" );
+    public CommandEnd() {
+        super("end", "bungeecord.command.end");
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args)
-    {
-        if ( args.length == 0 )
-        {
+    public void execute(CommandSender sender, String[] args) {
+        if (args.length == 0) {
             BungeeCord.getInstance().stop();
-        } else
-        {
-            BungeeCord.getInstance().stop( ChatColor.translateAlternateColorCodes( '&', Joiner.on( ' ' ).join( args ) ) );
+        } else {
+            BungeeCord.getInstance().stop(ChatColor.translateAlternateColorCodes('&', Joiner.on(' ').join(args)));
         }
     }
 }

@@ -53,13 +53,13 @@ public class SQLManager {
         }
     }
 
-    public Object getData( String username, String fieldName) {
+    public Object getData(String username, String fieldName) {
         try {
             @Cleanup final PreparedStatement preparedStatement = connection.prepareStatement("SELECT " + fieldName + " FROM Players WHERE username = ?");
             preparedStatement.setString(1, username);
             @Cleanup final ResultSet resultSet = preparedStatement.executeQuery();
             return resultSet.next() ? resultSet.getObject(fieldName) : null;
-        } catch ( Exception e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
         return null;

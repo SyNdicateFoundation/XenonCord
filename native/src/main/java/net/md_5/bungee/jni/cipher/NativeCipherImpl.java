@@ -1,7 +1,6 @@
 package net.md_5.bungee.jni.cipher;
 
-class NativeCipherImpl
-{
+class NativeCipherImpl {
 
     native long init(boolean forEncryption, byte[] key);
 

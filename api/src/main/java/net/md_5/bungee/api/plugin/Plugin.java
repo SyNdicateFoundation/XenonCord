@@ -2,22 +2,22 @@ package net.md_5.bungee.api.plugin;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import java.io.File;
-import java.io.InputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ConfigurationAdapter;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 
+import java.io.File;
+import java.io.InputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
+
 /**
  * Represents any Plugin that may be loaded at runtime to enhance existing
  * functionality.
  */
-public class Plugin
-{
+public class Plugin {
 
     @Getter
     private PluginDescription description;
@@ -28,18 +28,16 @@ public class Plugin
     @Getter
     private Logger logger;
 
-    public Plugin()
-    {
+    public Plugin() {
         ClassLoader classLoader = getClass().getClassLoader();
-        Preconditions.checkState( classLoader instanceof PluginClassloader, "Plugin requires " + PluginClassloader.class.getName() );
+        Preconditions.checkState(classLoader instanceof PluginClassloader, "Plugin requires " + PluginClassloader.class.getName());
 
-        ( (PluginClassloader) classLoader ).init( this );
+        ((PluginClassloader) classLoader).init(this);
     }
 
-    protected Plugin(ProxyServer proxy, PluginDescription description)
-    {
+    protected Plugin(ProxyServer proxy, PluginDescription description) {
         ClassLoader classLoader = getClass().getClassLoader();
-        Preconditions.checkState( !( classLoader instanceof PluginClassloader ), "Cannot use initialization constructor at runtime" );
+        Preconditions.checkState(!(classLoader instanceof PluginClassloader), "Cannot use initialization constructor at runtime");
 
         // init( proxy, description );
     }
@@ -56,22 +54,19 @@ public class Plugin
      * be initialized, so only use it for registering
      * {@link ConfigurationAdapter}'s and other predefined behavior.
      */
-    public void onLoad()
-    {
+    public void onLoad() {
     }
 
     /**
      * Called when this plugin is enabled.
      */
-    public void onEnable()
-    {
+    public void onEnable() {
     }
 
     /**
      * Called when this plugin is disabled.
      */
-    public void onDisable()
-    {
+    public void onDisable() {
     }
 
     /**
@@ -80,9 +75,8 @@ public class Plugin
      *
      * @return the data folder of this plugin
      */
-    public final File getDataFolder()
-    {
-        return new File( getProxy().getPluginsFolder(), getDescription().getName() );
+    public final File getDataFolder() {
+        return new File(getProxy().getPluginsFolder(), getDescription().getName());
     }
 
     /**
@@ -93,19 +87,17 @@ public class Plugin
      * @return the stream for getting this resource, or null if it does not
      * exist
      */
-    public final InputStream getResourceAsStream(String name)
-    {
-        return getClass().getClassLoader().getResourceAsStream( name );
+    public final InputStream getResourceAsStream(String name) {
+        return getClass().getClassLoader().getResourceAsStream(name);
     }
 
     /**
      * Called by the loader to initialize the fields in this plugin.
      *
-     * @param proxy current proxy instance
+     * @param proxy       current proxy instance
      * @param description the description that describes this plugin
      */
-    final void init(ProxyServer proxy, PluginDescription description)
-    {
+    final void init(ProxyServer proxy, PluginDescription description) {
         this.proxy = proxy;
         this.description = description;
         this.file = description.getFile();
@@ -116,13 +108,11 @@ public class Plugin
     private ExecutorService service;
 
     @Deprecated
-    public ExecutorService getExecutorService()
-    {
-        if ( service == null )
-        {
-            String name = ( getDescription() == null ) ? "unknown" : getDescription().getName();
-            service = Executors.newCachedThreadPool( new ThreadFactoryBuilder().setNameFormat( name + " Pool Thread #%1$d" )
-                    .setThreadFactory( new GroupedThreadFactory( this, name ) ).build() );
+    public ExecutorService getExecutorService() {
+        if (service == null) {
+            String name = (getDescription() == null) ? "unknown" : getDescription().getName();
+            service = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat(name + " Pool Thread #%1$d")
+                    .setThreadFactory(new GroupedThreadFactory(this, name)).build());
         }
         return service;
     }

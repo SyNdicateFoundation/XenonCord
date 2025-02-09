@@ -16,8 +16,7 @@ import net.md_5.bungee.api.plugin.Event;
 @Data
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class ServerConnectedEvent extends Event
-{
+public class ServerConnectedEvent extends Event {
 
     /**
      * Player whom the server is for.

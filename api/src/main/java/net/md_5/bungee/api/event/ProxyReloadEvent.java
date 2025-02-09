@@ -12,8 +12,7 @@ import net.md_5.bungee.api.plugin.Event;
 @Getter
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class ProxyReloadEvent extends Event
-{
+public class ProxyReloadEvent extends Event {
 
     /**
      * Creator of the action.

@@ -1,7 +1,8 @@
 package net.md_5.bungee.api.chat;
 
-import java.awt.Color;
 import net.md_5.bungee.api.ChatColor;
+
+import java.awt.*;
 
 /**
  * <p>
@@ -23,8 +24,7 @@ import net.md_5.bungee.api.ChatColor;
  * @see ComponentStyle#builder()
  * @see ComponentStyle#builder(ComponentStyle)
  */
-public final class ComponentStyleBuilder
-{
+public final class ComponentStyleBuilder {
 
     private ChatColor color;
     private Color shadowColor;
@@ -37,8 +37,7 @@ public final class ComponentStyleBuilder
      * @param color the color to set, or null to use the default
      * @return this ComponentStyleBuilder for chaining
      */
-    public ComponentStyleBuilder color(ChatColor color)
-    {
+    public ComponentStyleBuilder color(ChatColor color) {
         this.color = color;
         return this;
     }
@@ -49,8 +48,7 @@ public final class ComponentStyleBuilder
      * @param shadowColor the shadow color to set, or null to use the default
      * @return this ComponentStyleBuilder for chaining
      */
-    public ComponentStyleBuilder shadowColor(Color shadowColor)
-    {
+    public ComponentStyleBuilder shadowColor(Color shadowColor) {
         this.shadowColor = shadowColor;
         return this;
     }
@@ -61,8 +59,7 @@ public final class ComponentStyleBuilder
      * @param font the font key to set, or null to use the default
      * @return this ComponentStyleBuilder for chaining
      */
-    public ComponentStyleBuilder font(String font)
-    {
+    public ComponentStyleBuilder font(String font) {
         this.font = font;
         return this;
     }
@@ -73,8 +70,7 @@ public final class ComponentStyleBuilder
      * @param bold the bold value to set, or null to use the default
      * @return this ComponentStyleBuilder for chaining
      */
-    public ComponentStyleBuilder bold(Boolean bold)
-    {
+    public ComponentStyleBuilder bold(Boolean bold) {
         this.bold = bold;
         return this;
     }
@@ -85,8 +81,7 @@ public final class ComponentStyleBuilder
      * @param italic the italic value to set, or null to use the default
      * @return this ComponentStyleBuilder for chaining
      */
-    public ComponentStyleBuilder italic(Boolean italic)
-    {
+    public ComponentStyleBuilder italic(Boolean italic) {
         this.italic = italic;
         return this;
     }
@@ -97,8 +92,7 @@ public final class ComponentStyleBuilder
      * @param underlined the underlined value to set, or null to use the default
      * @return this ComponentStyleBuilder for chaining
      */
-    public ComponentStyleBuilder underlined(Boolean underlined)
-    {
+    public ComponentStyleBuilder underlined(Boolean underlined) {
         this.underlined = underlined;
         return this;
     }
@@ -107,11 +101,10 @@ public final class ComponentStyleBuilder
      * Set the style's strikethrough property.
      *
      * @param strikethrough the strikethrough value to set, or null to use the
-     * default
+     *                      default
      * @return this ComponentStyleBuilder for chaining
      */
-    public ComponentStyleBuilder strikethrough(Boolean strikethrough)
-    {
+    public ComponentStyleBuilder strikethrough(Boolean strikethrough) {
         this.strikethrough = strikethrough;
         return this;
     }
@@ -122,8 +115,7 @@ public final class ComponentStyleBuilder
      * @param obfuscated the obfuscated value to set, or null to use the default
      * @return this ComponentStyleBuilder for chaining
      */
-    public ComponentStyleBuilder obfuscated(Boolean obfuscated)
-    {
+    public ComponentStyleBuilder obfuscated(Boolean obfuscated) {
         this.obfuscated = obfuscated;
         return this;
     }
@@ -133,8 +125,7 @@ public final class ComponentStyleBuilder
      *
      * @return the created ComponentStyle
      */
-    public ComponentStyle build()
-    {
-        return new ComponentStyle( color, shadowColor, font, bold, italic, underlined, strikethrough, obfuscated );
+    public ComponentStyle build() {
+        return new ComponentStyle(color, shadowColor, font, bold, italic, underlined, strikethrough, obfuscated);
     }
 }

@@ -7,8 +7,7 @@ import java.util.Map;
  * This class allows plugins to set their own configuration adapter to load
  * settings from a different place.
  */
-public interface ConfigurationAdapter
-{
+public interface ConfigurationAdapter {
 
     /**
      * Reload all the possible values, and if necessary cache them for
@@ -20,7 +19,7 @@ public interface ConfigurationAdapter
      * Gets an integer from the specified path.
      *
      * @param path the path to retrieve the integer from
-     * @param def the default value
+     * @param def  the default value
      * @return the retrieved integer
      */
     public int getInt(String path, int def);
@@ -29,7 +28,7 @@ public interface ConfigurationAdapter
      * Gets a string from the specified path.
      *
      * @param path the path to retrieve the string from.
-     * @param def the default value
+     * @param def  the default value
      * @return the retrieved string
      */
     public String getString(String path, String def);
@@ -38,7 +37,7 @@ public interface ConfigurationAdapter
      * Gets a boolean from the specified path.
      *
      * @param path the path to retrieve the boolean form.
-     * @param def the default value
+     * @param def  the default value
      * @return the retrieved boolean
      */
     public boolean getBoolean(String path, boolean def);
@@ -47,7 +46,7 @@ public interface ConfigurationAdapter
      * Get a list from the specified path.
      *
      * @param path the path to retrieve the list form.
-     * @param def the default value
+     * @param def  the default value
      * @return the retrieved list
      */
     public Collection<?> getList(String path, Collection<?> def);
@@ -73,6 +72,7 @@ public interface ConfigurationAdapter
      * @return all the player's groups.
      */
     public Collection<String> getGroups(String player);
+
     /**
      * Get all permission corresponding to the specified group. The result of
      * this method may or may not be cached, depending on the implementation.

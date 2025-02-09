@@ -4,7 +4,8 @@ import ir.xenoncommunity.XenonCore;
 
 import java.util.concurrent.*;
 
-@SuppressWarnings("unused") public class TaskManager {
+@SuppressWarnings("unused")
+public class TaskManager {
     private final ExecutorService queueExecutorService;
     private final ExecutorService executorService;
     private final ExecutorService cachedExecutorService;

@@ -1,14 +1,16 @@
 package io.github.waterfallmc.waterfall.utils;
-import java.util.UUID;
 
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Longs;
 
+import java.util.UUID;
+
 public class UUIDUtils {
-    private UUIDUtils() {}
+    private UUIDUtils() {
+    }
 
     public static String undash(String id) {
-        return new StringBuilder( 32 ).append( id, 0, 8 ).append( id, 9, 13 ).append( id, 14, 18 ).append( id, 19, 23 ).append( id, 24, 36 ).toString();
+        return new StringBuilder(32).append(id, 0, 8).append(id, 9, 13).append(id, 14, 18).append(id, 19, 23).append(id, 24, 36).toString();
     }
 
     public static String toMojangString(UUID id) {

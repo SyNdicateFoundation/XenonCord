@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class BanCommand extends Command {
     private final SQLManager sqlManager;
 
-    public BanCommand( SQLManager sqlManagerIn) {
+    public BanCommand(SQLManager sqlManagerIn) {
         super("ban", XenonCore.instance.getConfigData().getPunishmanager().getBanperm());
         this.sqlManager = sqlManagerIn;
     }
@@ -29,7 +29,7 @@ public class BanCommand extends Command {
             return;
         }
 
-        if(args[1].toLowerCase().equals("console")) {
+        if (args[1].toLowerCase().equals("console")) {
             Message.send(sender,
                     XenonCore.instance.getConfigData().getCannotexecasconsoleerrormessage(), false);
             return;
@@ -43,7 +43,7 @@ public class BanCommand extends Command {
 
         Arrays.stream(args).forEach(word -> sb.append(word).append(" "));
 
-        final String reason = sb.toString().replace(args[0] , "").replace(args[1], "").substring(2);
+        final String reason = sb.toString().replace(args[0], "").replace(args[1], "").substring(2);
 
         XenonCore.instance.getTaskManager().add(() -> {
             try {
@@ -62,7 +62,7 @@ public class BanCommand extends Command {
                 preparedStatement.executeUpdate();
 
                 XenonCore.instance.getBungeeInstance().getPlayers().forEach(player -> {
-                    if(player.getName().equals(playerName)) player.disconnect(
+                    if (player.getName().equals(playerName)) player.disconnect(
                             ChatColor.translateAlternateColorCodes('&',
                                     XenonCore.instance.getConfigData().getPunishmanager().getBandisconnectmessage()
                                             .replace("PLAYER", playerName)

@@ -7,8 +7,7 @@ package net.md_5.bungee.api.chat;
  *
  * @see KeybindComponent
  */
-public interface Keybinds
-{
+public interface Keybinds {
 
     String JUMP = "key.jump";
     String SNEAK = "key.sneak";

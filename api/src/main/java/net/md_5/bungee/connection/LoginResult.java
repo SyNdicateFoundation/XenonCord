@@ -6,8 +6,7 @@ import net.md_5.bungee.protocol.Property;
 
 @Data
 @AllArgsConstructor
-public class LoginResult
-{
+public class LoginResult {
 
     private String id;
     private String name;

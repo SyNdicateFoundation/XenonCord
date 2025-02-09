@@ -12,7 +12,7 @@ import net.md_5.bungee.api.plugin.Cancellable;
 /**
  * Event called to represent a player first making their presence and username
  * known.
- *
+ * <p>
  * This will NOT contain many attributes relating to the player which are filled
  * in after authentication with Mojang's servers. Examples of attributes which
  * are not available include their UUID.
@@ -20,8 +20,7 @@ import net.md_5.bungee.api.plugin.Cancellable;
 @Data
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancellable
-{
+public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancellable {
 
     /**
      * Cancelled state.
@@ -36,9 +35,8 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
      */
     private final PendingConnection connection;
 
-    public PreLoginEvent(PendingConnection connection, Callback<PreLoginEvent> done)
-    {
-        super( done );
+    public PreLoginEvent(PendingConnection connection, Callback<PreLoginEvent> done) {
+        super(done);
         this.connection = connection;
     }
 
@@ -47,9 +45,8 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
      * @deprecated use component methods instead
      */
     @Deprecated
-    public String getCancelReason()
-    {
-        return BaseComponent.toLegacyText( getReason() );
+    public String getCancelReason() {
+        return BaseComponent.toLegacyText(getReason());
     }
 
     /**
@@ -57,9 +54,8 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
      * @deprecated Use component methods instead
      */
     @Deprecated
-    public void setCancelReason(String cancelReason)
-    {
-        setReason( TextComponent.fromLegacy( cancelReason ) );
+    public void setCancelReason(String cancelReason) {
+        setReason(TextComponent.fromLegacy(cancelReason));
     }
 
     /**
@@ -67,12 +63,11 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
      * @deprecated use single component methods instead
      */
     @Deprecated
-    public BaseComponent[] getCancelReasonComponents()
-    {
+    public BaseComponent[] getCancelReasonComponents() {
         return new BaseComponent[]
-        {
-            getReason()
-        };
+                {
+                        getReason()
+                };
     }
 
     /**
@@ -80,8 +75,7 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
      * @deprecated use single component methods instead
      */
     @Deprecated
-    public void setCancelReason(BaseComponent... cancelReason)
-    {
-        setReason( TextComponent.fromArray( cancelReason ) );
+    public void setCancelReason(BaseComponent... cancelReason) {
+        setReason(TextComponent.fromArray(cancelReason));
     }
 }

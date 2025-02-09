@@ -12,12 +12,34 @@ import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
 import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
 import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelException;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.util.ResourceLeakDetector;
+import ir.xenoncommunity.XenonCore;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Synchronized;
+import net.md_5.bungee.api.*;
+import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.config.ConfigurationAdapter;
+import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.PluginManager;
+import net.md_5.bungee.chat.*;
+import net.md_5.bungee.command.ConsoleCommandSender;
+import net.md_5.bungee.compress.CompressFactory;
+import net.md_5.bungee.conf.Configuration;
+import net.md_5.bungee.conf.YamlConfig;
+import net.md_5.bungee.forge.ForgeConstants;
+import net.md_5.bungee.netty.PipelineUtils;
+import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.ProtocolConstants;
+import net.md_5.bungee.protocol.packet.PluginMessage;
+import net.md_5.bungee.query.RemoteQuery;
+import net.md_5.bungee.scheduler.BungeeScheduler;
+import net.md_5.bungee.util.CaseInsensitiveMap;
+import org.reflections.Reflections;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -35,54 +57,10 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ir.xenoncommunity.XenonCore;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.Synchronized;
-import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.Favicon;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.ReconnectHandler;
-import net.md_5.bungee.api.ServerPing;
-import net.md_5.bungee.api.Title;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentStyle;
-import net.md_5.bungee.api.chat.KeybindComponent;
-import net.md_5.bungee.api.chat.ScoreComponent;
-import net.md_5.bungee.api.chat.SelectorComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
-import net.md_5.bungee.api.config.ConfigurationAdapter;
-import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
-import net.md_5.bungee.api.plugin.PluginManager;
-import net.md_5.bungee.chat.ComponentSerializer;
-import net.md_5.bungee.chat.ComponentStyleSerializer;
-import net.md_5.bungee.chat.KeybindComponentSerializer;
-import net.md_5.bungee.chat.ScoreComponentSerializer;
-import net.md_5.bungee.chat.SelectorComponentSerializer;
-import net.md_5.bungee.chat.TextComponentSerializer;
-import net.md_5.bungee.chat.TranslatableComponentSerializer;
-import net.md_5.bungee.command.ConsoleCommandSender;
-import net.md_5.bungee.compress.CompressFactory;
-import net.md_5.bungee.conf.Configuration;
-import net.md_5.bungee.conf.YamlConfig;
-import net.md_5.bungee.forge.ForgeConstants;
-import net.md_5.bungee.netty.PipelineUtils;
-import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.ProtocolConstants;
-import net.md_5.bungee.protocol.packet.PluginMessage;
-import net.md_5.bungee.query.RemoteQuery;
-import net.md_5.bungee.scheduler.BungeeScheduler;
-import net.md_5.bungee.util.CaseInsensitiveMap;
-import org.reflections.Reflections;
-
 /**
  * Main BungeeCord proxy class.
  */
-public class BungeeCord extends ProxyServer
-{
+public class BungeeCord extends ProxyServer {
 
     /**
      * Current operation state.
@@ -101,7 +79,7 @@ public class BungeeCord extends ProxyServer
     /**
      * locations.yml save thread.
      */
-    private final Timer saveThread = new Timer( "Reconnect Saver" );
+    private final Timer saveThread = new Timer("Reconnect Saver");
     // private final Timer metricsThread = new Timer( "Metrics Thread" ); // Waterfall: Disable Metrics
     /**
      * Server socket listener.
@@ -133,7 +111,7 @@ public class BungeeCord extends ProxyServer
     private ConfigurationAdapter configurationAdapter = new YamlConfig();
     private final Collection<String> pluginChannels = new HashSet<>();
     @Getter
-    private final File pluginsFolder = new File( "plugins" );
+    private final File pluginsFolder = new File("plugins");
     @Getter
     private final BungeeScheduler scheduler = new BungeeScheduler();
     // Waterfall start - Remove ConsoleReader for JLine 3 update
@@ -148,21 +126,20 @@ public class BungeeCord extends ProxyServer
     @Getter
     private final XenonCore xenonInstance;
     public final Gson gson = new GsonBuilder()
-            .registerTypeAdapter( BaseComponent.class, new ComponentSerializer() )
-            .registerTypeAdapter( TextComponent.class, new TextComponentSerializer() )
-            .registerTypeAdapter( TranslatableComponent.class, new TranslatableComponentSerializer() )
-            .registerTypeAdapter( KeybindComponent.class, new KeybindComponentSerializer() )
-            .registerTypeAdapter( ScoreComponent.class, new ScoreComponentSerializer() )
-            .registerTypeAdapter( SelectorComponent.class, new SelectorComponentSerializer() )
-            .registerTypeAdapter( ComponentStyle.class, new ComponentStyleSerializer() )
-            .registerTypeAdapter( ServerPing.PlayerInfo.class, new PlayerInfoSerializer() )
-            .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
+            .registerTypeAdapter(BaseComponent.class, new ComponentSerializer())
+            .registerTypeAdapter(TextComponent.class, new TextComponentSerializer())
+            .registerTypeAdapter(TranslatableComponent.class, new TranslatableComponentSerializer())
+            .registerTypeAdapter(KeybindComponent.class, new KeybindComponentSerializer())
+            .registerTypeAdapter(ScoreComponent.class, new ScoreComponentSerializer())
+            .registerTypeAdapter(SelectorComponent.class, new SelectorComponentSerializer())
+            .registerTypeAdapter(ComponentStyle.class, new ComponentStyleSerializer())
+            .registerTypeAdapter(ServerPing.PlayerInfo.class, new PlayerInfoSerializer())
+            .registerTypeAdapter(Favicon.class, Favicon.getFaviconTypeAdapter()).create();
     @Getter
     private ConnectionThrottle connectionThrottle;
 
 
-    public static BungeeCord getInstance()
-    {
+    public static BungeeCord getInstance() {
         return (BungeeCord) ProxyServer.getInstance();
     }
 
@@ -197,7 +174,7 @@ public class BungeeCord extends ProxyServer
             CompressFactory.zlib.load();
         }
     }
-    
+
 
     /**
      * Start this proxy instance by loading the configuration, plugins and
@@ -207,20 +184,19 @@ public class BungeeCord extends ProxyServer
      */
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void start( long startTime) throws Exception
-    {
+    public void start(long startTime) throws Exception {
 
         xenonInstance.getLogger().info(String.format("Enabled XenonCord %s", XenonCore.instance.getVersion()));
 
-        System.setProperty( "io.netty.selectorAutoRebuildThreshold", "0" ); // Seems to cause Bungee to stop accepting connections
+        System.setProperty("io.netty.selectorAutoRebuildThreshold", "0"); // Seems to cause Bungee to stop accepting connections
 
-        if ( System.getProperty( "io.netty.leakDetectionLevel" ) == null && System.getProperty( "io.netty.leakDetection.level" ) == null )
-            ResourceLeakDetector.setLevel( ResourceLeakDetector.Level.DISABLED ); // Eats performance
+        if (System.getProperty("io.netty.leakDetectionLevel") == null && System.getProperty("io.netty.leakDetection.level") == null)
+            ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED); // Eats performance
 
         bossEventLoopGroup = PipelineUtils.newEventLoopGroup(
-                0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
+                0, new ThreadFactoryBuilder().setNameFormat("Netty Boss IO Thread #%1$d").build());
         workerEventLoopGroup = PipelineUtils.newEventLoopGroup(
-                0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
+                0, new ThreadFactoryBuilder().setNameFormat("Netty Worker IO Thread #%1$d").build());
 
         xenonInstance.logdebuginfo("Loading bungee config and checking plugins folder...");
 
@@ -228,14 +204,14 @@ public class BungeeCord extends ProxyServer
         config.load();
 
         xenonInstance.logdebuginfo("Registering channels...");
-        registerChannel( "BungeeCord" );
-        registerChannel( ForgeConstants.FML_TAG );
-        registerChannel( ForgeConstants.FML_HANDSHAKE_TAG );
-        registerChannel( ForgeConstants.FORGE_REGISTER );
+        registerChannel("BungeeCord");
+        registerChannel(ForgeConstants.FML_TAG);
+        registerChannel(ForgeConstants.FML_HANDSHAKE_TAG);
+        registerChannel(ForgeConstants.FORGE_REGISTER);
 
         isRunning = true;
 
-        XenonCore.instance.getTaskManager().cachedAsync(() ->{
+        XenonCore.instance.getTaskManager().cachedAsync(() -> {
             xenonInstance.logdebuginfo("ASYNC task command registerer is starting...");
             new Reflections("ir.xenoncommunity.commands").getSubTypesOf(Command.class).stream().filter(
                     command -> !command.getSimpleName().toLowerCase().contains("playercommand")).forEach(command -> {
@@ -250,7 +226,7 @@ public class BungeeCord extends ProxyServer
         });
         XenonCore.instance.getTaskManager().cachedAsync(() -> {
             xenonInstance.logdebuginfo("ASYNC task plugin loader is starting...");
-            pluginManager.detectPlugins( pluginsFolder );
+            pluginManager.detectPlugins(pluginsFolder);
             pluginManager.loadPlugins();
             XenonCore.instance.setProxyCompletlyLoaded(pluginManager.enablePlugins());
             xenonInstance.logdebuginfo("Plugins are loaded!");
@@ -258,25 +234,22 @@ public class BungeeCord extends ProxyServer
         });
 
 
-        if ( config.getThrottle() > 0 )
-            connectionThrottle = new ConnectionThrottle( config.getThrottle(), config.getThrottleLimit() );
+        if (config.getThrottle() > 0)
+            connectionThrottle = new ConnectionThrottle(config.getThrottle(), config.getThrottleLimit());
 
         startListeners();
 
-        saveThread.scheduleAtFixedRate( new TimerTask()
-        {
+        saveThread.scheduleAtFixedRate(new TimerTask() {
             @Override
-            public void run()
-            {
-                if ( getReconnectHandler() != null )
-                {
+            public void run() {
+                if (getReconnectHandler() != null) {
                     getReconnectHandler().save();
                 }
             }
-        }, 0, TimeUnit.MINUTES.toMillis( 5 ) );
+        }, 0, TimeUnit.MINUTES.toMillis(5));
 
         xenonInstance.logdebuginfo("Adding shutdown hook...");
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> independentThreadStop( getTranslation( "restart" ), false )));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> independentThreadStop(getTranslation("restart"), false)));
 
         XenonCore.instance.init(startTime);
     }
@@ -338,37 +311,30 @@ public class BungeeCord extends ProxyServer
     }
 
 
-    public void stopListeners()
-    {
+    public void stopListeners() {
         xenonInstance.logdebuginfo("Closing listeners...");
         listeners.forEach(listener -> {
-            xenonInstance.logdebuginfo(String.format("Closing listener %s", listener ));
-            try
-            {
+            xenonInstance.logdebuginfo(String.format("Closing listener %s", listener));
+            try {
                 listener.close().syncUninterruptibly();
-            } catch ( ChannelException ex )
-            {
-                getLogger().severe( "Could not close listen thread" );
+            } catch (ChannelException ex) {
+                getLogger().severe("Could not close listen thread");
             }
         });
         listeners.clear();
     }
 
     @Override
-    public void stop()
-    {
-        stop( getTranslation( "restart" ) );
+    public void stop() {
+        stop(getTranslation("restart"));
     }
 
     @Override
-    public void stop( String reason)
-    {
-        new Thread( "Shutdown Thread" )
-        {
+    public void stop(String reason) {
+        new Thread("Shutdown Thread") {
             @Override
-            public void run()
-            {
-                independentThreadStop( reason, true );
+            public void run() {
+                independentThreadStop(reason, true);
             }
         }.start();
     }
@@ -376,69 +342,60 @@ public class BungeeCord extends ProxyServer
     // This must be run on a separate thread to avoid deadlock!
     @SuppressFBWarnings("DM_EXIT")
     @SuppressWarnings("TooBroadCatch")
-    private void independentThreadStop( String reason, boolean callSystemExit)
-    {
+    private void independentThreadStop(String reason, boolean callSystemExit) {
         xenonInstance.shutdown();
 
         shutdownLock.lock();
 
         // Acquired the shutdown lock
-        if ( !isRunning )
-        {
+        if (!isRunning) {
             shutdownLock.unlock();
             return;
         }
         isRunning = false;
 
         stopListeners();
-        xenonInstance.logdebuginfo( "Closing pending connections" );
+        xenonInstance.logdebuginfo("Closing pending connections");
 
         connectionLock.readLock().lock();
-        try
-        {
-            getLogger().log( Level.INFO, "Disconnecting {0} connections", connections.size() );
+        try {
+            getLogger().log(Level.INFO, "Disconnecting {0} connections", connections.size());
             connections.values().forEach(user -> user.disconnect(reason));
-        } finally
-        {
+        } finally {
             connectionLock.readLock().unlock();
         }
 
-        try
-        {
-            Thread.sleep( 500 );
-        } catch ( InterruptedException ignored)
-        {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignored) {
         }
 
-        if ( reconnectHandler != null )
-        {
-            xenonInstance.logdebuginfo( "Saving reconnect locations" );
+        if (reconnectHandler != null) {
+            xenonInstance.logdebuginfo("Saving reconnect locations");
             reconnectHandler.save();
             reconnectHandler.close();
         }
 
         saveThread.cancel();
 
-        getLogger().info( "Disabling plugins" );
-        Lists.reverse( new ArrayList<>( pluginManager.getPlugins() ) ).forEach(plugin -> {
-            try
-            {
+        getLogger().info("Disabling plugins");
+        Lists.reverse(new ArrayList<>(pluginManager.getPlugins())).forEach(plugin -> {
+            try {
                 plugin.onDisable();
                 Arrays.stream(plugin.getLogger().getHandlers()).forEach(Handler::close);
-            } catch ( Throwable t )
-            {
+            } catch (Throwable t) {
                 final String msg = "Exception disabling plugin " + plugin.getDescription().getName();
-                getLogger().log( Level.SEVERE, msg, t );
-                pluginManager.callEvent( new ProxyExceptionEvent( new ProxyPluginEnableDisableException( msg, t, plugin) ) );
+                getLogger().log(Level.SEVERE, msg, t);
+                pluginManager.callEvent(new ProxyExceptionEvent(new ProxyPluginEnableDisableException(msg, t, plugin)));
             }
-            getScheduler().cancel( plugin );
+            getScheduler().cancel(plugin);
             plugin.getExecutorService().shutdownNow();
         });
 
-        getLogger().info( "Closing IO threads" );
+        getLogger().info("Closing IO threads");
         bossEventLoopGroup.shutdownGracefully();
         workerEventLoopGroup.shutdownGracefully();
-        while(true) {
+        while (true) {
             try {
                 bossEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
                 workerEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
@@ -447,7 +404,7 @@ public class BungeeCord extends ProxyServer
             }
         }
 
-        getLogger().info( "Thank you for using XenonCord!" );
+        getLogger().info("Thank you for using XenonCord!");
         // Need to close loggers after last message!
         org.apache.logging.log4j.LogManager.shutdown(); // Waterfall
 
@@ -455,9 +412,8 @@ public class BungeeCord extends ProxyServer
         // If that happens, the system will obtain the lock, and then see that isRunning == false and return without doing anything.
         shutdownLock.unlock();
 
-        if ( callSystemExit )
-        {
-            System.exit( 0 );
+        if (callSystemExit) {
+            System.exit(0);
         }
     }
 
@@ -466,300 +422,246 @@ public class BungeeCord extends ProxyServer
      *
      * @param packet the packet to send
      */
-    public void broadcast(DefinedPacket packet)
-    {
+    public void broadcast(DefinedPacket packet) {
         connectionLock.readLock().lock();
-        try
-        {
+        try {
             connections.values().forEach(con -> {
-                con.unsafe().sendPacket( packet );
+                con.unsafe().sendPacket(packet);
             });
-        } finally
-        {
+        } finally {
             connectionLock.readLock().unlock();
         }
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return "XenonCord";
     }
 
     @Override
-    public String getVersion()
-    {
+    public String getVersion() {
         return xenonInstance.getVersion();
     }
 
-    public final void reloadMessages()
-    {
+    public final void reloadMessages() {
         final Map<String, Format> cachedFormats = new HashMap<>();
-        final File file = new File( "messages.properties" );
+        final File file = new File("messages.properties");
 
-        if ( file.isFile() )
-        {
-            try ( FileReader rd = new FileReader( file ) )
-            {
-                cacheResourceBundle( cachedFormats, new PropertyResourceBundle( rd ) );
-            } catch ( IOException ex )
-            {
-                getLogger().log( Level.SEVERE, "Could not load custom messages.properties", ex );
+        if (file.isFile()) {
+            try (FileReader rd = new FileReader(file)) {
+                cacheResourceBundle(cachedFormats, new PropertyResourceBundle(rd));
+            } catch (IOException ex) {
+                getLogger().log(Level.SEVERE, "Could not load custom messages.properties", ex);
             }
         }
 
         ResourceBundle baseBundle;
-        try
-        {
-            baseBundle = ResourceBundle.getBundle( "messages" );
-        } catch ( MissingResourceException ex )
-        {
-            baseBundle = ResourceBundle.getBundle( "messages", Locale.ENGLISH );
+        try {
+            baseBundle = ResourceBundle.getBundle("messages");
+        } catch (MissingResourceException ex) {
+            baseBundle = ResourceBundle.getBundle("messages", Locale.ENGLISH);
         }
-        cacheResourceBundle( cachedFormats, baseBundle );
+        cacheResourceBundle(cachedFormats, baseBundle);
 
-        messageFormats = Collections.unmodifiableMap( cachedFormats );
+        messageFormats = Collections.unmodifiableMap(cachedFormats);
     }
 
-    private void cacheResourceBundle(Map<String, Format> map, ResourceBundle resourceBundle)
-    {
+    private void cacheResourceBundle(Map<String, Format> map, ResourceBundle resourceBundle) {
         final Enumeration<String> keys = resourceBundle.getKeys();
-        while ( keys.hasMoreElements() )
-        {
-            map.computeIfAbsent( keys.nextElement(), (key) -> new MessageFormat( resourceBundle.getString( key ) ) );
+        while (keys.hasMoreElements()) {
+            map.computeIfAbsent(keys.nextElement(), (key) -> new MessageFormat(resourceBundle.getString(key)));
         }
     }
 
     @Override
-    public String getTranslation(String name, Object... args)
-    {
-        final Format format = messageFormats.get( name );
-        return ( format != null ) ? format.format( args ) : "<translation '" + name + "' missing>";
+    public String getTranslation(String name, Object... args) {
+        final Format format = messageFormats.get(name);
+        return (format != null) ? format.format(args) : "<translation '" + name + "' missing>";
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Collection<ProxiedPlayer> getPlayers()
-    {
+    public Collection<ProxiedPlayer> getPlayers() {
         connectionLock.readLock().lock();
-        try
-        {
-            return Collections.unmodifiableCollection( new HashSet( connections.values() ) );
-        } finally
-        {
+        try {
+            return Collections.unmodifiableCollection(new HashSet(connections.values()));
+        } finally {
             connectionLock.readLock().unlock();
         }
     }
 
     @Override
-    public int getOnlineCount()
-    {
+    public int getOnlineCount() {
         return connections.size();
     }
 
     @Override
-    public ProxiedPlayer getPlayer(String name)
-    {
+    public ProxiedPlayer getPlayer(String name) {
         connectionLock.readLock().lock();
-        try
-        {
-            return connections.get( name );
-        } finally
-        {
+        try {
+            return connections.get(name);
+        } finally {
             connectionLock.readLock().unlock();
         }
     }
 
-    public UserConnection getPlayerByOfflineUUID(UUID uuid)
-    {
-        if ( uuid.version() != 3 )
-        {
+    public UserConnection getPlayerByOfflineUUID(UUID uuid) {
+        if (uuid.version() != 3) {
             return null;
         }
         connectionLock.readLock().lock();
-        try
-        {
-            return connectionsByOfflineUUID.get( uuid );
-        } finally
-        {
+        try {
+            return connectionsByOfflineUUID.get(uuid);
+        } finally {
             connectionLock.readLock().unlock();
         }
     }
 
     @Override
-    public ProxiedPlayer getPlayer(UUID uuid)
-    {
+    public ProxiedPlayer getPlayer(UUID uuid) {
         connectionLock.readLock().lock();
-        try
-        {
-            return connectionsByUUID.get( uuid );
-        } finally
-        {
+        try {
+            return connectionsByUUID.get(uuid);
+        } finally {
             connectionLock.readLock().unlock();
         }
     }
 
     @Override
-    public Map<String, ServerInfo> getServers()
-    {
+    public Map<String, ServerInfo> getServers() {
         return config.getServers();
     }
 
     // Waterfall start
     @Override
-    public Map<String, ServerInfo> getServersCopy()
-    {
+    public Map<String, ServerInfo> getServersCopy() {
         return config.getServersCopy();
     }
     // Waterfall end
 
     @Override
-    public ServerInfo getServerInfo(String name)
-    {
-        return config.getServerInfo( name ); // Waterfall
+    public ServerInfo getServerInfo(String name) {
+        return config.getServerInfo(name); // Waterfall
     }
 
     @Override
     @Synchronized("pluginChannels")
-    public void registerChannel(String channel)
-    {
-        pluginChannels.add( channel );
+    public void registerChannel(String channel) {
+        pluginChannels.add(channel);
     }
 
     @Override
     @Synchronized("pluginChannels")
-    public void unregisterChannel(String channel)
-    {
-        pluginChannels.remove( channel );
+    public void unregisterChannel(String channel) {
+        pluginChannels.remove(channel);
     }
 
     @Override
     @Synchronized("pluginChannels")
-    public Collection<String> getChannels()
-    {
-        return Collections.unmodifiableCollection( pluginChannels );
+    public Collection<String> getChannels() {
+        return Collections.unmodifiableCollection(pluginChannels);
     }
 
-    public PluginMessage registerChannels(int protocolVersion)
-    {
-        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_13 )
-        {
-            return new PluginMessage( "minecraft:register", String.join( "\00", Iterables.transform( pluginChannels, PluginMessage.MODERNISE ) ).getBytes( StandardCharsets.UTF_8 ), false );
+    public PluginMessage registerChannels(int protocolVersion) {
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_13) {
+            return new PluginMessage("minecraft:register", String.join("\00", Iterables.transform(pluginChannels, PluginMessage.MODERNISE)).getBytes(StandardCharsets.UTF_8), false);
         }
 
-        return new PluginMessage( "REGISTER", String.join( "\00", pluginChannels ).getBytes( StandardCharsets.UTF_8 ), false );
+        return new PluginMessage("REGISTER", String.join("\00", pluginChannels).getBytes(StandardCharsets.UTF_8), false);
     }
 
     @Override
-    public int getProtocolVersion()
-    {
-        return ProtocolConstants.SUPPORTED_VERSION_IDS.get( ProtocolConstants.SUPPORTED_VERSION_IDS.size() - 1 );
+    public int getProtocolVersion() {
+        return ProtocolConstants.SUPPORTED_VERSION_IDS.get(ProtocolConstants.SUPPORTED_VERSION_IDS.size() - 1);
     }
 
     @Override
-    public String getGameVersion()
-    {
+    public String getGameVersion() {
         return getConfig().getGameVersion(); // Waterfall
     }
 
     @Override
-    public ServerInfo constructServerInfo(String name, InetSocketAddress address, String motd, boolean restricted)
-    {
-        return constructServerInfo( name, (SocketAddress) address, motd, restricted );
+    public ServerInfo constructServerInfo(String name, InetSocketAddress address, String motd, boolean restricted) {
+        return constructServerInfo(name, (SocketAddress) address, motd, restricted);
     }
 
     @Override
-    public ServerInfo constructServerInfo(String name, SocketAddress address, String motd, boolean restricted)
-    {
-        return new BungeeServerInfo( name, address, motd, restricted );
+    public ServerInfo constructServerInfo(String name, SocketAddress address, String motd, boolean restricted) {
+        return new BungeeServerInfo(name, address, motd, restricted);
     }
 
     @Override
-    public CommandSender getConsole()
-    {
+    public CommandSender getConsole() {
         return ConsoleCommandSender.getInstance();
     }
 
     @Override
-    public void broadcast(String message)
-    {
-        broadcast( TextComponent.fromLegacy( message ) );
+    public void broadcast(String message) {
+        broadcast(TextComponent.fromLegacy(message));
     }
 
     @Override
-    public void broadcast(BaseComponent... message)
-    {
-        getConsole().sendMessage( message );
-        getPlayers().forEach(player -> player.sendMessage( message ));
+    public void broadcast(BaseComponent... message) {
+        getConsole().sendMessage(message);
+        getPlayers().forEach(player -> player.sendMessage(message));
     }
 
     @Override
-    public void broadcast(BaseComponent message)
-    {
-        getConsole().sendMessage( message );
-        getPlayers().forEach(player -> player.sendMessage( message ));
+    public void broadcast(BaseComponent message) {
+        getConsole().sendMessage(message);
+        getPlayers().forEach(player -> player.sendMessage(message));
     }
 
-    public boolean addConnection(UserConnection con)
-    {
+    public boolean addConnection(UserConnection con) {
         UUID offlineId = con.getPendingConnection().getOfflineId();
-        if ( offlineId != null && offlineId.version() != 3 )
-            throw new IllegalArgumentException( "Offline UUID must be a name-based UUID" );
+        if (offlineId != null && offlineId.version() != 3)
+            throw new IllegalArgumentException("Offline UUID must be a name-based UUID");
 
         final String name = con.getName();
 
         connectionLock.writeLock().lock();
-        try
-        {
-            if ( connections.containsKey( name ) || connectionsByUUID.containsKey( con.getUniqueId() ) || connectionsByOfflineUUID.containsKey( offlineId ) )
+        try {
+            if (connections.containsKey(name) || connectionsByUUID.containsKey(con.getUniqueId()) || connectionsByOfflineUUID.containsKey(offlineId))
                 return false;
 
-            connections.put( name, con );
-            connectionsByUUID.put( con.getUniqueId(), con );
-            connectionsByOfflineUUID.put( offlineId, con );
-        } finally
-        {
+            connections.put(name, con);
+            connectionsByUUID.put(con.getUniqueId(), con);
+            connectionsByOfflineUUID.put(offlineId, con);
+        } finally {
             connectionLock.writeLock().unlock();
         }
         return true;
     }
 
-    public void removeConnection(UserConnection con)
-    {
+    public void removeConnection(UserConnection con) {
         connectionLock.writeLock().lock();
-        try
-        {
+        try {
             // TODO See #1218
-            if ( connections.get( con.getName() ) == con )
-            {
-                connections.remove( con.getName() );
-                connectionsByUUID.remove( con.getUniqueId() );
-                connectionsByOfflineUUID.remove( con.getPendingConnection().getOfflineId() );
+            if (connections.get(con.getName()) == con) {
+                connections.remove(con.getName());
+                connectionsByUUID.remove(con.getUniqueId());
+                connectionsByOfflineUUID.remove(con.getPendingConnection().getOfflineId());
             }
-        } finally
-        {
+        } finally {
             connectionLock.writeLock().unlock();
         }
     }
 
     @Override
-    public Collection<String> getDisabledCommands()
-    {
+    public Collection<String> getDisabledCommands() {
         return config.getDisabledCommands();
     }
 
     @Override
-    public Collection<ProxiedPlayer> matchPlayer( String partialName)
-    {
-        Preconditions.checkNotNull( partialName, "partialName" );
-        final ProxiedPlayer exactMatch = getPlayer( partialName );
+    public Collection<ProxiedPlayer> matchPlayer(String partialName) {
+        Preconditions.checkNotNull(partialName, "partialName");
+        final ProxiedPlayer exactMatch = getPlayer(partialName);
 
-        return exactMatch != null ? Collections.singleton( exactMatch ) : Sets.newHashSet( Iterables.filter( getPlayers(), input -> input != null && input.getName().toLowerCase(Locale.ROOT).startsWith(partialName.toLowerCase(Locale.ROOT))) );
+        return exactMatch != null ? Collections.singleton(exactMatch) : Sets.newHashSet(Iterables.filter(getPlayers(), input -> input != null && input.getName().toLowerCase(Locale.ROOT).startsWith(partialName.toLowerCase(Locale.ROOT))));
     }
 
     @Override
-    public Title createTitle()
-    {
+    public Title createTitle() {
         return new BungeeTitle();
     }
 }

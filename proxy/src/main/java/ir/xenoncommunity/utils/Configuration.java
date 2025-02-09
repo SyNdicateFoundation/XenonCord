@@ -3,7 +3,6 @@ package ir.xenoncommunity.utils;
 import ir.xenoncommunity.XenonCore;
 import lombok.Cleanup;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
@@ -20,7 +19,8 @@ public class Configuration {
     private final File sqlPunishments;
     private final File sqlStaffActivity;
     private final Logger logger;
-    public Configuration(){
+
+    public Configuration() {
         this.configFile = new File("XenonCore.yml");
         this.sqlAntibot = new File("AntiBot.db");
         this.sqlPlaytime = new File("Playtimes.db");
@@ -28,6 +28,7 @@ public class Configuration {
         this.sqlStaffActivity = new File("StaffActivity.db");
         this.logger = XenonCore.instance.getLogger();
     }
+
     private void copyConfig() {
         try {
             @Cleanup final BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("XenonCore.yml"))));
@@ -42,7 +43,8 @@ public class Configuration {
             logger.error(e.getMessage());
         }
     }
-    public ConfigData init(){
+
+    public ConfigData init() {
         logger.info("Initializing Configuration...");
         try {
             if (!configFile.exists()) copyConfig();
@@ -64,7 +66,8 @@ public class Configuration {
             configData.getStaffchat().setStaffchatmessage(configData.getStaffchat().getStaffchatmessage().replace("PREFIX", prefix));
             configData.getStaffchat().setTogglemessage(configData.getStaffchat().getTogglemessage().replace("PREFIX", prefix));
             configData.getAdminchat().setAdminchatmessage(configData.getAdminchat().getAdminchatmessage().replace("PREFIX", prefix));
-            configData.getAdminchat().setTogglemessage(configData.getAdminchat().getTogglemessage().replace("PREFIX", prefix));configData.getMaintenance().setMaintenanceaddcommandmessage(configData.getMaintenance().getMaintenanceaddcommandmessage().replace("PREFIX", prefix));
+            configData.getAdminchat().setTogglemessage(configData.getAdminchat().getTogglemessage().replace("PREFIX", prefix));
+            configData.getMaintenance().setMaintenanceaddcommandmessage(configData.getMaintenance().getMaintenanceaddcommandmessage().replace("PREFIX", prefix));
             configData.getMaintenance().setMaintenanceremovecommandmessage(configData.getMaintenance().getMaintenanceremovecommandmessage().replace("PREFIX", prefix));
             configData.getMaintenance().setMaintenancedisconnectmessage(configData.getMaintenance().getMaintenancedisconnectmessage().replace("PREFIX", prefix));
             configData.getPing().setPingmessage(configData.getPing().getPingmessage().replace("PREFIX", prefix));
@@ -87,14 +90,15 @@ public class Configuration {
             logger.info("Successfully Initialized!");
 
             return configData;
-        } catch ( Exception e) {
+        } catch (Exception e) {
             logger.error(e.getMessage());
         }
         return null;
     }
+
     @Getter
     @Setter
-    public static class ConfigData{
+    public static class ConfigData {
         private String prefix, loadingmessage, ingamebrandname, cannotexecasconsoleerrormessage,
                 unknownoptionmessage, xenoncordperm, reloadperm, reloadmessage, reloadcompletemessage;
         private boolean debug, usegui;
@@ -112,33 +116,39 @@ public class Configuration {
         private StaffActivityData staffactivity;
         private CommandWhitelistData commandwhitelist;
     }
+
     @Getter
     @Setter
-    public static class ModulesData{
+    public static class ModulesData {
         private String[] enables;
     }
+
     @Getter
     @Setter
     public static class MotdChangerData {
         private String motd, maintenancemotd;
         private Boolean onemoreplayer;
     }
+
     @Getter
     @Setter
     public static class CommandSpyData {
         private String spymessage, spyperm, spybypass, spytogglemessage;
         private String[] spyexceptions;
     }
+
     @Getter
     @Setter
     public static class StaffChatData {
         private String staffchatperm, staffchatmessage, togglemessage;
     }
+
     @Getter
     @Setter
     public static class AdminChatData {
         private String adminchatperm, adminchatmessage, togglemessage;
     }
+
     @Getter
     @Setter
     public static class MaintenanceData {
@@ -146,24 +156,28 @@ public class Configuration {
                 maintenanceaddcommandmessage, maintenanceremovecommandmessage,
                 maintenancedisconnectmessage;
     }
+
     @Getter
     @Setter
     public static class PingData {
         private String pingperm, pingothersperm,
                 pingmessage, pingothersmessage;
     }
+
     @Getter
     @Setter
     public static class BpluginsData {
         private String pluginisloadingmessage, pluginisunloadingmessage,
                 plugindoesntexisterrormessage, pluginsperm, pluginstoggleperm;
     }
+
     @Getter
     @Setter
     public static class PlaytimeData {
         private String playtimemessage, playtimeothersmessage,
                 playtimeperm, playtimeothersperm;
     }
+
     @Getter
     @Setter
     public static class PunishManagerData {
@@ -174,18 +188,21 @@ public class Configuration {
                 unmuteconsolelogmessage;
         private String[] mutecommands;
     }
+
     @Getter
     @Setter
     public static class StaffActivityData {
         private String staffusernames[];
         private int sendtime;
     }
+
     @Getter
     @Setter
     public static class CommandWhitelistData {
         private String bypass, blockmessage;
         private Map<String, GroupData> pergroup;
     }
+
     @Getter
     @Setter
     public static class GroupData {

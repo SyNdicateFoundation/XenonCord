@@ -13,29 +13,25 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class ScoreboardScoreReset extends DefinedPacket
-{
+public class ScoreboardScoreReset extends DefinedPacket {
 
     private String itemName;
     private String scoreName;
 
     @Override
-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        itemName = readString( buf );
-        scoreName = readNullable( DefinedPacket::readString, buf );
+    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        itemName = readString(buf);
+        scoreName = readNullable(DefinedPacket::readString, buf);
     }
 
     @Override
-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        writeString( itemName, buf );
-        writeNullable( scoreName, DefinedPacket::writeString, buf );
+    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        writeString(itemName, buf);
+        writeNullable(scoreName, DefinedPacket::writeString, buf);
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 }

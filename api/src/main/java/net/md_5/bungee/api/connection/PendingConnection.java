@@ -1,16 +1,16 @@
 package net.md_5.bungee.api.connection;
 
+import net.md_5.bungee.api.config.ListenerInfo;
+import org.jetbrains.annotations.ApiStatus;
+
 import java.net.InetSocketAddress;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import net.md_5.bungee.api.config.ListenerInfo;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Represents a user attempting to log into the proxy.
  */
-public interface PendingConnection extends Connection
-{
+public interface PendingConnection extends Connection {
 
     /**
      * Get the requested username.
@@ -104,12 +104,12 @@ public interface PendingConnection extends Connection
      * Retrieves a cookie from this pending connection.
      *
      * @param cookie the resource location of the cookie, for example
-     * "bungeecord:my_cookie"
+     *               "bungeecord:my_cookie"
      * @return a {@link CompletableFuture} that will be completed when the
      * Cookie response is received. If the cookie is not set in the client, the
      * {@link CompletableFuture} will complete with a null value
      * @throws IllegalStateException if the player's version is not at least
-     * 1.20.5
+     *                               1.20.5
      */
     @ApiStatus.Experimental
     CompletableFuture<byte[]> retrieveCookie(String cookie);
@@ -118,12 +118,12 @@ public interface PendingConnection extends Connection
      * Sends a login payload request to the client.
      *
      * @param channel the channel to send this data via
-     * @param data the data to send
+     * @param data    the data to send
      * @return a {@link CompletableFuture} that will be completed when the Login
      * Payload response is received. If the Vanilla client doesn't know the
      * channel, the {@link CompletableFuture} will complete with a null value
      * @throws IllegalStateException if the player's version is not at least
-     * 1.13
+     *                               1.13
      */
     @ApiStatus.Experimental
     CompletableFuture<byte[]> sendData(String channel, byte[] data);

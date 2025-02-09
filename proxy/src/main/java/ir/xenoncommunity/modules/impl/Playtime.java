@@ -106,7 +106,7 @@ public class Playtime extends Command implements Listener {
         if (preparedStatement.executeQuery().next()) {
             final long totalPlaytime = (long) sqlManager.getData(playerName, "totalplaytime");
 
-            Message.send(sender,  (sender.getName().equals(playerName))
+            Message.send(sender, (sender.getName().equals(playerName))
                     ? XenonCore.instance.getConfigData().getPlaytime().getPlaytimemessage()
                     .replace("PLAYTIME", String.valueOf(totalPlaytime / 3600000))
                     : XenonCore.instance.getConfigData().getPlaytime().getPlaytimeothersmessage()

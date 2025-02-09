@@ -12,8 +12,7 @@ import net.md_5.bungee.api.CommandSender;
  */
 @Data
 @RequiredArgsConstructor(access = AccessLevel.NONE)
-public abstract class Command
-{
+public abstract class Command {
 
     private final String name;
     private final String permission;
@@ -26,22 +25,20 @@ public abstract class Command
      *
      * @param name the name of this command
      */
-    public Command(String name)
-    {
-        this( name, null );
+    public Command(String name) {
+        this(name, null);
     }
 
     /**
      * Construct a new command.
      *
-     * @param name primary name of this command
+     * @param name       primary name of this command
      * @param permission the permission node required to execute this command,
-     * null or empty string allows it to be executed by everyone
-     * @param aliases aliases which map back to this command
+     *                   null or empty string allows it to be executed by everyone
+     * @param aliases    aliases which map back to this command
      */
-    public Command(String name, String permission, String... aliases)
-    {
-        Preconditions.checkArgument( name != null, "name" );
+    public Command(String name, String permission, String... aliases) {
+        Preconditions.checkArgument(name != null, "name");
         this.name = name;
         this.permission = permission;
         this.aliases = aliases;
@@ -52,7 +49,7 @@ public abstract class Command
      * Execute this command with the specified sender and arguments.
      *
      * @param sender the executor of this command
-     * @param args arguments used to invoke this command
+     * @param args   arguments used to invoke this command
      */
     public abstract void execute(CommandSender sender, String[] args);
 
@@ -62,8 +59,7 @@ public abstract class Command
      * @param sender the sender to check
      * @return whether the sender can execute this
      */
-    public boolean hasPermission(CommandSender sender)
-    {
-        return permission == null || permission.isEmpty() || sender.hasPermission( permission );
+    public boolean hasPermission(CommandSender sender) {
+        return permission == null || permission.isEmpty() || sender.hasPermission(permission);
     }
 }

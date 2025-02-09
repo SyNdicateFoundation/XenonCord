@@ -12,8 +12,7 @@ import net.md_5.bungee.api.plugin.Event;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public abstract class TargetedEvent extends Event
-{
+public abstract class TargetedEvent extends Event {
 
     /**
      * Creator of the action.

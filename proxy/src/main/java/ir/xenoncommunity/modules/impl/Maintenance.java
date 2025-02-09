@@ -26,7 +26,7 @@ public class Maintenance extends Command implements Listener {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if(args.length == 0){
+        if (args.length == 0) {
             if (downServers.add("proxy")) {
                 disconnectPlayers("proxy");
                 Message.send(sender, XenonCore.instance.getConfigData().getMaintenance().getMaintenanceaddcommandmessage().replace("SERVER", "the whole proxy"), true);
@@ -38,16 +38,16 @@ public class Maintenance extends Command implements Listener {
         }
         final String action = args[0];
         final boolean add = "add".equalsIgnoreCase(action);
-        if(!add && !"remove".equalsIgnoreCase(action)) {
+        if (!add && !"remove".equalsIgnoreCase(action)) {
             Message.send(sender, XenonCore.instance.getConfigData().getUnknownoptionmessage().replace("OPTIONS", "add, remove, blank (to set the whole proxy)"), false);
             return;
         }
         final String targetServer = args[1];
-        if(targetServer.isEmpty()) {
+        if (targetServer.isEmpty()) {
             Message.send(sender, "Please enter a server name", false);
             return;
         }
-        if(add){
+        if (add) {
             downServers.add(args[1]);
             disconnectPlayers(targetServer);
             Message.send(sender,

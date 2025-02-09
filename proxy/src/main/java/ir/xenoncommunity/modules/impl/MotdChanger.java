@@ -30,7 +30,7 @@ public class MotdChanger implements Listener {
 
     private String getMotd() {
         return (Maintenance.downServers != null && Maintenance.downServers.contains("proxy"))
-                ?  XenonCore.instance.getConfigData().getMotdchanger().getMaintenancemotd()
+                ? XenonCore.instance.getConfigData().getMotdchanger().getMaintenancemotd()
                 : XenonCore.instance.getConfigData().getMotdchanger().getMotd().replace("ONLINE", String.valueOf(XenonCore.instance.getBungeeInstance().getOnlineCount()));
     }
 }

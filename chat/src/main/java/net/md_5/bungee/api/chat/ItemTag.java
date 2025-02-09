@@ -1,18 +1,9 @@
 package net.md_5.bungee.api.chat;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
+import lombok.*;
+
 import java.lang.reflect.Type;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 /**
  * Metadata for use in conjunction with {@link HoverEvent.Action#SHOW_ITEM}
@@ -21,8 +12,7 @@ import lombok.ToString;
 @ToString(of = "nbt")
 @EqualsAndHashCode(of = "nbt")
 @Setter
-public final class ItemTag
-{
+public final class ItemTag {
 
     @Getter
     private final String nbt;
@@ -45,29 +35,24 @@ public final class ItemTag
     }
      */
 
-    private ItemTag(String nbt)
-    {
+    private ItemTag(String nbt) {
         this.nbt = nbt;
     }
 
-    public static ItemTag ofNbt(String nbt)
-    {
-        return new ItemTag( nbt );
+    public static ItemTag ofNbt(String nbt) {
+        return new ItemTag(nbt);
     }
 
-    public static class Serializer implements JsonSerializer<ItemTag>, JsonDeserializer<ItemTag>
-    {
+    public static class Serializer implements JsonSerializer<ItemTag>, JsonDeserializer<ItemTag> {
 
         @Override
-        public ItemTag deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException
-        {
-            return ItemTag.ofNbt( element.getAsJsonPrimitive().getAsString() );
+        public ItemTag deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+            return ItemTag.ofNbt(element.getAsJsonPrimitive().getAsString());
         }
 
         @Override
-        public JsonElement serialize(ItemTag itemTag, Type type, JsonSerializationContext context)
-        {
-            return context.serialize( itemTag.getNbt() );
+        public JsonElement serialize(ItemTag itemTag, Type type, JsonSerializationContext context) {
+            return context.serialize(itemTag.getNbt());
         }
     }
 }

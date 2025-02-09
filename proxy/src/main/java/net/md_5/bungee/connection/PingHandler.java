@@ -22,8 +22,7 @@ import net.md_5.bungee.util.BufUtil;
 import net.md_5.bungee.util.QuietException;
 
 @RequiredArgsConstructor
-public class PingHandler extends PacketHandler
-{
+public class PingHandler extends PacketHandler {
 
     private final ServerInfo target;
     private final Callback<ServerPing> callback;
@@ -31,48 +30,42 @@ public class PingHandler extends PacketHandler
     private ChannelWrapper channel;
 
     @Override
-    public void connected(ChannelWrapper channel) throws Exception
-    {
+    public void connected(ChannelWrapper channel) throws Exception {
         this.channel = channel;
-        MinecraftEncoder encoder = new MinecraftEncoder( Protocol.HANDSHAKE, false, protocol );
+        MinecraftEncoder encoder = new MinecraftEncoder(Protocol.HANDSHAKE, false, protocol);
 
-        channel.getHandle().pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.STATUS, false, ProxyServer.getInstance().getProtocolVersion() ) );
-        channel.getHandle().pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, encoder );
+        channel.getHandle().pipeline().addAfter(PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder(Protocol.STATUS, false, ProxyServer.getInstance().getProtocolVersion()));
+        channel.getHandle().pipeline().addAfter(PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, encoder);
 
-        channel.write( new Handshake( protocol, target.getAddress().getHostString(), target.getAddress().getPort(), 1 ) );
+        channel.write(new Handshake(protocol, target.getAddress().getHostString(), target.getAddress().getPort(), 1));
 
-        encoder.setProtocol( Protocol.STATUS );
-        channel.write( new StatusRequest() );
+        encoder.setProtocol(Protocol.STATUS);
+        channel.write(new StatusRequest());
     }
 
     @Override
-    public void exception(Throwable t) throws Exception
-    {
-        callback.done( null, t );
+    public void exception(Throwable t) throws Exception {
+        callback.done(null, t);
     }
 
     @Override
-    public void handle(PacketWrapper packet) throws Exception
-    {
-        if ( packet.packet == null )
-        {
-            throw new QuietException( "Unexpected packet received during ping process! " + BufUtil.dump( packet.buf, 16 ) );
+    public void handle(PacketWrapper packet) throws Exception {
+        if (packet.packet == null) {
+            throw new QuietException("Unexpected packet received during ping process! " + BufUtil.dump(packet.buf, 16));
         }
     }
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
-    public void handle(StatusResponse statusResponse) throws Exception
-    {
-        ServerPing serverPing = BungeeCord.getInstance().gson.fromJson( statusResponse.getResponse(), ServerPing.class );
-        ( (BungeeServerInfo) target ).cachePing( serverPing );
-        callback.done( serverPing, null );
+    public void handle(StatusResponse statusResponse) throws Exception {
+        ServerPing serverPing = BungeeCord.getInstance().gson.fromJson(statusResponse.getResponse(), ServerPing.class);
+        ((BungeeServerInfo) target).cachePing(serverPing);
+        callback.done(serverPing, null);
         channel.close();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "[Ping Handler] -> " + target.getName();
     }
 }

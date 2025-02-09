@@ -1,11 +1,7 @@
 package net.md_5.bungee;
 
-import static org.junit.jupiter.api.Assertions.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import java.util.Random;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import net.md_5.bungee.jni.NativeCode;
 import net.md_5.bungee.jni.cipher.BungeeCipher;
 import net.md_5.bungee.jni.cipher.JavaCipher;
@@ -14,67 +10,67 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Random;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @TestMethodOrder(MethodOrderer.MethodName.class)
-public class NativeCipherTest
-{
+public class NativeCipherTest {
 
     private final byte[] plainBytes = "This is a test".getBytes();
     private final byte[] cipheredBytes = new byte[]
-    {
-        50, -7, 89, 1, -11, -32, -118, -48, -2, -72, 105, 97, -70, -81
-    };
-    private final SecretKey secret = new SecretKeySpec( new byte[ 16 ], "AES" );
+            {
+                    50, -7, 89, 1, -11, -32, -118, -48, -2, -72, 105, 97, -70, -81
+            };
+    private final SecretKey secret = new SecretKeySpec(new byte[16], "AES");
     private static final int BENCHMARK_COUNT = 4096;
     //
-    private static final NativeCode<BungeeCipher> factory = new NativeCode<>( "native-cipher", JavaCipher::new, NativeCipher::new );
+    private static final NativeCode<BungeeCipher> factory = new NativeCode<>("native-cipher", JavaCipher::new, NativeCipher::new);
 
     @Test
-    public void testNative() throws Exception
-    {
-        if ( NativeCode.isSupported() )
-        {
+    public void testNative() throws Exception {
+        if (NativeCode.isSupported()) {
             boolean loaded = factory.load();
-            assertTrue( loaded, "Native cipher failed to load!" );
+            assertTrue(loaded, "Native cipher failed to load!");
 
             NativeCipher cipher = new NativeCipher();
-            System.out.println( "Testing native cipher..." );
-            testACipher( cipher );
+            System.out.println("Testing native cipher...");
+            testACipher(cipher);
         }
     }
 
     @Test
-    public void testNativeBenchmark() throws Exception
-    {
-        if ( NativeCode.isSupported() )
-        {
+    public void testNativeBenchmark() throws Exception {
+        if (NativeCode.isSupported()) {
             boolean loaded = factory.load();
-            assertTrue( loaded, "Native cipher failed to load!" );
+            assertTrue(loaded, "Native cipher failed to load!");
 
             NativeCipher cipher = new NativeCipher();
 
-            System.out.println( "Benchmarking native cipher..." );
-            testBenchmark( cipher );
+            System.out.println("Benchmarking native cipher...");
+            testBenchmark(cipher);
         }
     }
 
     @Test
-    public void testJDK() throws Exception
-    {
+    public void testJDK() throws Exception {
         // Create JDK cipher
         BungeeCipher cipher = new JavaCipher();
 
-        System.out.println( "Testing Java cipher..." );
-        testACipher( cipher );
+        System.out.println("Testing Java cipher...");
+        testACipher(cipher);
     }
 
     @Test
-    public void testJDKBenchmark() throws Exception
-    {
+    public void testJDKBenchmark() throws Exception {
         // Create JDK cipher
         BungeeCipher cipher = new JavaCipher();
 
-        System.out.println( "Benchmarking Java cipher..." );
-        testBenchmark( cipher );
+        System.out.println("Benchmarking Java cipher...");
+        testBenchmark(cipher);
     }
 
     /**
@@ -84,67 +80,63 @@ public class NativeCipherTest
      * @param cipher cipher to test
      * @throws java.lang.Exception any exceptions encountered
      */
-    public void testACipher(BungeeCipher cipher) throws Exception
-    {
+    public void testACipher(BungeeCipher cipher) throws Exception {
         // Create input buf
-        ByteBuf nativePlain = Unpooled.directBuffer( plainBytes.length );
-        nativePlain.writeBytes( plainBytes );
+        ByteBuf nativePlain = Unpooled.directBuffer(plainBytes.length);
+        nativePlain.writeBytes(plainBytes);
         // Create expected buf
-        ByteBuf nativeCiphered = Unpooled.directBuffer( cipheredBytes.length );
-        nativeCiphered.writeBytes( cipheredBytes );
+        ByteBuf nativeCiphered = Unpooled.directBuffer(cipheredBytes.length);
+        nativeCiphered.writeBytes(cipheredBytes);
         // Create output buf
-        ByteBuf out = Unpooled.directBuffer( plainBytes.length );
+        ByteBuf out = Unpooled.directBuffer(plainBytes.length);
 
         // Encrypt
-        cipher.init( true, secret );
-        cipher.cipher( nativePlain, out );
-        assertEquals( nativeCiphered, out );
+        cipher.init(true, secret);
+        cipher.cipher(nativePlain, out);
+        assertEquals(nativeCiphered, out);
 
         out.clear();
 
         // Decrypt
-        cipher.init( false, secret );
-        cipher.cipher( nativeCiphered, out );
+        cipher.init(false, secret);
+        cipher.cipher(nativeCiphered, out);
         nativePlain.resetReaderIndex();
-        assertEquals( nativePlain, out );
+        assertEquals(nativePlain, out);
 
-        System.out.println( "This cipher works correctly!" );
+        System.out.println("This cipher works correctly!");
     }
 
-    public void testBenchmark(BungeeCipher cipher) throws Exception
-    {
+    public void testBenchmark(BungeeCipher cipher) throws Exception {
         // Create input buf
-        byte[] random = new byte[ 1 << 12 ];
-        new Random().nextBytes( random );
+        byte[] random = new byte[1 << 12];
+        new Random().nextBytes(random);
         ByteBuf nativePlain = Unpooled.directBuffer();
-        nativePlain.writeBytes( random );
+        nativePlain.writeBytes(random);
 
         // Create output buf
-        ByteBuf nativeCiphered = Unpooled.directBuffer( plainBytes.length );
+        ByteBuf nativeCiphered = Unpooled.directBuffer(plainBytes.length);
 
         // Encrypt
-        cipher.init( true, secret );
+        cipher.init(true, secret);
         long start = System.currentTimeMillis();
-        for ( int i = 0; i < BENCHMARK_COUNT; i++ )
-        {
+        for (int i = 0; i < BENCHMARK_COUNT; i++) {
             nativeCiphered.clear();
-            cipher.cipher( nativePlain, nativeCiphered );
-            nativePlain.readerIndex( 0 );
+            cipher.cipher(nativePlain, nativeCiphered);
+            nativePlain.readerIndex(0);
         }
-        System.out.println( String.format( "Encryption Iteration: %d, Elapsed: %d ms", BENCHMARK_COUNT, System.currentTimeMillis() - start ) );
+        System.out.println(String.format("Encryption Iteration: %d, Elapsed: %d ms", BENCHMARK_COUNT, System.currentTimeMillis() - start));
 
         // Create output buf
-        ByteBuf out = Unpooled.directBuffer( plainBytes.length );
+        ByteBuf out = Unpooled.directBuffer(plainBytes.length);
 
         // Decrypt
-        cipher.init( false, secret );
+        cipher.init(false, secret);
         start = System.currentTimeMillis();
-        for ( int i = 0; i < BENCHMARK_COUNT; i++ )
-        {
-            cipher.cipher( nativeCiphered, out );
-            nativeCiphered.readerIndex( 0 );
+        for (int i = 0; i < BENCHMARK_COUNT; i++) {
+            cipher.cipher(nativeCiphered, out);
+            nativeCiphered.readerIndex(0);
             out.clear();
         }
-        System.out.println( String.format( "Decryption Iteration: %d, Elapsed: %d ms", BENCHMARK_COUNT, System.currentTimeMillis() - start ) );
+        System.out.println(String.format("Decryption Iteration: %d, Elapsed: %d ms", BENCHMARK_COUNT, System.currentTimeMillis() - start));
     }
 }

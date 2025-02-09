@@ -1,10 +1,10 @@
 package net.md_5.bungee.api;
 
-import java.util.Collection;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public interface CommandSender
-{
+import java.util.Collection;
+
+public interface CommandSender {
 
     /**
      * Get the unique name of this command sender.
@@ -78,7 +78,7 @@ public interface CommandSender
      * Set a permission node for this user.
      *
      * @param permission the node to set
-     * @param value the value of the node
+     * @param value      the value of the node
      */
     public void setPermission(String permission, boolean value);
 

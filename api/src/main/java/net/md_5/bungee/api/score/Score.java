@@ -6,8 +6,7 @@ import lombok.Data;
  * Represents a scoreboard score entry.
  */
 @Data
-public class Score
-{
+public class Score {
 
     /**
      * Name to be displayed in the list.

@@ -16,38 +16,30 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class Kick extends DefinedPacket
-{
+public class Kick extends DefinedPacket {
 
     private BaseComponent message;
 
     @Override
-    public void read(ByteBuf buf, Protocol protocol, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        if ( protocol == Protocol.LOGIN )
-        {
-            message = ComponentSerializer.deserialize( readString( buf ) );
-        } else
-        {
-            message = readBaseComponent( buf, protocolVersion );
+    public void read(ByteBuf buf, Protocol protocol, ProtocolConstants.Direction direction, int protocolVersion) {
+        if (protocol == Protocol.LOGIN) {
+            message = ComponentSerializer.deserialize(readString(buf));
+        } else {
+            message = readBaseComponent(buf, protocolVersion);
         }
     }
 
     @Override
-    public void write(ByteBuf buf, Protocol protocol, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        if ( protocol == Protocol.LOGIN )
-        {
-            writeString( ComponentSerializer.toString( message ), buf );
-        } else
-        {
-            writeBaseComponent( message, buf, protocolVersion );
+    public void write(ByteBuf buf, Protocol protocol, ProtocolConstants.Direction direction, int protocolVersion) {
+        if (protocol == Protocol.LOGIN) {
+            writeString(ComponentSerializer.toString(message), buf);
+        } else {
+            writeBaseComponent(message, buf, protocolVersion);
         }
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 }

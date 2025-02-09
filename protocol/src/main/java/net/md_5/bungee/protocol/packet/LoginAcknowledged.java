@@ -10,28 +10,23 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class LoginAcknowledged extends DefinedPacket
-{
+public class LoginAcknowledged extends DefinedPacket {
 
     @Override
-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
+    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
     }
 
     @Override
-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
+    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
     }
 
     @Override
-    public Protocol nextProtocol()
-    {
+    public Protocol nextProtocol() {
         return Protocol.CONFIGURATION;
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 }

@@ -9,8 +9,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public final class ClickEvent
-{
+public final class ClickEvent {
 
     /**
      * The type of action to perform on click.
@@ -23,8 +22,7 @@ public final class ClickEvent
      */
     private final String value;
 
-    public enum Action
-    {
+    public enum Action {
 
         /**
          * Open a url at the path given by

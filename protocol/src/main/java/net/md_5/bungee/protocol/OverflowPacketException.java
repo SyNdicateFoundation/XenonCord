@@ -1,16 +1,13 @@
 package net.md_5.bungee.protocol;
 
-public class OverflowPacketException extends RuntimeException
-{
-    public OverflowPacketException(String message)
-    {
-        super( message );
+public class OverflowPacketException extends RuntimeException {
+    public OverflowPacketException(String message) {
+        super(message);
     }
 
     // Waterfall start
     @Override
-    public Throwable initCause(Throwable cause)
-    {
+    public Throwable initCause(Throwable cause) {
         if (DefinedPacket.PROCESS_TRACES) {
             return super.initCause(cause);
         }
@@ -18,8 +15,7 @@ public class OverflowPacketException extends RuntimeException
     }
 
     @Override
-    public Throwable fillInStackTrace()
-    {
+    public Throwable fillInStackTrace() {
         if (DefinedPacket.PROCESS_TRACES) {
             return super.fillInStackTrace();
         }

@@ -13,42 +13,34 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.util.Collections;
 
-public class CommandFind extends Command implements TabExecutor
-{
+@SuppressWarnings({"unused", "deprecation"}) public class CommandFind extends Command implements TabExecutor {
 
-    public CommandFind()
-    {
-        super( "find", "bungeecord.command.find" );
+    public CommandFind() {
+        super("find", "bungeecord.command.find");
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args)
-    {
-        if ( args.length != 1 )
-        {
-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "username_needed" ) );
-        } else
-        {
-            ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
-            if ( player == null || player.getServer() == null )
-            {
-                sender.sendMessage( ProxyServer.getInstance().getTranslation( "user_not_online" ) );
-            } else
-            {
-                boolean moduleLoaded = ProxyServer.getInstance().getPluginManager().getPlugin( "cmd_server" ) != null;
+    public void execute(CommandSender sender, String[] args) {
+        if (args.length != 1) {
+            sender.sendMessage(ProxyServer.getInstance().getTranslation("username_needed"));
+        } else {
+            ProxiedPlayer player = ProxyServer.getInstance().getPlayer(args[0]);
+            if (player == null || player.getServer() == null) {
+                sender.sendMessage(ProxyServer.getInstance().getTranslation("user_not_online"));
+            } else {
+                boolean moduleLoaded = ProxyServer.getInstance().getPluginManager().getPlugin("cmd_server") != null;
                 ServerInfo server = player.getServer().getInfo();
-                ComponentBuilder componentBuilder = new ComponentBuilder().appendLegacy( ProxyServer.getInstance().getTranslation( "user_online_at", player.getName(), server.getName() ) );
+                ComponentBuilder componentBuilder = new ComponentBuilder().appendLegacy(ProxyServer.getInstance().getTranslation("user_online_at", player.getName(), server.getName()));
 
-                if ( moduleLoaded && server.canAccess( sender ) )
-                {
-                    componentBuilder.event( new HoverEvent(
+                if (moduleLoaded && server.canAccess(sender)) {
+                    componentBuilder.event(new HoverEvent(
                             HoverEvent.Action.SHOW_TEXT,
-                            new ComponentBuilder().appendLegacy( ProxyServer.getInstance().getTranslation( "click_to_connect" ) ).create() )
+                            new ComponentBuilder().appendLegacy(ProxyServer.getInstance().getTranslation("click_to_connect")).create())
                     );
-                    componentBuilder.event( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/server " + server.getName() ) );
+                    componentBuilder.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/server " + server.getName()));
                 }
 
-                sender.sendMessage( componentBuilder.create() );
+                sender.sendMessage(componentBuilder.create());
             }
         }
     }

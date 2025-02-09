@@ -13,8 +13,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
  * You can create a new configuration by calling
  * {@link ProxyServer#createTitle()}.
  */
-public interface Title
-{
+public interface Title {
 
     /**
      * Set the title to send to the player.

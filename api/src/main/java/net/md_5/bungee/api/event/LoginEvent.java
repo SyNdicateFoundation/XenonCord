@@ -8,7 +8,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.plugin.Cancellable;
-import net.md_5.bungee.connection.LoginResult; // Waterfall: Parse LoginResult object to new constructor of LoginEvent
+import net.md_5.bungee.connection.LoginResult;
 
 /**
  * Event called to represent a player logging in.
@@ -16,8 +16,7 @@ import net.md_5.bungee.connection.LoginResult; // Waterfall: Parse LoginResult o
 @Data
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
-{
+public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable {
 
     /**
      * Cancelled state.
@@ -39,16 +38,14 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
      */
     private final PendingConnection connection;
 
-    public LoginEvent(PendingConnection connection, Callback<LoginEvent> done)
-    {
-        super( done );
+    public LoginEvent(PendingConnection connection, Callback<LoginEvent> done) {
+        super(done);
         this.connection = connection;
     }
 
     // Waterfall start - adding new constructor for LoginResult
-    public LoginEvent(PendingConnection connection, Callback<LoginEvent> done, LoginResult loginResult)
-    {
-        super( done );
+    public LoginEvent(PendingConnection connection, Callback<LoginEvent> done, LoginResult loginResult) {
+        super(done);
         this.connection = connection;
         this.loginResult = loginResult;
     }
@@ -59,9 +56,8 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
      * @deprecated use component methods instead
      */
     @Deprecated
-    public String getCancelReason()
-    {
-        return TextComponent.toLegacyText( getReason() );
+    public String getCancelReason() {
+        return TextComponent.toLegacyText(getReason());
     }
 
     /**
@@ -69,9 +65,8 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
      * @deprecated use component methods instead
      */
     @Deprecated
-    public void setCancelReason(String cancelReason)
-    {
-        setReason( TextComponent.fromLegacy( cancelReason ) );
+    public void setCancelReason(String cancelReason) {
+        setReason(TextComponent.fromLegacy(cancelReason));
     }
 
     /**
@@ -79,12 +74,11 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
      * @deprecated use single component methods instead
      */
     @Deprecated
-    public BaseComponent[] getCancelReasonComponents()
-    {
+    public BaseComponent[] getCancelReasonComponents() {
         return new BaseComponent[]
-        {
-            getReason()
-        };
+                {
+                        getReason()
+                };
     }
 
     /**
@@ -92,8 +86,7 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
      * @deprecated use single component methods instead
      */
     @Deprecated
-    public void setCancelReason(BaseComponent... cancelReason)
-    {
-        setReason( TextComponent.fromArray( cancelReason ) );
+    public void setCancelReason(BaseComponent... cancelReason) {
+        setReason(TextComponent.fromArray(cancelReason));
     }
 }

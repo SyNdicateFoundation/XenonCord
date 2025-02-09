@@ -1,10 +1,6 @@
 package net.md_5.bungee;
 
 import com.google.common.base.Preconditions;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.ArrayDeque;
-import java.util.Queue;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +12,13 @@ import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.packet.PluginMessage;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.ArrayDeque;
+import java.util.Queue;
+
 @RequiredArgsConstructor
-public class ServerConnection implements Server
-{
+public class ServerConnection implements Server {
 
     @Getter
     private final ChannelWrapper ch;
@@ -33,104 +33,86 @@ public class ServerConnection implements Server
     private final Queue<KeepAliveData> keepAlives = new ArrayDeque<>();
     private final Queue<DefinedPacket> packetQueue = new ArrayDeque<>();
 
-    private final Unsafe unsafe = new Unsafe()
-    {
+    private final Unsafe unsafe = new Unsafe() {
         @Override
-        public void sendPacket(DefinedPacket packet)
-        {
-            ch.write( packet );
+        public void sendPacket(DefinedPacket packet) {
+            ch.write(packet);
         }
     };
 
-    public void sendPacketQueued(DefinedPacket packet)
-    {
-        ch.scheduleIfNecessary( () ->
+    public void sendPacketQueued(DefinedPacket packet) {
+        ch.scheduleIfNecessary(() ->
         {
-            if ( ch.isClosed() )
-            {
+            if (ch.isClosed()) {
                 return;
             }
             Protocol encodeProtocol = ch.getEncodeProtocol();
-            if ( !encodeProtocol.TO_SERVER.hasPacket( packet.getClass(), ch.getEncodeVersion() ) )
-            {
-                packetQueue.add( packet );
-            } else
-            {
-                unsafe().sendPacket( packet );
+            if (!encodeProtocol.TO_SERVER.hasPacket(packet.getClass(), ch.getEncodeVersion())) {
+                packetQueue.add(packet);
+            } else {
+                unsafe().sendPacket(packet);
             }
-        } );
+        });
     }
 
-    public void sendQueuedPackets()
-    {
-        ch.scheduleIfNecessary( () ->
+    public void sendQueuedPackets() {
+        ch.scheduleIfNecessary(() ->
         {
-            if ( ch.isClosed() )
-            {
+            if (ch.isClosed()) {
                 return;
             }
             DefinedPacket packet;
-            while ( ( packet = packetQueue.poll() ) != null )
-            {
-                unsafe().sendPacket( packet );
+            while ((packet = packetQueue.poll()) != null) {
+                unsafe().sendPacket(packet);
             }
-        } );
+        });
     }
 
     @Override
-    public void sendData(String channel, byte[] data)
-    {
-        sendPacketQueued( new PluginMessage( channel, data, forgeServer ) );
+    public void sendData(String channel, byte[] data) {
+        sendPacketQueued(new PluginMessage(channel, data, forgeServer));
     }
 
     @Override
-    public void disconnect(String reason)
-    {
+    public void disconnect(String reason) {
         disconnect();
     }
 
     @Override
-    public void disconnect(BaseComponent... reason)
-    {
-        Preconditions.checkArgument( reason.length == 0, "Server cannot have disconnect reason" );
+    public void disconnect(BaseComponent... reason) {
+        Preconditions.checkArgument(reason.length == 0, "Server cannot have disconnect reason");
 
         isObsolete = true;
         ch.close();
     }
 
     @Override
-    public void disconnect(BaseComponent reason)
-    {
+    public void disconnect(BaseComponent reason) {
         disconnect();
     }
 
     @Override
-    public InetSocketAddress getAddress()
-    {
+    public InetSocketAddress getAddress() {
         return (InetSocketAddress) getSocketAddress();
     }
 
     @Override
-    public SocketAddress getSocketAddress()
-    {
+    public SocketAddress getSocketAddress() {
         return getInfo().getAddress();
     }
 
     @Override
-    public boolean isConnected()
-    {
+    public boolean isConnected() {
         return !ch.isClosed();
     }
 
     @Override
-    public Unsafe unsafe()
-    {
+    public Unsafe unsafe() {
         return unsafe;
     }
 
     @Data
-    public static class KeepAliveData
-    {
+    public static class KeepAliveData {
 
         private final long id;
         private final long time;

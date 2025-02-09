@@ -8,8 +8,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class Objective
-{
+public class Objective {
 
     /**
      * Name of the objective.

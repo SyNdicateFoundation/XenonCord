@@ -22,8 +22,7 @@ import net.md_5.bungee.api.plugin.Event;
 @Data
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class SettingsChangedEvent extends Event
-{
+public class SettingsChangedEvent extends Event {
 
     /**
      * Player who changed the settings.

@@ -8,14 +8,13 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
  *
  * @param <S> The State to transition to.
  */
-public interface IForgeClientPacketHandler<S>
-{
+public interface IForgeClientPacketHandler<S> {
 
     /**
      * Handles any {@link PluginMessage} packets.
      *
      * @param message The {@link PluginMessage} to handle.
-     * @param con The {@link UserConnection} to send packets to.
+     * @param con     The {@link UserConnection} to send packets to.
      * @return The state to transition to.
      */
     public S handle(PluginMessage message, UserConnection con);
@@ -24,7 +23,7 @@ public interface IForgeClientPacketHandler<S>
      * Sends any {@link PluginMessage} packets.
      *
      * @param message The {@link PluginMessage} to send.
-     * @param con The {@link UserConnection} to set data.
+     * @param con     The {@link UserConnection} to set data.
      * @return The state to transition to.
      */
     public S send(PluginMessage message, UserConnection con);

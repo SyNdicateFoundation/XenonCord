@@ -19,8 +19,7 @@ import net.md_5.bungee.api.plugin.Event;
 @Data
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class ServerConnectEvent extends Event implements Cancellable
-{
+public class ServerConnectEvent extends Event implements Cancellable {
 
     /**
      * Player connecting to a new server.
@@ -45,27 +44,23 @@ public class ServerConnectEvent extends Event implements Cancellable
     private boolean cancelled;
 
     @Deprecated
-    public ServerConnectEvent(ProxiedPlayer player, ServerInfo target)
-    {
-        this( player, target, Reason.UNKNOWN );
+    public ServerConnectEvent(ProxiedPlayer player, ServerInfo target) {
+        this(player, target, Reason.UNKNOWN);
     }
 
     @Deprecated
-    public ServerConnectEvent(ProxiedPlayer player, ServerInfo target, Reason reason)
-    {
-        this( player, target, reason, null );
+    public ServerConnectEvent(ProxiedPlayer player, ServerInfo target, Reason reason) {
+        this(player, target, reason, null);
     }
 
-    public ServerConnectEvent(ProxiedPlayer player, ServerInfo target, Reason reason, ServerConnectRequest request)
-    {
+    public ServerConnectEvent(ProxiedPlayer player, ServerInfo target, Reason reason, ServerConnectRequest request) {
         this.player = player;
         this.target = target;
         this.reason = reason;
         this.request = request;
     }
 
-    public enum Reason
-    {
+    public enum Reason {
 
         /**
          * Redirection to lobby server due to being unable to connect to

@@ -1,15 +1,15 @@
 package net.md_5.bungee.api.scheduler;
 
+import net.md_5.bungee.api.plugin.Plugin;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-import net.md_5.bungee.api.plugin.Plugin;
 
 /**
  * This interface represents a scheduler which may be used to queue, delay and
  * execute tasks in an asynchronous fashion.
  */
-public interface TaskScheduler
-{
+public interface TaskScheduler {
 
     /**
      * Cancel a task to prevent it from executing, or if its a repeating task,
@@ -41,7 +41,7 @@ public interface TaskScheduler
      * running as soon as this method returns.
      *
      * @param owner the plugin owning this task
-     * @param task the task to run
+     * @param task  the task to run
      * @return the scheduled task
      */
     ScheduledTask runAsync(Plugin owner, Runnable task);
@@ -51,9 +51,9 @@ public interface TaskScheduler
      * is up.
      *
      * @param owner the plugin owning this task
-     * @param task the task to run
+     * @param task  the task to run
      * @param delay the delay before this task will be executed
-     * @param unit the unit in which the delay will be measured
+     * @param unit  the unit in which the delay will be measured
      * @return the scheduled task
      */
     ScheduledTask schedule(Plugin owner, Runnable task, long delay, TimeUnit unit);
@@ -64,11 +64,11 @@ public interface TaskScheduler
      * interval. The interval will not begin to count down until the last task
      * invocation is complete.
      *
-     * @param owner the plugin owning this task
-     * @param task the task to run
-     * @param delay the delay before this task will be executed
+     * @param owner  the plugin owning this task
+     * @param task   the task to run
+     * @param delay  the delay before this task will be executed
      * @param period the interval before subsequent executions of this task
-     * @param unit the unit in which the delay and period will be measured
+     * @param unit   the unit in which the delay and period will be measured
      * @return the scheduled task
      */
     ScheduledTask schedule(Plugin owner, Runnable task, long delay, long period, TimeUnit unit);
@@ -80,8 +80,7 @@ public interface TaskScheduler
      */
     Unsafe unsafe();
 
-    interface Unsafe
-    {
+    interface Unsafe {
 
         /**
          * An executor service which underlies this scheduler.

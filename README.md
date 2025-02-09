@@ -8,14 +8,15 @@ Note: This project is currently in the status of recode.
 - this project contains some fixes, patches, and as well as new features, such as anti bot and etc.
 - we will add features and complete this readme.md file.
 
-
 ### Key Features 🚀
 
 Lightweight - this project is focused on being clean code & optimized.
 Provided features - this proxy software provides many features by default. eg. staffchat, commandwhitelist, and etc.
-C:ustomizable this proxy is designed to be customizable. means, if you wanted to use these default features, or not, we granted you the ability to remove it, by a simple configuration.
+C:ustomizable this proxy is designed to be customizable. means, if you wanted to use these default features, or not, we
+granted you the ability to remove it, by a simple configuration.
 
 ## Getting Started 🚧
+
 - NOTE: We removed waterfall's patch system, and we're going to add updates manually.
 
 - setting up:
@@ -27,14 +28,16 @@ C:ustomizable this proxy is designed to be customizable. means, if you wanted to
 - git clone it in Intelij, and use it.
 
 ## TODO 📝
+
 - optimize
 - add features
 
 ## Credits:
+
 - thanks to BungeeCord by SpigotMC for their hard work.
 - thanks to Waterfall by PaperMC to make stuff easier for us.
 - thanks to whom who helped in designing a better GUI.
 
-## Contribution Guidelines 
+## Contribution Guidelines
 
 Feel free to contribute to the development of XenonCord. we will notice it.

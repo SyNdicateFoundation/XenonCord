@@ -15,7 +15,9 @@
     <packaging>jar</packaging>
 
     <name>Waterfall-Log4J</name>
-    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
+    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and
+        Minecraft related applications.
+    </description>
 
     <properties>
         <log4j2.version>2.20.0</log4j2.version>
