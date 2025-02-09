@@ -4,6 +4,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.jetbrains.annotations.ApiStatus;
+import lombok.Setter;
 
 @Getter
 @ToString
@@ -21,6 +23,10 @@ public final class ClickEvent {
      * @see Action
      */
     private final String value;
+
+    @Setter
+    @ApiStatus.Internal
+    private boolean v1_21_5 = false;
 
     public enum Action {
 

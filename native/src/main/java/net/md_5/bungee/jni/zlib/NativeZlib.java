@@ -48,8 +48,7 @@ public class NativeZlib implements BungeeZlib {
         Preconditions.checkState(ctx != 0, "Invalid pointer to compress!");
 
         while (!nativeCompress.finished && (compress || in.isReadable())) {
-            out.ensureWritable(OUTPUT_BUFFER_SIZE);
-
+            out.ensureWritable( OUTPUT_BUFFER_SIZE );
             int processed;
             try {
                 processed = nativeCompress.process(ctx, in.memoryAddress() + in.readerIndex(), in.readableBytes(), out.memoryAddress() + out.writerIndex(), out.writableBytes(), compress);

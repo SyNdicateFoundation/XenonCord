@@ -170,8 +170,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
                 }
 
                 Callback<ProxyPingEvent> callback = (result1, error1) -> {
-                    if (ch.isClosing()) return;
-
                     final ServerPing legacy = result1.getResponse();
                     ch.close(ping.isV1_5()
                             ? ChatColor.DARK_BLUE + "\00" + 127
@@ -184,7 +182,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
                             + '\u00a7' + ((legacy.getPlayers() != null) ? legacy.getPlayers().getMax() : "-1"));
                 };
 
-                bungee.getPluginManager().callEvent(new ProxyPingEvent(InitialHandler.this, result, callback));
+                bungee.getPluginManager().callEvent( new ProxyPingEvent( InitialHandler.this, result, eventLoopCallback( callback ) ) );
             };
 
             if (forced != null && listener.isPingPassthrough()) ((BungeeServerInfo) forced).ping(pingBack, protocol);
@@ -215,7 +213,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
 
         Callback<ServerPing> pingBack = new Callback<ServerPing>() {
             @Override
-            public void done(ServerPing result, Throwable error) {
+                public void done(ServerPing result, Throwable error) {
                 if (error != null) {
                     result = getPingInfo(bungee.getTranslation("ping_cannot_connect"), protocol);
                     bungee.getLogger().log(Level.WARNING, "Error pinging remote server", error);
@@ -231,7 +229,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
                         }
                     }
                 };
-                bungee.getPluginManager().callEvent(new ProxyPingEvent(InitialHandler.this, result, callback));
+                bungee.getPluginManager().callEvent( new ProxyPingEvent( InitialHandler.this, result, eventLoopCallback( callback ) ) );
             }
         };
 
@@ -378,9 +376,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
                     disconnect((reason != null) ? reason : TextComponent.fromLegacy(bungee.getTranslation("kick_message")));
                     return;
                 }
-                if (ch.isClosing()) {
-                    return;
-                }
                 if (onlineMode) {
                     thisState = State.ENCRYPT;
                     unsafe().sendPacket(request = EncryptionUtil.encryptRequest());
@@ -392,7 +387,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         };
 
         // fire pre login event
-        bungee.getPluginManager().callEvent(new PreLoginEvent(InitialHandler.this, callback));
+        bungee.getPluginManager().callEvent( new PreLoginEvent( InitialHandler.this, eventLoopCallback( callback ) ) );
     }
 
     @Override
@@ -490,16 +485,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
             if (ch.isClosing()) return;
 
             ch.getHandle().eventLoop().execute(() -> {
-                if (!ch.isClosing()) {
-                    userCon = new UserConnection(bungee, ch, getName(), InitialHandler.this);
-                    userCon.setCompressionThreshold(BungeeCord.getInstance().config.getCompressionThreshold());
-
-                    if (getVersion() < ProtocolConstants.MINECRAFT_1_20_2) {
-                        unsafe().sendPacket(new LoginSuccess(getRewriteId(), getName(), (loginProfile == null) ? null : loginProfile.getProperties()));
-                        ch.setProtocol(Protocol.GAME);
-                    }
-                    finish2();
+                if ( result.isCancelled() )
+                {
+                    BaseComponent reason = result.getReason();
+                    disconnect( ( reason != null ) ? reason : TextComponent.fromLegacy( bungee.getTranslation( "kick_message" ) ) );
+                    return;
                 }
+
+                userCon = new UserConnection( bungee, ch, getName(), InitialHandler.this );
+                userCon.setCompressionThreshold( BungeeCord.getInstance().config.getCompressionThreshold() );
+
+                if ( getVersion() < ProtocolConstants.MINECRAFT_1_20_2 )
+                {
+                    unsafe.sendPacket( new LoginSuccess( getRewriteId(), getName(), ( loginProfile == null ) ? null : loginProfile.getProperties() ) );
+                    ch.setProtocol( Protocol.GAME );
+                }
+                finish2();
             });
         }, this.getLoginProfile())); // Waterfall: Parse LoginResult object to new constructor of LoginEvent
     }
@@ -526,16 +527,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         Callback<PostLoginEvent> complete = new Callback<PostLoginEvent>() {
             @Override
             public void done(PostLoginEvent result, Throwable error) {
-                // #3612: Don't progress further if disconnected during event
-                if (ch.isClosing()) {
-                    return;
-                }
-
                 userCon.connect(result.getTarget(), null, true, ServerConnectEvent.Reason.JOIN_PROXY);
             }
         };
-
-        bungee.getPluginManager().callEvent(new PostLoginEvent(userCon, initialServer, complete));
+        bungee.getPluginManager().callEvent( new PostLoginEvent( userCon, initialServer, eventLoopCallback( complete ) ) );
     }
 
     @Override
@@ -546,6 +541,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         }
         Preconditions.checkState(future != null, "Unexpected custom LoginPayloadResponse");
         XenonCore.instance.getTaskManager().async(() -> future.complete(response.getData()));
+        throw CancelSendSignal.INSTANCE;
     }
 
 
@@ -714,18 +710,25 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         return future;
     }
 
-    private <T> Callback<T> eventLoopCallback(Callback<T> callback) {
-        EventLoop eventLoop = ch.getHandle().eventLoop();
-        return eventLoop.inEventLoop() ? (result, error) ->
+    private <T> Callback<T> eventLoopCallback(Callback<T> callback)
+    {
+        return (result, error) ->
         {
-            if (!ch.isClosing()) {
-                callback.done(result, error);
+            final EventLoop eventLoop = ch.getHandle().eventLoop();
+            if ( eventLoop.inEventLoop() )
+            {
+                if ( ch.isClosing() ) return;
+
+                callback.done( result, error );
+                return;
             }
-        } : (result, error) -> eventLoop.execute(() ->
-        {
-            if (!ch.isClosing()) {
-                callback.done(result, error);
-            }
-        });
+            eventLoop.execute( () ->
+            {
+                if ( !ch.isClosing() )
+                {
+                    callback.done( result, error );
+                }
+            } );
+        };
     }
 }

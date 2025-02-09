@@ -64,6 +64,14 @@ public abstract class DefinedPacket {
         return readString(buf, Short.MAX_VALUE);
     }
 
+    public static <T> T readStringMapKey(ByteBuf buf, Map<String, T> map)
+    {
+        String string = readString( buf );
+        T result = map.get( string );
+        Preconditions.checkArgument( result != null, "Unknown string key %s", string );
+        return result;
+    }
+
     public static String readString(ByteBuf buf, int maxLen) {
         int len = readVarInt(buf);
         if (len > maxLen * 3) {
