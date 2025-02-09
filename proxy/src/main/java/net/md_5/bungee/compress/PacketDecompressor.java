@@ -41,7 +41,7 @@ public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf> {
                 throw new OverflowPacketException( "Packet may not be larger than " + MAX_DECOMPRESSED_LEN + " bytes" );
             }
 
-            ByteBuf decompressed = ctx.alloc().buffer(size, MAX_DECOMPRESSED_LEN);
+            ByteBuf decompressed = ctx.alloc().directBuffer(size, MAX_DECOMPRESSED_LEN);
 
             try {
                 zlib.process(in, decompressed);
