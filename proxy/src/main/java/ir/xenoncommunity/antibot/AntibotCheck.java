@@ -67,9 +67,9 @@ public abstract class AntibotCheck {
     }
 
     public void log(){
+
         XenonCore.instance.getTaskManager().add(() -> {
             long startTime = System.currentTimeMillis();
-
             while (System.currentTimeMillis() - startTime < 5000) {
                 sendStats();
 
@@ -89,24 +89,25 @@ public abstract class AntibotCheck {
 
     private void sendStats() {
         this.animationFrame = (this.animationFrame + 1) % this.arrows.length;
+        final String stats = "§b§lXenonCord §8» §7CPS/s§8: §f" +
+                joinsPerSecond +
+                " §8| §7PING/s§8: §f" +
+                pingsPerSecond +
+                " §8| §7Blacklist§8: §f" +
+                blockedPlayersCount +
+                " §8(" + " §7Total CPS§8: §f" +
+                (joinsPerSecond + pingsPerSecond) +
+                " §4§l" +
+                this.arrows[this.animationFrame];
         for (ProxiedPlayer proxyPlayer : ProxyServer.getInstance().getPlayers()) {
             //if (proxyPlayer.hasPermission("alphaguard.stats") && Main.msgSee.contains(proxyPlayer.getUniqueId())) {
-            final String stats = "§b§lXenonCord §8» §7CPS/s§8: §f" +
-                    joinsPerSecond +
-                    " §8| §7PING/s§8: §f" +
-                    pingsPerSecond +
-                    " §8| §7Blacklist§8: §f" +
-                    blockedPlayersCount +
-                    " §8(" + " §7Total CPS§8: §f" +
-                    (joinsPerSecond + pingsPerSecond) + " §8| §7Ping§8: §f" +
-                    proxyPlayer.getPing() + "ms§8)" +
-                    " §4§l" +
-                    this.arrows[this.animationFrame];
+
             proxyPlayer.sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
                     stats
             ));
-            XenonCore.instance.getLogger().warn(stats);
+
             //}
         }
+        XenonCore.instance.getLogger().warn(stats);
     }
 }
