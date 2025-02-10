@@ -20,6 +20,7 @@ public abstract class AntibotCheck {
     public final AtomicInteger blockedPlayersCount = new AtomicInteger(0);
     public final Map<String, Long> cooldownMap = new ConcurrentHashMap<>();
     public final Map<String, Long> joinTimeMap = new ConcurrentHashMap<>();
+    public final Map<String, Long> firstJoinTimestamps = new ConcurrentHashMap<>();
     public int joinsPerSecond = 0;
     public int pingsPerSecond = 0;
     private final String[] arrows = new String[]{"✟"};
