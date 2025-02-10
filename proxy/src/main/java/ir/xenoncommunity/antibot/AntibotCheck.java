@@ -23,8 +23,6 @@ public abstract class AntibotCheck {
     public final Map<String, Long> firstJoinTimestamps = new ConcurrentHashMap<>();
     public static int joinsPerSecond = 0;
     public static int pingsPerSecond = 0;
-    private static final String[] arrows = new String[]{"✟"};
-    private static int animationFrame = 0;
 
     public void blockPlayer(PreLoginEvent event, String playerName, String reason) {
         cancelPreLogin(event, reason);
@@ -85,17 +83,14 @@ public abstract class AntibotCheck {
     }
 
     public static void sendStats() {
-        animationFrame = (animationFrame + 1) % arrows.length;
         final String stats = "§b§lXenonCord §8» §7CPS/s§8: §f" +
                 joinsPerSecond +
                 " §8| §7PING/s§8: §f" +
                 pingsPerSecond +
                 " §8| §7Blacklist§8: §f" +
                 blockedPlayersCount +
-                " §8(" + " §7Total CPS§8: §f" +
-                (joinsPerSecond + pingsPerSecond) +
-                " §4§l)" +
-                arrows[animationFrame];
+                " §8" + " §7Total CPS§8: §f" +
+                (joinsPerSecond + pingsPerSecond);
         for (ProxiedPlayer proxyPlayer : ProxyServer.getInstance().getPlayers()) {
             //if (proxyPlayer.hasPermission("alphaguard.stats") && Main.msgSee.contains(proxyPlayer.getUniqueId())) {
             if(!XenonCord.ABstatusPlayers.contains(proxyPlayer.getName()))  return;
