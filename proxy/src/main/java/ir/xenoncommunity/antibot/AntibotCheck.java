@@ -40,7 +40,7 @@ public abstract class AntibotCheck {
 
 //    public void cancelProxyPing(ProxyPingEvent event, String reason) {
 //    }
-
+    private boolean isLogging = false;
     public void cancelPing(ProxyPingEvent event) {
         log();
         event.setResponse(null);
@@ -63,7 +63,10 @@ public abstract class AntibotCheck {
     }
 
     public void log(){
+        if(isLogging) return;
+
         XenonCore.instance.getTaskManager().add(() -> {
+            isLogging = true;
             long startTime = System.currentTimeMillis();
             while (System.currentTimeMillis() - startTime < 5000) {
                 sendStats();
@@ -74,6 +77,7 @@ public abstract class AntibotCheck {
                     Thread.currentThread().interrupt();
                 }
             }
+            isLogging = false;
         });
     }
 
