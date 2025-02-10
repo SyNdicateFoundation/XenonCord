@@ -26,7 +26,8 @@ public class ModuleManager {
                     XenonCore.instance.logdebuginfo(String.format("Module %s loaded as a both.", module));
                 }
             } catch (Exception e) {
-                XenonCore.instance.getLogger().error(e.getMessage());
+                XenonCore.instance.logdebugerror("Error while enabling a module");
+                e.printStackTrace();
             }
         }));
 

@@ -21,7 +21,7 @@ public class JoinDelay extends ir.xenoncommunity.antibot.AntibotCheck implements
         XenonCore.instance.getTaskManager().repeatingTask(() ->
                         joinTimeMap.entrySet().removeIf
                                 (entry -> System.currentTimeMillis() - entry.getValue() > slowJoinThreshold)
-                , 10, 10, TimeUnit.SECONDS);
+                , 10, 10, TimeUnit.MILLISECONDS);
     }
 
     @EventHandler

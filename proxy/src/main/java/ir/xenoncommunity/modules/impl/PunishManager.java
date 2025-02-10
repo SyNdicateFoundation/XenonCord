@@ -57,7 +57,8 @@ public class PunishManager implements Listener {
                 XenonCore.instance.logdebuginfo(String.format("CMD %s loaded.", command.getSimpleName()));
                 XenonCore.instance.getBungeeInstance().pluginManager.registerCommand(null, (Command) constructor.newInstance(sqlManager));
             } catch (Exception e) {
-                XenonCore.instance.getLogger().error(e.getMessage());
+                XenonCore.instance.logdebugerror("Error while enabling punishment commands");
+                e.printStackTrace();
             }
         });
     }
@@ -96,6 +97,7 @@ public class PunishManager implements Listener {
                     .replace("PLAYER1", e.getConnection().getName())
                     .replace("PLAYER2", punishAdmin));
         } catch (Exception ex) {
+            XenonCore.instance.logdebugerror("Error while handing a join");
             ex.printStackTrace();
         }
     }
@@ -146,6 +148,7 @@ public class PunishManager implements Listener {
                     .replace("PLAYER1", username)
                     .replace("PLAYER2", punishAdmin));
         } catch (Exception ex) {
+            XenonCore.instance.logdebugerror("Error while handing a chat");
             ex.printStackTrace();
         }
     }

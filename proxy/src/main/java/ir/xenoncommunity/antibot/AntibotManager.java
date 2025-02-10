@@ -54,6 +54,7 @@ public class AntibotManager {
                 XenonCore.instance.getBungeeInstance().getPluginManager().registerListener(null, (Listener) listener.newInstance());
                 XenonCore.instance.logdebuginfo(String.format("Antibot check %s loaded.", check));
             } catch (Exception e) {
+                XenonCore.instance.logdebugerror("Error while enabling antibot checks");
                 e.printStackTrace();
             }
         }));
@@ -69,7 +70,6 @@ public class AntibotManager {
         this.blockedIPs.remove(ip);
         return false;
     }
-
 
     public void handlePing(String ip) {
         if (this.isBlocked(ip))

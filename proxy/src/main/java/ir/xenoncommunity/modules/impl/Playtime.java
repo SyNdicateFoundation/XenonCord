@@ -49,7 +49,8 @@ public class Playtime extends Command implements Listener {
                 preparedStatement.setLong(4, currentTime);
                 sqlManager.updateDB(preparedStatement);
             } catch (Exception ex) {
-                XenonCore.instance.getLogger().error(ex.getMessage());
+                XenonCore.instance.logdebugerror("Error while handing a join");
+                ex.printStackTrace();
             }
         });
     }
@@ -72,7 +73,8 @@ public class Playtime extends Command implements Listener {
                 if (selectStatement.executeQuery().next())
                     updatePlaytime(username, currentTime);
             } catch (Exception ex) {
-                XenonCore.instance.getLogger().error(ex.getMessage());
+                XenonCore.instance.logdebugerror("Error while handing a leave");
+                ex.printStackTrace();
             }
         });
     }
@@ -93,7 +95,8 @@ public class Playtime extends Command implements Listener {
             try {
                 sendPlaytimeMessage(sender, args.length == 0 ? sender.getName() : args[0]);
             } catch (Exception ex) {
-                XenonCore.instance.getLogger().error(ex.getMessage());
+                XenonCore.instance.logdebugerror("Error while handing a command");
+                ex.printStackTrace();
             }
         });
     }

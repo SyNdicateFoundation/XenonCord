@@ -67,6 +67,7 @@ public class BPlugins extends Command {
                 Message.send(sender, XenonCore.instance.getConfigData().getUnknownoptionmessage().replace("OPTIONS", "load, unload, blank (to see plugins list)"), false);
             }
         } catch (Exception e) {
+            XenonCore.instance.logdebugerror("Error while handing a plugin action");
             e.printStackTrace();
             Message.send(sender, String.format("%s &cAn error occurred while processing the plugin. Check the console for details.", prefix), true);
         }

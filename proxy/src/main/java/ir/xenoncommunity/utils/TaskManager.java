@@ -39,7 +39,8 @@ public class TaskManager {
             try {
                 runnableIn.run();
             } catch (Exception e) {
-                XenonCore.instance.getLogger().error(e.getMessage());
+                XenonCore.instance.logdebugerror("Error while handing a queued task");
+                e.printStackTrace();
             } finally {
                 Thread.currentThread().interrupt();
             }
@@ -56,7 +57,8 @@ public class TaskManager {
             try {
                 runnableIn.run();
             } catch (Exception e) {
-                XenonCore.instance.getLogger().error(e.getMessage());
+                XenonCore.instance.logdebugerror("Error while handing a asynchronous task");
+                e.printStackTrace();
             }
         });
     }
@@ -71,7 +73,8 @@ public class TaskManager {
             try {
                 runnableIn.run();
             } catch (Exception e) {
-                XenonCore.instance.getLogger().error(e.getMessage());
+                XenonCore.instance.logdebugerror("Error while handing a cached asynchronous task");
+                e.printStackTrace();
             }
         });
     }

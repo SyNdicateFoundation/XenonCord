@@ -180,7 +180,7 @@ antibot:
   maxpings: 10
   blockdurationmillis: 300
   connectionintervalmillis: 1000
-  pingresetinterval: 60
+  pingresetinterval: 60000
   slowjointhreshold: 10000
   playerspecifiedcooldown: 5000
   fastjointhreshold: 3000
@@ -192,3 +192,4 @@ antibot:
     - NameCheck
     - JoinDelay
     - FastJoin
+    - PingCheck

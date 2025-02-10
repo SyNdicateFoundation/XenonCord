@@ -258,10 +258,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
 
         this.virtualHost = InetSocketAddress.createUnresolved(handshake.getHost(), handshake.getPort());
 
-        bungee.getPluginManager().callEvent(new PlayerHandshakeEvent(InitialHandler.this, handshake));
+        final PlayerHandshakeEvent event =  new PlayerHandshakeEvent(InitialHandler.this, handshake);
+        bungee.getPluginManager().callEvent(event);
 
         // return if the connection was closed during the event
-        if (ch.isClosing()) {
+        if (ch.isClosing() || event.isCancelled()) {
             return;
         }
 

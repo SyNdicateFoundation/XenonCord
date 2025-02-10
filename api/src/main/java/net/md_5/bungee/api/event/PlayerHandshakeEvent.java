@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import net.md_5.bungee.api.connection.PendingConnection;
+import net.md_5.bungee.api.plugin.Cancellable;
 import net.md_5.bungee.api.plugin.Event;
 import net.md_5.bungee.protocol.packet.Handshake;
 
@@ -14,7 +15,7 @@ import net.md_5.bungee.protocol.packet.Handshake;
 @Data
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class PlayerHandshakeEvent extends Event {
+public class PlayerHandshakeEvent extends Event implements Cancellable {
 
     /**
      * Connection attempting to login.
@@ -29,4 +30,5 @@ public class PlayerHandshakeEvent extends Event {
         this.connection = connection;
         this.handshake = handshake;
     }
+    private boolean cancelled;
 }
