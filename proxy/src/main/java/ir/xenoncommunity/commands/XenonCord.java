@@ -1,17 +1,34 @@
 package ir.xenoncommunity.commands;
 
 import ir.xenoncommunity.XenonCore;
+import ir.xenoncommunity.antibot.AntibotCheck;
 import ir.xenoncommunity.utils.Message;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 @SuppressWarnings("unused")
 public class XenonCord extends Command {
+    public static final Set<String> ABstatusPlayers = new HashSet<>();
 
     public XenonCord() {
         super("xenoncord", XenonCore.instance.getConfigData().getXenoncordperm());
-    }
+        XenonCore.instance.getTaskManager().repeatingTask(() -> {
+            if(XenonCord.ABstatusPlayers.isEmpty()) return;
 
+            AntibotCheck.sendStats();
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }, 0L, 1000L, TimeUnit.MILLISECONDS);
+    }
     public void execute(CommandSender sender, String[] args) {
         if (args.length == 0) {
             Message.send(sender, "&7This server is using &b&lXenonCord &r&7by &fRealStresser.\nPlease, report bugs on:\nhttps://github.com/SyNdicateFoundation/XenonCord", false);
@@ -28,6 +45,17 @@ public class XenonCord extends Command {
                 Message.send(sender,
                         XenonCore.instance.getConfigData().getReloadcompletemessage(),
                         true);
+                break;
+            case "antibot":
+                if (!Arrays.asList(XenonCore.instance.getConfigData().getModules().getEnables()).contains("Antibot"))
+                    return;
+                switch (args[1]) {
+                    case "stats": {
+                        if(ABstatusPlayers.add(sender.getName())) {
+                        }else ABstatusPlayers.remove(sender.getName());
+                        break;
+                    }
+                }
                 break;
         }
     }

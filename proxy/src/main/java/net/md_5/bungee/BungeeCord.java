@@ -15,6 +15,7 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.util.ResourceLeakDetector;
 import ir.xenoncommunity.XenonCore;
+import ir.xenoncommunity.commands.XenonCord;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Synchronized;
@@ -219,6 +220,7 @@ public class BungeeCord extends ProxyServer {
                     XenonCore.instance.getLogger().error(e.getMessage());
                 }
             });
+            new XenonCord();
             xenonInstance.logdebuginfo("Commands are loaded!");
             xenonInstance.logdebuginfo("ASYNC task command registerer is shutting down...");
         });
