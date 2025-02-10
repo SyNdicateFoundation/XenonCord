@@ -1,5 +1,6 @@
 package ir.xenoncommunity.antibot;
 
+import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.utils.Message;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
@@ -13,6 +14,7 @@ import net.md_5.bungee.api.event.ProxyPingEvent;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings({"unused", "deprecation"})
@@ -43,18 +45,41 @@ public abstract class AntibotCheck {
 //    public void cancelProxyPing(ProxyPingEvent event, String reason) {
 //    }
 
+    public void cancelPing(ProxyPingEvent event) {
+        log();
+        event.setResponse(null);
+    }
     public void cancelHandshake(PlayerHandshakeEvent event, String reason) {
+        log();
         event.setCancelled(true);
     }
 
     public void cancelPreLogin(PreLoginEvent event, String reason) {
+        log();
         event.setCancelled(true);
         event.setCancelReason(reason);
     }
 
     public void cancelLogin(LoginEvent event, String reason) {
+        log();
         event.setCancelled(true);
         event.setCancelReason(reason);
+    }
+
+    public void log(){
+        XenonCore.instance.getTaskManager().add(() -> {
+            long startTime = System.currentTimeMillis();
+
+            while (System.currentTimeMillis() - startTime < 5000) {
+                sendStats();
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
     }
 
     public void resetPlayerData(String playerName, long currentTime) {
@@ -66,10 +91,21 @@ public abstract class AntibotCheck {
         this.animationFrame = (this.animationFrame + 1) % this.arrows.length;
         for (ProxiedPlayer proxyPlayer : ProxyServer.getInstance().getPlayers()) {
             //if (proxyPlayer.hasPermission("alphaguard.stats") && Main.msgSee.contains(proxyPlayer.getUniqueId())) {
-            int ping = proxyPlayer.getPing();
-            int totalCPS = joinsPerSecond + pingsPerSecond;
-            String actionBarMessage = "§b§lXenonCord §8» §7CPS/s§8: §f" + joinsPerSecond + " §8| §7PING/s§8: §f" + pingsPerSecond + " §8| §7Blacklist§8: §f" + blockedPlayersCount + " §8(" + " §7Total CPS§8: §f" + totalCPS + " §8| §7Ping§8: §f" + ping + "ms§8)" + " §4§l" + this.arrows[this.animationFrame];
-            proxyPlayer.sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(actionBarMessage));
+            final String stats = "§b§lXenonCord §8» §7CPS/s§8: §f" +
+                    joinsPerSecond +
+                    " §8| §7PING/s§8: §f" +
+                    pingsPerSecond +
+                    " §8| §7Blacklist§8: §f" +
+                    blockedPlayersCount +
+                    " §8(" + " §7Total CPS§8: §f" +
+                    (joinsPerSecond + pingsPerSecond) + " §8| §7Ping§8: §f" +
+                    proxyPlayer.getPing() + "ms§8)" +
+                    " §4§l" +
+                    this.arrows[this.animationFrame];
+            proxyPlayer.sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
+                    stats
+            ));
+            XenonCore.instance.getLogger().warn(stats);
             //}
         }
     }
