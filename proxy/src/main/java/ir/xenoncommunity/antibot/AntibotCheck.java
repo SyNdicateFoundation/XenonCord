@@ -11,6 +11,7 @@ import net.md_5.bungee.api.event.PlayerHandshakeEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 
+import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -87,8 +88,11 @@ public abstract class AntibotCheck {
     }
 
     public static void sendStats() {
+        final Runtime runtime = Runtime.getRuntime();
         final String stats = "§b§lXenonCord §8» §7CPS/s§8: §f" +
                 joinsPerSecond +
+                " §8| §7CPU§8: §f" + String.format("%.2f", getCpuUsage()) + "%" +
+                " §8| §7MEMORY§8: §f" + formatMemory(runtime.totalMemory() - runtime.freeMemory()) + "/" + formatMemory(runtime.totalMemory()) +
                 " §8| §7PING/s§8: §f" +
                 pingsPerSecond +
                 " §8| §7Blacklist§8: §f" +
@@ -105,5 +109,38 @@ public abstract class AntibotCheck {
             //}
         }
         XenonCore.instance.getLogger().warn(stats);
+    }
+    private static long prevProcessCpuTime;
+
+    private static double getCpuUsage() {
+        final long prevUpTime;
+        final long upTime = getUptime();
+        final long processCpuTime = getProcessCpuTime();
+
+        final long processCpuTimeDiff = processCpuTime - prevProcessCpuTime;
+
+        prevProcessCpuTime = processCpuTime;
+
+        return (double) processCpuTimeDiff / (upTime * 10000) * 100;
+    }
+    private static String formatMemory(long bytes) {
+        String[] units = new String[]{"B", "KB", "MB", "GB", "TB"};
+        int unitIndex = 0;
+        double value = (double) bytes;
+
+        while (value >= 1024 && unitIndex < units.length - 1) {
+            value /= 1024;
+            unitIndex++;
+        }
+
+        return String.format("%.2f %s", value, units[unitIndex]);
+    }
+
+    private static long getUptime() {
+        return ManagementFactory.getRuntimeMXBean().getUptime();
+    }
+
+    private static long getProcessCpuTime() {
+        return ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
     }
 }
