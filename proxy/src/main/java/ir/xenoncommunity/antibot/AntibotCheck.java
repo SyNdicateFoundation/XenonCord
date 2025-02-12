@@ -62,7 +62,6 @@ public abstract class AntibotCheck {
         log();
         event.setCancelled(true);
         event.setReason(reason);
-        System.out.println("set cancelled");
     }
 
     public void cancelPreLogin(PreLoginEvent event, String reason) {

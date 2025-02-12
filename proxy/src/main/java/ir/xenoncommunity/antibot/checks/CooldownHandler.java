@@ -9,6 +9,7 @@ import net.md_5.bungee.event.EventHandler;
 @SuppressWarnings("unused")
 @AntibotCheck(name = "Still On Cooldown")
 public class CooldownHandler extends ir.xenoncommunity.antibot.AntibotCheck implements Listener {
+    //@EventHandler(priority = )
     @EventHandler(priority = Byte.MAX_VALUE)
     public void onPostPlayerHandshake(PostPlayerHandshakeEvent event) {
         ++joinsPerSecond;
