@@ -10,6 +10,7 @@ import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerHandshakeEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
+import net.md_5.bungee.api.xenoncord.PostPlayerHandshakeEvent;
 
 import java.lang.management.ManagementFactory;
 import java.util.Map;
@@ -25,17 +26,24 @@ public abstract class AntibotCheck {
     public static int joinsPerSecond = 0;
     public static int pingsPerSecond = 0;
 
-    public void blockPlayer(PreLoginEvent event, String playerName, String reason) {
-        cancelPreLogin(event, reason);
+    public void blockPlayer(PostPlayerHandshakeEvent event, String playerIP, String reason) {
+        cancelPostHandshake(event, reason);
         blockedPlayersCount.incrementAndGet();
-        cooldownMap.put(playerName, System.currentTimeMillis());
+        cooldownMap.put(playerIP, System.currentTimeMillis());
         //appendToBlacklistFile(playerName);
     }
 
-    public void blockPlayer(LoginEvent event, String playerName, String reason) {
+    public void blockPlayer(PreLoginEvent event, String playerIP, String reason) {
+        cancelPreLogin(event, reason);
+        blockedPlayersCount.incrementAndGet();
+        cooldownMap.put(playerIP, System.currentTimeMillis());
+        //appendToBlacklistFile(playerName);
+    }
+
+    public void blockPlayer(LoginEvent event, String playerIP, String reason) {
         cancelLogin(event, reason);
         blockedPlayersCount.incrementAndGet();
-        cooldownMap.put(playerName, System.currentTimeMillis());
+        cooldownMap.put(playerIP, System.currentTimeMillis());
         //appendToBlacklistFile(playerName);
     }
 
@@ -46,9 +54,15 @@ public abstract class AntibotCheck {
         log();
         event.setResponse(null);
     }
-    public void cancelHandshake(PlayerHandshakeEvent event, String reason) {
+    public void cancelHandshake(PlayerHandshakeEvent event) {
         log();
         event.setCancelled(true);
+    }
+    public void cancelPostHandshake(PostPlayerHandshakeEvent event, String reason) {
+        log();
+        event.setCancelled(true);
+        event.setReason(reason);
+        System.out.println("set cancelled");
     }
 
     public void cancelPreLogin(PreLoginEvent event, String reason) {

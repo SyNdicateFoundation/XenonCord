@@ -16,6 +16,7 @@ import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.*;
+import net.md_5.bungee.api.xenoncord.PostPlayerHandshakeEvent;
 import net.md_5.bungee.http.HttpClient;
 import net.md_5.bungee.jni.cipher.BungeeCipher;
 import net.md_5.bungee.netty.ChannelWrapper;
@@ -261,10 +262,29 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         final PlayerHandshakeEvent event =  new PlayerHandshakeEvent(InitialHandler.this, handshake);
         bungee.getPluginManager().callEvent(event);
 
+        try {
+            final String host = event.getConnection().getVirtualHost().getHostString();
+            if(!(host != null && host.length() <= 255 && host.matches("[a-zA-Z0-9.-]+")))
+                event.setCancelled(true);
+        } catch (Exception var3) {
+            XenonCore.instance.logdebugerror("Error while handling pre-login event");
+            event.setCancelled(true);
+        }
+
+
+
         // return if the connection was closed during the event
-        if (ch.isClosing() || event.isCancelled()) {
+        if (ch.isClosing()) {
             return;
         }
+
+        if (event.isCancelled()) {
+            disconnect();
+            ch.close();
+            return;
+        }
+
+
 
         switch (handshake.getRequestedProtocol()) {
             case 1:
@@ -285,6 +305,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
                 }
                 thisState = State.USERNAME;
                 ch.setProtocol(Protocol.LOGIN);
+
+                final PostPlayerHandshakeEvent postEvent =  new PostPlayerHandshakeEvent(InitialHandler.this, handshake);
+                bungee.getPluginManager().callEvent(postEvent);
+                if(postEvent.isCancelled()){
+                    disconnect(postEvent.getReason());
+                    return;
+                }
 
                 if (!ProtocolConstants.SUPPORTED_VERSION_IDS.contains(handshake.getProtocolVersion())) {
                     if (handshake.getProtocolVersion() > bungee.getProtocolVersion()) {
@@ -360,6 +387,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
                     disconnect((reason != null) ? reason : TextComponent.fromLegacy(bungee.getTranslation("kick_message")));
                     return;
                 }
+
                 if (onlineMode) {
                     thisState = State.ENCRYPT;
                     unsafe().sendPacket(request = EncryptionUtil.encryptRequest());

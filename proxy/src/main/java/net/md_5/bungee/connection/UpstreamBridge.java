@@ -50,7 +50,8 @@ public class UpstreamBridge extends PacketHandler {
     @Override
     public void disconnected(ChannelWrapper channel) {
         // We lost connection to the client
-        bungee.getPluginManager().callEvent(new PlayerDisconnectEvent(con));
+        final PlayerDisconnectEvent event = new PlayerDisconnectEvent(con);
+        bungee.getPluginManager().callEvent(event);
         con.getTabListHandler().onDisconnect();
         BungeeCord.getInstance().removeConnection(con);
 
@@ -81,6 +82,9 @@ public class UpstreamBridge extends PacketHandler {
             });
             con.getServer().disconnect("Quitting");
         });
+
+        DownstreamBridge.CHANNELS_REGISTERED.remove(event.getPlayer());
+        DownstreamBridge.PACKET_USAGE.remove(event.getPlayer());
     }
 
     @Override

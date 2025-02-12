@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.Objects;
 
@@ -31,14 +32,7 @@ public class Configuration {
 
     private void copyConfig() {
         try {
-            @Cleanup final BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("XenonCore.yml"))));
-            @Cleanup final BufferedWriter writer = new BufferedWriter(new FileWriter(configFile));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                writer.write(line);
-                writer.newLine();
-            }
+            Files.copy(Objects.requireNonNull(XenonCore.class.getResourceAsStream("/XenonCore.yml")), configFile.toPath());
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

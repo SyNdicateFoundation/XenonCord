@@ -1,5 +1,6 @@
 package net.md_5.bungee.connection;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -25,6 +26,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.Connection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.*;
@@ -43,8 +45,11 @@ import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.tab.TabList;
 
 import java.io.DataInput;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -241,11 +246,18 @@ public class DownstreamBridge extends PacketHandler {
             });
         }
     }
+    public static final Map<Connection, Long> PACKET_USAGE = new ConcurrentHashMap<>();
+    public static final Map<Connection, AtomicInteger> CHANNELS_REGISTERED = new ConcurrentHashMap<>();
+
+    private boolean elapsed(long from, long required) {
+        return from == -1L || System.currentTimeMillis() - from > required;
+    }
 
     @Override
     @SuppressWarnings("checkstyle:avoidnestedblocks")
     public void handle(PluginMessage pluginMessage) throws Exception {
-        if (bungee.getPluginManager().callEvent(new PluginMessageEvent(server, con, pluginMessage.getTag(), pluginMessage.getData().clone())).isCancelled()) {
+        final PluginMessageEvent event = new PluginMessageEvent(server, con, pluginMessage.getTag(), pluginMessage.getData().clone());
+        if (bungee.getPluginManager().callEvent(event).isCancelled()) {
             throw CancelSendSignal.INSTANCE;
         }
 
@@ -267,6 +279,32 @@ public class DownstreamBridge extends PacketHandler {
         if (pluginMessage.getTag().equals("MC|PLUGINS")) {
             throw CancelSendSignal.INSTANCE;
         }
+
+        final String tag = event.getTag();
+        if ("MC|BSign".equals(tag) || "MC|BEdit".equals(tag) || "REGISTER".equals(tag)) {
+            final Connection connection = event.getSender();
+
+            if (connection instanceof ProxiedPlayer) {
+                try {
+                    if ("REGISTER".equals(tag)) {
+                        CHANNELS_REGISTERED.putIfAbsent(connection, new AtomicInteger());
+
+                        if (CHANNELS_REGISTERED.get(connection).addAndGet(new String(event.getData(), Charsets.UTF_8).split("\u0000").length) > 124) {
+                            throw new IOException("Too many channels");
+                        }
+                    } else {
+                        if (!this.elapsed(PACKET_USAGE.getOrDefault(connection, -1L), 100L))
+                            throw new IOException("Packet flood");
+
+                        PACKET_USAGE.put(connection, System.currentTimeMillis());
+                    }
+                } catch (Throwable var8) {
+                    connection.disconnect();
+                    throw CancelSendSignal.INSTANCE;
+                }
+            }
+        }
+
 
         if ( pluginMessage.getTag().equals( PluginMessage.BUNGEE_CHANNEL_LEGACY ) ) {
             final DataInput in = pluginMessage.getStream();

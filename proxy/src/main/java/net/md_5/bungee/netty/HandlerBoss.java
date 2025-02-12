@@ -112,7 +112,9 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
                 if (sendPacket) {
                     handler.handle(packet);
                 }
-            } finally {
+            } catch(OutOfMemoryError e){
+                System.gc();
+            } finally{
                 packet.trySingleRelease();
             }
         }

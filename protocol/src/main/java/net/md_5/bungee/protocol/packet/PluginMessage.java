@@ -85,7 +85,11 @@ public class PluginMessage extends DefinedPacket {
 
     @Override
     public void handle(AbstractPacketHandler handler) throws Exception {
-        handler.handle(this);
+        try{
+            handler.handle(this);
+        } catch (OutOfMemoryError e){
+                System.gc();
+        }
     }
 
     public DataInput getStream() {

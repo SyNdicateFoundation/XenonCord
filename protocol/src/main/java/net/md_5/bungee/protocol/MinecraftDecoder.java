@@ -8,6 +8,7 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import net.md_5.bungee.protocol.packet.Handshake;
 
 import java.util.List;
 
@@ -40,6 +41,49 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
         this.protocolVersion = protocolVersion;
     }
 
+    private int readVarInt(ByteBuf buf) {
+        int value = 0;
+        int size = 0;
+
+        byte b;
+        do {
+            b = buf.readByte();
+            value |= (b & 127) << size++ * 7;
+            if (size > 5) {
+                throw new RuntimeException("VarInt too large");
+            }
+        } while((b & 128) == 128);
+
+        return value;
+    }
+
+    private Handshake readHandshake(ByteBuf buf) {
+        try {
+            final int protocolVersion = this.readVarInt(buf);
+            final String host = this.readString(buf);
+            final int port = buf.readUnsignedShort();
+            final int nextState = this.readVarInt(buf);
+            return new Handshake(protocolVersion, host, port, nextState);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String readString(ByteBuf buf) {
+        final int length = this.readVarInt(buf);
+        if (length <= 255 && length >= 0) {
+            final byte[] bytes = new byte[length];
+            buf.readBytes(bytes);
+            return new String(bytes);
+        } else {
+            throw new IllegalArgumentException("String length exceeds limit");
+        }
+    }
+
+    private final int MAX_PACKET_SIZE = 4096;
+    private final int MAX_HANDSHAKE_LENGTH = 255;
+
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         // See Varint21FrameDecoder for the general reasoning. We add this here as ByteToMessageDecoder#handlerRemoved()
@@ -48,8 +92,11 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
             return;
         }
 
+
+
         Protocol.DirectionData prot = (server) ? protocol.TO_SERVER : protocol.TO_CLIENT;
         ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
+
 
         Object packetTypeInfo = null;
         try {
@@ -117,6 +164,9 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
                 slice.release();
             }
         }
+
+
+
     }
 
     private void doLengthSanityChecks(ByteBuf buf, DefinedPacket packet,

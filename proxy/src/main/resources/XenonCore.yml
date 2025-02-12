@@ -47,7 +47,6 @@ modules:
     - BPlugins
     - Playtime
     - PunishManager
-    - ExploitPatcher
     #- StaffActivitySender
 
 # MotdChanger Settings

@@ -57,7 +57,11 @@ public class LoginRequest extends DefinedPacket {
 
     @Override
     public void handle(AbstractPacketHandler handler) throws Exception {
-        handler.handle(this);
+        try{
+            handler.handle(this);
+        } catch (OutOfMemoryError e){
+                System.gc();
+        }
     }
 
     // Waterfall start: Additional DoS mitigations, courtesy of Velocity

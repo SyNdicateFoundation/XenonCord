@@ -3,6 +3,7 @@ package ir.xenoncommunity.antibot.checks;
 import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.annotations.AntibotCheck;
 import net.md_5.bungee.api.event.LoginEvent;
+import net.md_5.bungee.api.event.PlayerHandshakeEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -25,17 +26,12 @@ public class JoinDelay extends ir.xenoncommunity.antibot.AntibotCheck implements
     }
 
     @EventHandler
-    public void onPreLogin(PreLoginEvent event) {
-        joinTimeMap.put(event.getConnection().getName(), System.currentTimeMillis());
-    }
-
-    @EventHandler
     public void onPlayerLogin(LoginEvent event) {
-        final String username = event.getConnection().getName();
-        final Long joinTime = joinTimeMap.get(username);
+        final String playerIp = event.getConnection().getAddress().getAddress().getHostAddress();
+        final Long joinTime = joinTimeMap.get(playerIp);
 
         if ((joinTime != null && (System.currentTimeMillis() - joinTime) > slowJoinThreshold)) {
-            blockPlayer(event, username, XenonCore.instance.getConfigData().getAntibot().getDisconnect_slowconnection());
+            blockPlayer(event, playerIp, XenonCore.instance.getConfigData().getAntibot().getDisconnect_slowconnection());
         }
     }
 }
