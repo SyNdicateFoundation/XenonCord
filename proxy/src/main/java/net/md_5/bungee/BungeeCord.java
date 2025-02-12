@@ -203,7 +203,7 @@ public class BungeeCord extends ProxyServer {
         config.load();
 
         xenonInstance.logdebuginfo("Registering channels...");
-        registerChannel("BungeeCord");
+        registerChannel( PluginMessage.BUNGEE_CHANNEL_LEGACY );
         registerChannel(ForgeConstants.FML_TAG);
         registerChannel(ForgeConstants.FML_HANDSHAKE_TAG);
         registerChannel(ForgeConstants.FORGE_REGISTER);

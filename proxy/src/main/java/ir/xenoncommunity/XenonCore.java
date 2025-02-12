@@ -64,7 +64,6 @@ public class XenonCore {
             SwingManager.createAndShowGUI();
             getLogger().info("Successfully booted! Loading the proxy server with plugins took: {}ms", System.currentTimeMillis() - startTime);
         });
-
     }
 
     /**
