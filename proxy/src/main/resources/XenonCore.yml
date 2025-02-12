@@ -176,10 +176,8 @@ commandwhitelist:
         - "/spawn"
 
 antibot:
-  maxpings: 10
-  blockdurationmillis: 300
+  blockdurationmillis: 20000
   connectionintervalmillis: 1000
-  pingresetinterval: 60000
   slowjointhreshold: 10000
   playerspecifiedcooldown: 5000
   fastjointhreshold: 3000
@@ -190,5 +188,4 @@ antibot:
     - CooldownHandler
     - NameCheck
     - JoinDelay
-    - FastJoin
     - PingCheck

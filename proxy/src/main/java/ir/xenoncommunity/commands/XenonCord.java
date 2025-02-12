@@ -21,9 +21,9 @@ public class XenonCord extends Command {
     public XenonCord() {
         super("xenoncord", XenonCore.instance.getConfigData().getXenoncordperm());
         XenonCore.instance.getTaskManager().repeatingTask(() -> {
-            if (!log && ABstatusPlayers.isEmpty()) return;
+            if (!log ) return;
 
-            AntibotCheck.sendStats();
+            AntibotCheck.log();
 
             try {
                 Thread.sleep(1000);

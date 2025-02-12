@@ -211,7 +211,7 @@ public class Configuration {
     @Getter
     @Setter
     public static class AntiBotData {
-        private int maxpings, blockdurationmillis, connectionintervalmillis, pingresetinterval, slowjointhreshold, playerspecifiedcooldown, fastjointhreshold;
+        private int blockdurationmillis, connectionintervalmillis, pingresetinterval, slowjointhreshold, playerspecifiedcooldown, fastjointhreshold;
         private String disconnect_cooldown, disconnect_invalidusername, disconnect_slowconnection;
         private String[] checks;
     }

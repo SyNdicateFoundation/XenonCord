@@ -15,41 +15,53 @@ import net.md_5.bungee.api.xenoncord.PostPlayerHandshakeEvent;
 import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings({"unused", "deprecation"})
 public abstract class AntibotCheck {
     public static final AtomicInteger blockedPlayersCount = new AtomicInteger(0);
+    public final Map<String, Long> blockedIPs = new ConcurrentHashMap<>();
     public final Map<String, Long> cooldownMap = new ConcurrentHashMap<>();
     public final Map<String, Long> joinTimeMap = new ConcurrentHashMap<>();
     public final Map<String, Long> firstJoinTimestamps = new ConcurrentHashMap<>();
     public static int joinsPerSecond = 0;
     public static int pingsPerSecond = 0;
 
+    public AntibotCheck() {
+        XenonCore.instance.getTaskManager().repeatingTask(this::cleanupExpiredEntries, 1L, 1L, TimeUnit.MINUTES);
+    }
+
     public void blockPlayer(PostPlayerHandshakeEvent event, String playerIP, String reason) {
         cancelPostHandshake(event, reason);
         blockedPlayersCount.incrementAndGet();
-        cooldownMap.put(playerIP, System.currentTimeMillis());
+        final Long currentTime = System.currentTimeMillis();
+        cooldownMap.put(playerIP, currentTime);
+        blockedIPs.put(playerIP, currentTime);
         //appendToBlacklistFile(playerName);
     }
 
     public void blockPlayer(PreLoginEvent event, String playerIP, String reason) {
         cancelPreLogin(event, reason);
         blockedPlayersCount.incrementAndGet();
-        cooldownMap.put(playerIP, System.currentTimeMillis());
+        final Long currentTime = System.currentTimeMillis();
+        cooldownMap.put(playerIP, currentTime);
+        blockedIPs.put(playerIP, currentTime);
         //appendToBlacklistFile(playerName);
     }
 
     public void blockPlayer(LoginEvent event, String playerIP, String reason) {
         cancelLogin(event, reason);
         blockedPlayersCount.incrementAndGet();
-        cooldownMap.put(playerIP, System.currentTimeMillis());
+        final Long currentTime = System.currentTimeMillis();
+        cooldownMap.put(playerIP, currentTime);
+        blockedIPs.put(playerIP, currentTime);
         //appendToBlacklistFile(playerName);
     }
 
 //    public void cancelProxyPing(ProxyPingEvent event, String reason) {
 //    }
-    private boolean isLogging = false;
+    private static boolean isLogging = false;
     public void cancelPing(ProxyPingEvent event) {
         log();
         event.setResponse(null);
@@ -76,7 +88,13 @@ public abstract class AntibotCheck {
         event.setCancelReason(reason);
     }
 
-    public void log(){
+    private void cleanupExpiredEntries() {
+        joinTimeMap.clear();
+        firstJoinTimestamps.clear();
+        cooldownMap.clear();
+    }
+
+    public static void log(){
         if(isLogging) return;
 
         XenonCore.instance.getTaskManager().add(() -> {
@@ -90,6 +108,8 @@ public abstract class AntibotCheck {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
+                pingsPerSecond = 0;
+                joinsPerSecond = 0;
             }
             isLogging = false;
         });
