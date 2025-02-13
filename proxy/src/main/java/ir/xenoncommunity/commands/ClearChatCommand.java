@@ -2,15 +2,14 @@ package ir.xenoncommunity.commands;
 
 import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.utils.Message;
-import ir.xenoncommunity.utils.SQLManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
+@SuppressWarnings("unused")
 public class ClearChatCommand extends Command {
 
-    public ClearChatCommand(SQLManager sqlManagerIn) {
+    public ClearChatCommand() {
         super("clearchat", XenonCore.instance.getConfigData().getPunish_manager().getClear_chat_perm(), "cls");
-        ;
     }
 
     @Override
