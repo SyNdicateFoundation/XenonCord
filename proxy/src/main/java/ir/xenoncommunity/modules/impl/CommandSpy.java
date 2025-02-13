@@ -70,6 +70,9 @@ public class CommandSpy extends Command implements Listener {
                         }
                     });
         });
+        Message.send(XenonCore.instance.getConfigData().getCommand_spy().getSpy_message()
+                .replace("PLAYER", player.getDisplayName())
+                .replace("COMMAND", rawCommand));
     }
 
     private boolean isSpyException(String rawCommand) {
