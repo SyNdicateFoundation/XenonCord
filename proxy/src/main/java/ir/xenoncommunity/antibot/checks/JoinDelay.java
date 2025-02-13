@@ -14,7 +14,7 @@ public class JoinDelay extends ir.xenoncommunity.antibot.AntibotCheck implements
     private final int slowJoinThreshold;
 
     public JoinDelay() {
-        this.slowJoinThreshold = XenonCore.instance.getConfigData().getAntibot().getSlowjointhreshold();
+        this.slowJoinThreshold = XenonCore.instance.getConfigData().getAntibot().getSlow_join_threshold();
         XenonCore.instance.getTaskManager().repeatingTask(() ->
                         joinTimeMap.entrySet().removeIf
                                 (entry -> System.currentTimeMillis() - entry.getValue() > slowJoinThreshold)
@@ -27,7 +27,7 @@ public class JoinDelay extends ir.xenoncommunity.antibot.AntibotCheck implements
         final Long joinTime = joinTimeMap.get(playerIp);
 
         if ((joinTime != null && (System.currentTimeMillis() - joinTime) > slowJoinThreshold)) {
-            blockPlayer(event, playerIp, XenonCore.instance.getConfigData().getAntibot().getDisconnect_slowconnection());
+            blockPlayer(event, playerIp, XenonCore.instance.getConfigData().getAntibot().getDisconnect_cooldown());
         }
     }
 }

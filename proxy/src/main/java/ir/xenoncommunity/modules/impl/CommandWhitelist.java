@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @ModuleListener(isExtended = false, isImplemented = true)
 public class CommandWhitelist implements Listener {
 
-    private final Configuration.CommandWhitelistData whitelistData = XenonCore.instance.getConfigData().getCommandwhitelist();
+    private final Configuration.CommandWhitelistData whitelistData = XenonCore.instance.getConfigData().getCommand_whitelist();
 
     @EventHandler
     public void onCommandExecution(ChatEvent e) {
@@ -48,7 +48,7 @@ public class CommandWhitelist implements Listener {
     }
 
     private boolean hasperm(ProxiedPlayer playerIn, String command) {
-        return whitelistData.getPergroup().entrySet().stream()
+        return whitelistData.getPer_group().entrySet().stream()
                 .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey())
                         && playerIn.getServer().getInfo().getName().equals(entry.getKey().split("\\.")[1]))
                 .map(Map.Entry::getValue)
@@ -57,7 +57,7 @@ public class CommandWhitelist implements Listener {
 
     private void clearAdd(TabCompleteEvent e, ProxiedPlayer playerIn) {
         e.getSuggestions().clear();
-        e.getSuggestions().addAll(whitelistData.getPergroup().entrySet().stream()
+        e.getSuggestions().addAll(whitelistData.getPer_group().entrySet().stream()
                 .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey())
                         && playerIn.getServer().getInfo().getName().equals(entry.getKey().split("\\.")[1]))
                 .map(Map.Entry::getValue)

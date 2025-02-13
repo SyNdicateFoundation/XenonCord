@@ -13,13 +13,13 @@ import net.md_5.bungee.command.ConsoleCommandSender;
 public class Ping extends Command {
 
     public Ping() {
-        super("Ping", XenonCore.instance.getConfigData().getPing().getPingperm());
+        super("Ping", XenonCore.instance.getConfigData().getPing().getPing_perm());
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ConsoleCommandSender) {
-            Message.send(sender, XenonCore.instance.getConfigData().getCannotexecasconsoleerrormessage(), false);
+            Message.send(sender, XenonCore.instance.getConfigData().getCannot_execute_as_console_message(), false);
             return;
         }
 
@@ -28,7 +28,7 @@ public class Ping extends Command {
     }
 
     private void sendPingMessage(CommandSender sender, int ping) {
-        Message.send(sender, XenonCore.instance.getConfigData().getPing().getPingmessage()
+        Message.send(sender, XenonCore.instance.getConfigData().getPing().getPing_message()
                 .replace("PING", String.valueOf(ping)), false);
     }
 
@@ -40,11 +40,11 @@ public class Ping extends Command {
             return;
         }
 
-        if (!sender.hasPermission(XenonCore.instance.getConfigData().getPing().getPingothersperm())) {
+        if (!sender.hasPermission(XenonCore.instance.getConfigData().getPing().getPing_others_perm())) {
             return;
         }
 
-        Message.send(sender, XenonCore.instance.getConfigData().getPing().getPingothersmessage()
+        Message.send(sender, XenonCore.instance.getConfigData().getPing().getPing_others_message()
                 .replace("PING", String.valueOf(targetPlayer.getPing()))
                 .replace("USERNAME", targetPlayerName), false);
     }

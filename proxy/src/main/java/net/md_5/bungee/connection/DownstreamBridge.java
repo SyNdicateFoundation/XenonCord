@@ -269,7 +269,7 @@ public class DownstreamBridge extends PacketHandler {
             Preconditions.checkState(!serverBrand.contains(bungee.getName()), "Cannot connect proxy to itself!");
 
             brand = ByteBufAllocator.DEFAULT.heapBuffer();
-            DefinedPacket.writeString(XenonCore.instance.getConfigData().getIngamebrandname(), brand);
+            DefinedPacket.writeString(XenonCore.instance.getConfigData().getIn_game_brandname(), brand);
             pluginMessage.setData(brand);
             brand.release();
             con.unsafe().sendPacket(pluginMessage);

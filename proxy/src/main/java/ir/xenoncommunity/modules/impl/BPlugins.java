@@ -25,9 +25,9 @@ public class BPlugins extends Command {
     private final String prefix = XenonCore.instance.getConfigData().getPrefix();
 
     public BPlugins() {
-        super("BPlugins", XenonCore.instance.getConfigData().getBplugins().getPluginsperm());
+        super("BPlugins", XenonCore.instance.getConfigData().getBplugins().getPlugins_perm());
     }
-
+    private final String doesntExistMessage = XenonCore.instance.getConfigData().getBplugins().getPlugin_does_not_exist_error_message();
     @Override
     @SneakyThrows
     public void execute(CommandSender sender, String[] args) {
@@ -38,13 +38,13 @@ public class BPlugins extends Command {
             return;
         }
 
-        if (!sender.hasPermission(XenonCore.instance.getConfigData().getBplugins().getPluginstoggleperm())) {
+        if (!sender.hasPermission(XenonCore.instance.getConfigData().getBplugins().getPlugins_toggle_perm())) {
             return;
         }
 
         final File plFile = new File(String.format("plugins/%s", args[1]));
         if (!plFile.exists()) {
-            Message.send(sender, XenonCore.instance.getConfigData().getBplugins().getPlugindoesntexisterrormessage(), false);
+            Message.send(sender, doesntExistMessage, false);
             return;
         }
 
@@ -64,7 +64,7 @@ public class BPlugins extends Command {
             } else if (action.equalsIgnoreCase("unload")) {
                 unloadPlugin(plFile, sender, manager);
             } else {
-                Message.send(sender, XenonCore.instance.getConfigData().getUnknownoptionmessage().replace("OPTIONS", "load, unload, blank (to see plugins list)"), false);
+                Message.send(sender, XenonCore.instance.getConfigData().getUnknown_option_message().replace("OPTIONS", "load, unload, blank (to see plugins list)"), false);
             }
         } catch (Exception e) {
             XenonCore.instance.logdebugerror("Error while handing a plugin action");
@@ -93,13 +93,13 @@ public class BPlugins extends Command {
         manager.loadPlugins();
         manager.getPlugin(desc.getName()).onEnable();
 
-        Message.send(sender, XenonCore.instance.getConfigData().getBplugins().getPluginisloadingmessage().replace("PLUGIN", plFile.getName()), true);
+        Message.send(sender, XenonCore.instance.getConfigData().getBplugins().getPlugin_is_loading_message().replace("PLUGIN", plFile.getName()), true);
     }
 
     private void unloadPlugin(File plFile, CommandSender sender, PluginManager manager) throws Exception {
         final Plugin plugin = manager.getPlugin(plFile.getName());
         if (plugin == null) {
-            Message.send(sender, XenonCore.instance.getConfigData().getBplugins().getPlugindoesntexisterrormessage(), false);
+            Message.send(sender, doesntExistMessage, false);
             return;
         }
 
@@ -133,6 +133,6 @@ public class BPlugins extends Command {
 
         System.gc();
 
-        Message.send(sender, XenonCore.instance.getConfigData().getBplugins().getPluginisunloadingmessage().replace("PLUGIN", plFile.getName()), true);
+        Message.send(sender, XenonCore.instance.getConfigData().getBplugins().getPlugin_is_unloading_message().replace("PLUGIN", plFile.getName()), true);
     }
 }

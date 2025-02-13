@@ -2,7 +2,6 @@ package ir.xenoncommunity.modules.impl;
 
 import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.annotations.ModuleListener;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
@@ -22,7 +21,7 @@ public class MotdChanger implements Listener {
 
         serverPing.setDescriptionComponent(new TextComponent(motd));
 
-        if (XenonCore.instance.getConfigData().getMotdchanger().getOnemoreplayer())
+        if (XenonCore.instance.getConfigData().getMotd_changer().getOne_more_player())
             serverPing.getPlayers().setMax(XenonCore.instance.getBungeeInstance().getOnlineCount() + 1);
 
         e.setResponse(serverPing);
@@ -30,7 +29,7 @@ public class MotdChanger implements Listener {
 
     private String getMotd() {
         return (Maintenance.downServers != null && Maintenance.downServers.contains("proxy"))
-                ? XenonCore.instance.getConfigData().getMotdchanger().getMaintenancemotd()
-                : XenonCore.instance.getConfigData().getMotdchanger().getMotd().replace("ONLINE", String.valueOf(XenonCore.instance.getBungeeInstance().getOnlineCount()));
+                ? XenonCore.instance.getConfigData().getMotd_changer().getMaintenance_motd()
+                : XenonCore.instance.getConfigData().getMotd_changer().getMotd().replace("ONLINE", String.valueOf(XenonCore.instance.getBungeeInstance().getOnlineCount()));
     }
 }

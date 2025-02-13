@@ -4,7 +4,6 @@ import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.antibot.AntibotCheck;
 import ir.xenoncommunity.utils.Message;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.command.ConsoleCommandSender;
 
@@ -19,7 +18,7 @@ public class XenonCord extends Command {
     public boolean log = false;
 
     public XenonCord() {
-        super("xenoncord", XenonCore.instance.getConfigData().getXenoncordperm());
+        super("xenoncord", XenonCore.instance.getConfigData().getXenoncord_permission());
         XenonCore.instance.getTaskManager().repeatingTask(() -> {
             if (!log ) return;
 
@@ -41,10 +40,10 @@ public class XenonCord extends Command {
 
         switch (args[0]) {
             case "reload":
-                if (!sender.hasPermission(XenonCore.instance.getConfigData().getReloadperm())) return;
-                Message.send(sender, XenonCore.instance.getConfigData().getReloadmessage(), true);
+                if (!sender.hasPermission(XenonCore.instance.getConfigData().getReload_permission())) return;
+                Message.send(sender, XenonCore.instance.getConfigData().getReload_message(), true);
                 XenonCore.instance.setConfigData(XenonCore.instance.getConfiguration().init());
-                Message.send(sender, XenonCore.instance.getConfigData().getReloadcompletemessage(), true);
+                Message.send(sender, XenonCore.instance.getConfigData().getReload_complete_message(), true);
                 break;
             case "antibot":
                 if (!Arrays.asList(XenonCore.instance.getConfigData().getModules().getEnables()).contains("Antibot")) return;

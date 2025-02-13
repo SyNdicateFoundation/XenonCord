@@ -25,7 +25,7 @@ public class SwingManager {
     private OperatingSystemMXBean osBean;
 
     public void createAndShowGUI() {
-        if (!XenonCore.instance.getConfigData().isUsegui()) return;
+        if (!XenonCore.instance.getConfigData().isUse_gui()) return;
         osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         JFrame frame = new JFrame("XenonCord Proxy");
         frame.setSize(600, 400);
@@ -37,7 +37,7 @@ public class SwingManager {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        Timer timer = new Timer((int) XenonCore.instance.getConfigData().getGuirefreshrate(), e -> {
+        Timer timer = new Timer((int) XenonCore.instance.getConfigData().getGui_refresh_rate(), e -> {
             onlinePlayersLabel.setText("Online Players: " + XenonCore.instance.getBungeeInstance().getOnlineCount());
             memoryUsageLabel.setText(getMemoryUsageText());
             cpuUsageLabel.setText(getCPUUsageText());

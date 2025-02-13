@@ -18,9 +18,9 @@ public class CooldownHandler extends ir.xenoncommunity.antibot.AntibotCheck impl
 
     public CooldownHandler() {
         final Configuration.AntiBotData config = XenonCore.instance.getConfigData().getAntibot();
-        this.cooldownThreshold = config.getPlayerspecifiedcooldown();
+        this.cooldownThreshold = config.getPlayer_specified_cooldown();
         this.disconnectCooldown = config.getDisconnect_cooldown();
-        this.fastJoinThreshold = config.getFastjointhreshold();
+        this.fastJoinThreshold = config.getFast_join_threshold();
     }
     @EventHandler(priority = Byte.MAX_VALUE)
     public void onPlayerHandshake(PlayerHandshakeEvent event){
@@ -29,7 +29,7 @@ public class CooldownHandler extends ir.xenoncommunity.antibot.AntibotCheck impl
 
         if(blockStart == null) return;
 
-        if(blockStart >= System.currentTimeMillis() - XenonCore.instance.getConfigData().getAntibot().getBlockdurationmillis()){
+        if(blockStart >= System.currentTimeMillis() - XenonCore.instance.getConfigData().getAntibot().getBlock_duration_millis()){
             event.setCancelled(true);
         } else {
             blockedIPs.remove(playerIP);

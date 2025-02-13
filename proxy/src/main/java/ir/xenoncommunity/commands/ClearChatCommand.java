@@ -1,4 +1,4 @@
-package ir.xenoncommunity.punishmanager;
+package ir.xenoncommunity.commands;
 
 import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.utils.Message;
@@ -7,11 +7,9 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
 public class ClearChatCommand extends Command {
-    private final SQLManager sqlManager;
 
     public ClearChatCommand(SQLManager sqlManagerIn) {
-        super("clearchat", XenonCore.instance.getConfigData().getPunishmanager().getClearchatperm(), "cls");
-        this.sqlManager = sqlManagerIn;
+        super("clearchat", XenonCore.instance.getConfigData().getPunish_manager().getClear_chat_perm(), "cls");
         ;
     }
 
@@ -26,7 +24,7 @@ public class ClearChatCommand extends Command {
 
         if (!args[0].equals("global"))
             Message.send(sender,
-                    XenonCore.instance.getConfigData().getUnknownoptionmessage()
+                    XenonCore.instance.getConfigData().getUnknown_option_message()
                             .replace("OPTIONS", "global, blank (for self use)"), false);
 
         XenonCore.instance.getTaskManager().add(() -> XenonCore.instance.getBungeeInstance().getPlayers().forEach(player -> {

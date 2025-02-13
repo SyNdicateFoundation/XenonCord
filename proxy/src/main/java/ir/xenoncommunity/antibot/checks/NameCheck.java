@@ -13,7 +13,7 @@ public class NameCheck extends ir.xenoncommunity.antibot.AntibotCheck implements
     public void onPreLogin(PreLoginEvent event) {
         final String playerName = event.getConnection().getName();
         if (!(playerName.length() >= 3 && playerName.length() <= 16 && playerName.matches("^[a-zA-Z0-9_]+$"))) {
-            blockPlayer(event, playerName, XenonCore.instance.getConfigData().getAntibot().getDisconnect_invalidusername());
+            blockPlayer(event, playerName, XenonCore.instance.getConfigData().getAntibot().getDisconnect_invalid_username());
         }
     }
 }

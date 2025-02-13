@@ -20,25 +20,25 @@ public class StaffChat extends Command implements Listener {
     public static ArrayList<String> toggles;
 
     public StaffChat() {
-        super("staffchat", XenonCore.instance.getConfigData().getStaffchat().getStaffchatperm(), "sc");
+        super("staffchat", XenonCore.instance.getConfigData().getStaff_chat().getStaff_chat_perm(), "sc");
         toggles = new ArrayList<>();
     }
 
+    private final String toggleMessage = XenonCore.instance.getConfigData().getStaff_chat().getToggle_message();
+    private final String staffChatMessage = XenonCore.instance.getConfigData().getStaff_chat().getStaff_chat_message();
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(XenonCore.instance.getConfigData().getStaffchat().getStaffchatperm())) return;
-
         final String senderName = sender.getName();
 
         if (args.length == 0) {
             if (sender instanceof ConsoleCommandSender) return;
 
             if (toggles.contains(senderName)) {
-                Message.send(sender, XenonCore.instance.getConfigData().getStaffchat().getTogglemessage()
+                Message.send(sender, toggleMessage
                         .replace("STATE", "disabled"), false);
                 toggles.remove(senderName);
             } else {
-                Message.send(sender, XenonCore.instance.getConfigData().getStaffchat().getTogglemessage()
+                Message.send(sender, toggleMessage
                         .replace("STATE", "enabled"), false);
                 toggles.add(senderName);
             }
@@ -56,8 +56,7 @@ public class StaffChat extends Command implements Listener {
         final ProxiedPlayer sender = (ProxiedPlayer) e.getSender();
         final String senderName = sender.getName();
 
-        if (!sender.hasPermission(XenonCore.instance.getConfigData().getStaffchat().getStaffchatperm())
-                || !toggles.contains(senderName)
+        if (!toggles.contains(senderName)
                 || e.getMessage().startsWith("/")) {
             return;
         }
@@ -72,12 +71,12 @@ public class StaffChat extends Command implements Listener {
     private void sendMessage(String msg, String senderName) {
         XenonCore.instance.getTaskManager().add(() ->
                 XenonCore.instance.getBungeeInstance().getPlayers().stream()
-                        .filter(proxiedPlayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getStaffchat().getStaffchatperm()))
+                        .filter(proxiedPlayer -> proxiedPlayer.hasPermission(XenonCore.instance.getConfigData().getStaff_chat().getStaff_chat_perm()))
                         .forEach(proxiedPlayer -> Message.send(proxiedPlayer,
-                                XenonCore.instance.getConfigData().getStaffchat().getStaffchatmessage()
+                                staffChatMessage
                                         .replace("PLAYER", senderName)
                                         .replace("MESSAGE", msg), false)));
-        Message.send(XenonCore.instance.getConfigData().getStaffchat().getStaffchatmessage()
+        Message.send(staffChatMessage
                 .replace("PLAYER", senderName)
                 .replace("MESSAGE", msg));
     }

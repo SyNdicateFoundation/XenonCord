@@ -1,8 +1,6 @@
 package ir.xenoncommunity;
 
-import ir.xenoncommunity.antibot.AntibotCheck;
 import ir.xenoncommunity.antibot.AntibotManager;
-import ir.xenoncommunity.commands.XenonCord;
 import ir.xenoncommunity.gui.SwingManager;
 import ir.xenoncommunity.modules.ModuleManager;
 import ir.xenoncommunity.utils.Configuration;
@@ -10,13 +8,11 @@ import ir.xenoncommunity.utils.TaskManager;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.ChatColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
 @Getter
@@ -58,7 +54,7 @@ public class XenonCore {
         getLogger().info("Loading the proxy server itself has been done. took: {}ms", System.currentTimeMillis() - startTime);
         getTaskManager().async(() -> {
             while (!isProxyCompletlyLoaded)
-                bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(configData.getLoadingmessage()));
+                bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(configData.getLoading_message()));
 
             moduleManager.init();
             SwingManager.createAndShowGUI();

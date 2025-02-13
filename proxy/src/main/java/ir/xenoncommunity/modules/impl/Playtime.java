@@ -20,7 +20,7 @@ public class Playtime extends Command implements Listener {
     private final SQLManager sqlManager;
 
     public Playtime() {
-        super("playtime", XenonCore.instance.getConfigData().getPlaytime().getPlaytimeperm(), "pt");
+        super("playtime", XenonCore.instance.getConfigData().getPlaytime().getPlaytime_perm(), "pt");
         sqlManager = new SQLManager(
                 XenonCore.instance.getConfiguration().getSqlPlaytime(),
                 "CREATE TABLE IF NOT EXISTS Players (" +
@@ -32,7 +32,7 @@ public class Playtime extends Command implements Listener {
 
     @EventHandler
     public void onJoin(PostLoginEvent event) {
-        if (!event.getPlayer().hasPermission(XenonCore.instance.getConfigData().getPlaytime().getPlaytimeperm())) {
+        if (!event.getPlayer().hasPermission(XenonCore.instance.getConfigData().getPlaytime().getPlaytime_perm())) {
             return;
         }
 
@@ -57,7 +57,7 @@ public class Playtime extends Command implements Listener {
 
     @EventHandler
     public void onLeave(PlayerDisconnectEvent event) {
-        if (!event.getPlayer().hasPermission(XenonCore.instance.getConfigData().getPlaytime().getPlaytimeperm())) {
+        if (!event.getPlayer().hasPermission(XenonCore.instance.getConfigData().getPlaytime().getPlaytime_perm())) {
             return;
         }
 
@@ -110,9 +110,9 @@ public class Playtime extends Command implements Listener {
             final long totalPlaytime = (long) sqlManager.getData(playerName, "totalplaytime");
 
             Message.send(sender, (sender.getName().equals(playerName))
-                    ? XenonCore.instance.getConfigData().getPlaytime().getPlaytimemessage()
+                    ? XenonCore.instance.getConfigData().getPlaytime().getPlaytime_message()
                     .replace("PLAYTIME", String.valueOf(totalPlaytime / 3600000))
-                    : XenonCore.instance.getConfigData().getPlaytime().getPlaytimeothersmessage()
+                    : XenonCore.instance.getConfigData().getPlaytime().getPlaytime_others_message()
                     .replace("PLAYER", playerName)
                     .replace("PLAYTIME", String.valueOf(totalPlaytime / 3600000)), false);
         } else {

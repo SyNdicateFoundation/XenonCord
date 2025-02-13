@@ -32,7 +32,7 @@ public class PunishManager implements Listener {
 
     public PunishManager() {
         XenonCore.instance.getTaskManager().async(this::initBackend);
-        if (XenonCore.instance.getConfigData().getPunishmanager().getMode().equals("LiteBans")) {
+        if (XenonCore.instance.getConfigData().getPunish_manager().getMode().equals("LiteBans")) {
             XenonCore.instance.getBungeeInstance().getPluginManager().unregisterListener(this);
             return;
         }
@@ -65,7 +65,7 @@ public class PunishManager implements Listener {
 
     @EventHandler
     public void onJoin(LoginEvent e) {
-        if (XenonCore.instance.getConfigData().getPunishmanager().getMode().equals("LiteBans")) {
+        if (XenonCore.instance.getConfigData().getPunish_manager().getMode().equals("LiteBans")) {
             return;
         }
 
@@ -84,7 +84,7 @@ public class PunishManager implements Listener {
             }
 
             if (banDuration > 0 && currentTime - lastPunish < banDuration) {
-                e.setReason(new TextComponent(XenonCore.instance.getConfigData().getPunishmanager().getBandisconnectmessage()
+                e.setReason(new TextComponent(XenonCore.instance.getConfigData().getPunish_manager().getBan_disconnect_message()
                                 .replace("PLAYER", username)
                                 .replace("REASON", (String) sqlManager.getData(username, "reason"))
                                 .replace("DURATION", String.valueOf(banDuration / 60000))));
@@ -93,7 +93,7 @@ public class PunishManager implements Listener {
             }
 
             unbanPlayer(username);
-            Message.send(XenonCore.instance.getConfigData().getPunishmanager().getUnbanconsolelogmessage()
+            Message.send(XenonCore.instance.getConfigData().getPunish_manager().getUnban_console_log_message()
                     .replace("PLAYER1", e.getConnection().getName())
                     .replace("PLAYER2", punishAdmin));
         } catch (Exception ex) {
@@ -112,12 +112,12 @@ public class PunishManager implements Listener {
 
     @EventHandler
     public void onChat(ChatEvent e) {
-        if (XenonCore.instance.getConfigData().getPunishmanager().getMode().equals("LiteBans")) {
+        if (XenonCore.instance.getConfigData().getPunish_manager().getMode().equals("LiteBans")) {
             return;
         }
 
         if (e.getMessage().startsWith("/") &&
-                Arrays.stream(XenonCore.instance.getConfigData().getPunishmanager().getMutecommands())
+                Arrays.stream(XenonCore.instance.getConfigData().getPunish_manager().getMute_commands())
                         .noneMatch(element -> e.getMessage().split(" ")[0].equals(element))) {
             return;
         }
@@ -134,7 +134,7 @@ public class PunishManager implements Listener {
             }
 
             if (muteDuration > 0 && currentTime - lastPunish < muteDuration) {
-                Message.send((CommandSender) e.getSender(), XenonCore.instance.getConfigData().getPunishmanager().getMuteblockmessage()
+                Message.send((CommandSender) e.getSender(), XenonCore.instance.getConfigData().getPunish_manager().getMute_block_message()
                                         .replace("PLAYER", username)
                                         .replace("REASON", (String) sqlManager.getData(username, "reason"))
                                         .replace("DURATION", String.valueOf(muteDuration / 60000)),
@@ -144,7 +144,7 @@ public class PunishManager implements Listener {
             }
 
             unmutePlayer(username);
-            Message.send(XenonCore.instance.getConfigData().getPunishmanager().getUnmuteconsolelogmessage()
+            Message.send(XenonCore.instance.getConfigData().getPunish_manager().getUnmute_console_log_message()
                     .replace("PLAYER1", username)
                     .replace("PLAYER2", punishAdmin));
         } catch (Exception ex) {

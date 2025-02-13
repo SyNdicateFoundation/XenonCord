@@ -4,7 +4,6 @@ import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.utils.Message;
 import ir.xenoncommunity.utils.SQLManager;
 import lombok.Cleanup;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
@@ -16,22 +15,24 @@ public class BanCommand extends Command {
     private final SQLManager sqlManager;
 
     public BanCommand(SQLManager sqlManagerIn) {
-        super("ban", XenonCore.instance.getConfigData().getPunishmanager().getBanperm());
+        super("ban", XenonCore.instance.getConfigData().getPunish_manager().getBan_perm());
         this.sqlManager = sqlManagerIn;
     }
+
+    private final String banAnnounce = XenonCore.instance.getConfigData().getPunish_manager().getBan_announce_message();
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length < 3) {
             Message.send(sender,
-                    XenonCore.instance.getConfigData().getUnknownoptionmessage()
+                    XenonCore.instance.getConfigData().getUnknown_option_message()
                             .replace("OPTIONS", "player, reason, duration in minute"), false);
             return;
         }
 
         if (args[1].toLowerCase().equals("console")) {
             Message.send(sender,
-                    XenonCore.instance.getConfigData().getCannotexecasconsoleerrormessage(), false);
+                    XenonCore.instance.getConfigData().getCannot_execute_as_console_message(), false);
             return;
         }
 
@@ -63,17 +64,17 @@ public class BanCommand extends Command {
 
                 XenonCore.instance.getBungeeInstance().getPlayers().forEach(player -> {
                     if (player.getName().equals(playerName)) player.disconnect(
-                                    XenonCore.instance.getConfigData().getPunishmanager().getBandisconnectmessage()
+                                    XenonCore.instance.getConfigData().getPunish_manager().getBan_disconnect_message()
                                             .replace("PLAYER", playerName)
                                             .replace("REASON", reason)
                                             .replace("DURATION", String.valueOf(banDuration / 60000)));
-                    Message.send(player, XenonCore.instance.getConfigData().getPunishmanager().getBanannouncemessage()
+                    Message.send(player, banAnnounce
                             .replace("PLAYER1", sender.getName())
                             .replace("PLAYER2", playerName)
                             .replace("REASON", reason)
                             .replace("DURATION", String.valueOf(banDuration / 60000)), false);
                 });
-                Message.send(XenonCore.instance.getConfigData().getPunishmanager().getBanannouncemessage()
+                Message.send(banAnnounce
                         .replace("PLAYER1", sender.getName())
                         .replace("PLAYER2", playerName)
                         .replace("REASON", reason)

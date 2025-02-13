@@ -21,7 +21,7 @@ public class CommandSpy extends Command implements Listener {
     private static final Set<String> spyPlayers = new HashSet<>();
 
     public CommandSpy() {
-        super("spy", XenonCore.instance.getConfigData().getCommandspy().getSpyperm(), "cmdspy");
+        super("spy", XenonCore.instance.getConfigData().getCommand_spy().getSpy_perm(), "cmdspy");
     }
 
     @Override
@@ -32,12 +32,13 @@ public class CommandSpy extends Command implements Listener {
         }
     }
 
+    private final String toggleMessage = XenonCore.instance.getConfigData().getCommand_spy().getSpy_toggle_message();
     private void toggleSpyMode(CommandSender sender, String senderName) {
         if (spyPlayers.add(senderName)) {
-            Message.send(sender, XenonCore.instance.getConfigData().getCommandspy().getSpytogglemessage().replace("STATE", "enabled"), false);
+            Message.send(sender, toggleMessage.replace("STATE", "enabled"), false);
         } else {
             spyPlayers.remove(senderName);
-            Message.send(sender, XenonCore.instance.getConfigData().getCommandspy().getSpytogglemessage().replace("STATE", "disabled"), false);
+            Message.send(sender, toggleMessage.replace("STATE", "disabled"), false);
         }
     }
 
@@ -47,7 +48,7 @@ public class CommandSpy extends Command implements Listener {
 
         final ProxiedPlayer player = (ProxiedPlayer) e.getSender();
 
-        if (player.hasPermission(XenonCore.instance.getConfigData().getCommandspy().getSpybypass())) return;
+        if (player.hasPermission(XenonCore.instance.getConfigData().getCommand_spy().getSpy_bypass())) return;
 
         final String rawCommand = e.getMessage();
 
@@ -57,13 +58,13 @@ public class CommandSpy extends Command implements Listener {
             spyPlayers.stream()
                     .filter(spyPlayerName -> {
                         ProxiedPlayer spyPlayer = XenonCore.instance.getBungeeInstance().getPlayer(spyPlayerName);
-                        return spyPlayer != null && spyPlayer.hasPermission(XenonCore.instance.getConfigData().getCommandspy().getSpyperm());
+                        return spyPlayer != null && spyPlayer.hasPermission(XenonCore.instance.getConfigData().getCommand_spy().getSpy_perm());
                     })
                     .forEach(spyPlayerName -> {
                         ProxiedPlayer spyPlayer = XenonCore.instance.getBungeeInstance().getPlayer(spyPlayerName);
                         if (spyPlayer != null) {
                             Message.send(spyPlayer,
-                                    XenonCore.instance.getConfigData().getCommandspy().getSpymessage()
+                                    XenonCore.instance.getConfigData().getCommand_spy().getSpy_message()
                                             .replace("PLAYER", player.getDisplayName())
                                             .replace("COMMAND", rawCommand), true);
                         }
@@ -72,7 +73,7 @@ public class CommandSpy extends Command implements Listener {
     }
 
     private boolean isSpyException(String rawCommand) {
-        return Arrays.stream(XenonCore.instance.getConfigData().getCommandspy().getSpyexceptions())
+        return Arrays.stream(XenonCore.instance.getConfigData().getCommand_spy().getSpy_exceptions())
                 .map(String::toLowerCase)
                 .anyMatch(rawCommand.substring(1).toLowerCase().split(" ")[0]::equals);
     }
