@@ -40,7 +40,7 @@ public class AdminChat extends Command implements Listener {
         boolean isEnabled = toggles.contains(senderName);
         String state = isEnabled ? "disabled" : "enabled";
 
-        Message.send(sender, adminChatMessage.replace("STATE", state), false);
+        Message.send(sender, XenonCore.instance.getConfigData().getAdmin_chat().getToggle_message().replace("STATE", state), false);
         if (isEnabled) {
             toggles.remove(senderName);
         } else {
@@ -61,11 +61,11 @@ public class AdminChat extends Command implements Listener {
             return;
         }
 
-        e.setCancelled(true);
-
-        if (StaffChat.toggles != null && StaffChat.toggles.contains(senderName)) return;
+        if (StaffChat.toggles.contains(senderName)) return;
 
         sendMessage(e.getMessage(), senderName);
+
+        e.setCancelled(true);
     }
 
     private void sendMessage(String msg, String senderName) {
