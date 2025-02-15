@@ -7,7 +7,8 @@ import lombok.Setter;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.Objects;
@@ -19,6 +20,7 @@ public class Configuration {
     private final File sqlPlaytime;
     private final File sqlPunishments;
     private final File sqlStaffActivity;
+    private final File sqlAntiBot;
     private final Logger logger;
 
     public Configuration() {
@@ -27,6 +29,7 @@ public class Configuration {
         this.sqlPlaytime = new File("Playtimes.db");
         this.sqlPunishments = new File("Punishments.db");
         this.sqlStaffActivity = new File("StaffActivity.db");
+        this.sqlAntiBot = new File("AntiBot.db");
         this.logger = XenonCore.instance.getLogger();
     }
 

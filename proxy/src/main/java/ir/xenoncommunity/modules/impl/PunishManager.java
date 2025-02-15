@@ -6,7 +6,6 @@ import ir.xenoncommunity.utils.Message;
 import ir.xenoncommunity.utils.SQLManager;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.ChatEvent;

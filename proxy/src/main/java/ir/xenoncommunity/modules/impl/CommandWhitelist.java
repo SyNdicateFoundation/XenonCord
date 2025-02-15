@@ -28,7 +28,7 @@ public class CommandWhitelist implements Listener {
 
         final ProxiedPlayer player = (ProxiedPlayer) e.getSender();
 
-        if (hasperm(player, e.getMessage().split(" ")[0])) {
+        if (doesnthavepermission(player, e.getMessage().split(" ")[0])) {
             Message.sendNoPermMessage(player);
             e.setCancelled(true);
         }
@@ -42,12 +42,12 @@ public class CommandWhitelist implements Listener {
         final ProxiedPlayer player = (ProxiedPlayer) e.getSender();
         final String command = e.getCursor().trim();
 
-        if (command.equals("/") || hasperm(player, command)) {
+        if (command.equals("/") || doesnthavepermission(player, command)) {
             clearAdd(e, player);
         }
     }
 
-    private boolean hasperm(ProxiedPlayer playerIn, String command) {
+    private boolean doesnthavepermission(ProxiedPlayer playerIn, String command) {
         return whitelistData.getPer_group().entrySet().stream()
                 .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey())
                         && playerIn.getServer().getInfo().getName().equals(entry.getKey().split("\\.")[1]))
@@ -56,12 +56,12 @@ public class CommandWhitelist implements Listener {
     }
 
     private void clearAdd(TabCompleteEvent e, ProxiedPlayer playerIn) {
-        e.getSuggestions().clear();
-        e.getSuggestions().addAll(whitelistData.getPer_group().entrySet().stream()
+        e.suggestions = whitelistData.getPer_group().entrySet().stream()
                 .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey())
                         && playerIn.getServer().getInfo().getName().equals(entry.getKey().split("\\.")[1]))
                 .map(Map.Entry::getValue)
                 .flatMap(ss -> Arrays.stream(ss.getCommands()))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+
     }
 }

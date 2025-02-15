@@ -1,8 +1,8 @@
 package ir.xenoncommunity.antibot.checks;
 
 //import ir.xenoncommunity.XenonCore;
+
 import ir.xenoncommunity.annotations.AntibotCheck;
-//import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;

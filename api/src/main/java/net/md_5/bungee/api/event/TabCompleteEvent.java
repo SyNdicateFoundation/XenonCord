@@ -24,7 +24,7 @@ public class TabCompleteEvent extends TargetedEvent implements Cancellable {
      * The suggestions that will be sent to the client. This list is mutable. If
      * this list is empty, the request will be forwarded to the server.
      */
-    private final List<String> suggestions;
+    public List<String> suggestions;
     /**
      * Cancelled state.
      */

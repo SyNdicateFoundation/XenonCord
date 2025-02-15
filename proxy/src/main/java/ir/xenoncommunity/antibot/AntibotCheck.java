@@ -2,6 +2,7 @@ package ir.xenoncommunity.antibot;
 
 import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.commands.XenonCord;
+import ir.xenoncommunity.utils.SQLManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -20,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings({"unused", "deprecation"})
 public abstract class AntibotCheck {
+    //private final SQLManager sqlManager = new SQLManager();
     public static final AtomicInteger blockedPlayersCount = new AtomicInteger(0);
     public final Map<String, Long> blockedIPs = new ConcurrentHashMap<>();
     public final Map<String, Long> cooldownMap = new ConcurrentHashMap<>();
@@ -27,10 +29,6 @@ public abstract class AntibotCheck {
     public final Map<String, Long> firstJoinTimestamps = new ConcurrentHashMap<>();
     public static int joinsPerSecond = 0;
     public static int pingsPerSecond = 0;
-
-    public AntibotCheck() {
-        XenonCore.instance.getTaskManager().repeatingTask(this::cleanupExpiredEntries, 1L, 1L, TimeUnit.MINUTES);
-    }
 
     public void blockPlayer(PostPlayerHandshakeEvent event, String playerIP, String reason) {
         cancelPostHandshake(event, reason);
