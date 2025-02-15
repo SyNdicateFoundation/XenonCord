@@ -3,10 +3,14 @@ package ir.xenoncommunity.antibot.checks;
 import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.annotations.AntibotCheck;
 import ir.xenoncommunity.utils.Configuration;
+import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.PlayerHandshakeEvent;
+import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.xenoncord.PostPlayerHandshakeEvent;
 import net.md_5.bungee.event.EventHandler;
+
+import javax.imageio.spi.ServiceRegistry;
 
 @SuppressWarnings("unused")
 @AntibotCheck(name = "Still On Cooldown")
@@ -21,6 +25,19 @@ public class CooldownHandler extends ir.xenoncommunity.antibot.AntibotCheck impl
         this.cooldownThreshold = config.getPlayer_specified_cooldown();
         this.disconnectCooldown = config.getDisconnect_cooldown();
         this.fastJoinThreshold = config.getFast_join_threshold();
+    }
+    @EventHandler
+    public void onProxyPing(ProxyPingEvent e) {
+        final String playerIP = e.getConnection().getAddress().getAddress().getHostAddress();
+        final Long blockStart = blockedIPs.get(playerIP);
+
+        if(blockStart == null) return;
+
+        if(blockStart >= System.currentTimeMillis() - XenonCore.instance.getConfigData().getAntibot().getBlock_duration_millis()){
+            e.setResponse(null);
+        } else {
+            blockedIPs.remove(playerIP);
+        }
     }
     @EventHandler(priority = Byte.MAX_VALUE)
     public void onPlayerHandshake(PlayerHandshakeEvent event){

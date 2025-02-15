@@ -7,12 +7,11 @@ import ir.xenoncommunity.utils.Message;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.TabCompleteEvent;
+import net.md_5.bungee.api.event.TabCompleteResponseEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @SuppressWarnings("unused")
 @ModuleListener(isExtended = false, isImplemented = true)
@@ -33,18 +32,16 @@ public class CommandWhitelist implements Listener {
             e.setCancelled(true);
         }
     }
+    @EventHandler
+    public void onTabComplete(TabCompleteEvent event) {
+            event.getSuggestions().clear();
+        System.out.println("kir");
+    }
 
     @EventHandler
-    public void onTabComplete(TabCompleteEvent e) {
-        if (!(e.getSender() instanceof ProxiedPlayer) || ((ProxiedPlayer) e.getSender()).hasPermission(whitelistData.getBypass())) {
-            return;
-        }
-        final ProxiedPlayer player = (ProxiedPlayer) e.getSender();
-        final String command = e.getCursor().trim();
-
-        if (command.equals("/") || doesnthavepermission(player, command)) {
-            clearAdd(e, player);
-        }
+    public void onTabComplete(TabCompleteResponseEvent event) {
+        System.out.println("kir");
+        event.getSuggestions().clear();
     }
 
     private boolean doesnthavepermission(ProxiedPlayer playerIn, String command) {
@@ -53,19 +50,5 @@ public class CommandWhitelist implements Listener {
                         && playerIn.getServer().getInfo().getName().equals(entry.getKey().split("\\.")[1]))
                 .map(Map.Entry::getValue)
                 .noneMatch(groupData -> Arrays.asList(groupData.getCommands()).contains(command));
-    }
-    /*
-
-                */
-
-    private void clearAdd(TabCompleteEvent e, ProxiedPlayer playerIn) {
-        e.getSuggestions().clear();
-        whitelistData.getPer_group().entrySet().stream()
-                .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey().split("\\.")[0])
-                        && playerIn.getServer().getInfo().getName().equals(entry.getKey().split("\\.")[1]))
-                .map(Map.Entry::getValue)
-                .flatMap(ss -> Arrays.stream(ss.getCommands()))
-                .forEach(element ->
-                        e.getSuggestions().add(element));
     }
 }

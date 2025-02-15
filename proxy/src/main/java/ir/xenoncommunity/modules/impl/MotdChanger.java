@@ -15,6 +15,7 @@ public class MotdChanger implements Listener {
     @EventHandler
     public void proxyPingEvent(ProxyPingEvent e) {
         final String motd = getMotd();
+        if(e.getResponse() == null) return;
         final ServerPing serverPing = e.getResponse();
 
         XenonCore.instance.setCurrentMotd(motd);

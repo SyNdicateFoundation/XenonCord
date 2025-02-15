@@ -161,6 +161,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
 
                 Callback<ProxyPingEvent> callback = (result1, error1) -> {
                     final ServerPing legacy = result1.getResponse();
+                    if(legacy == null) return;
                     ch.close(ping.isV1_5()
                             ? ChatColor.DARK_BLUE + "\00" + 127
                             + '\00' + legacy.getVersion().getName()
@@ -271,20 +272,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
             event.setCancelled(true);
         }
 
-
-
-        // return if the connection was closed during the event
         if (ch.isClosing()) {
             return;
-        }
-
-        if (event.isCancelled()) {
-            disconnect();
+        }else if (event.isCancelled()) {
             ch.close();
             return;
         }
-
-
 
         switch (handshake.getRequestedProtocol()) {
             case 1:
