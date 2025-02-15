@@ -60,7 +60,7 @@ public class CommandWhitelist implements Listener {
 
     private void clearAdd(TabCompleteEvent e, ProxiedPlayer playerIn) {
         e.suggestions = whitelistData.getPer_group().entrySet().stream()
-                .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey())
+                .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey().split("\\.")[0])
                         && playerIn.getServer().getInfo().getName().equals(entry.getKey().split("\\.")[1]))
                 .map(Map.Entry::getValue)
                 .flatMap(ss -> Arrays.stream(ss.getCommands()))
