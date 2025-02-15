@@ -49,11 +49,14 @@ public class CommandWhitelist implements Listener {
 
     private boolean doesnthavepermission(ProxiedPlayer playerIn, String command) {
         return whitelistData.getPer_group().entrySet().stream()
-                .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey())
+                .filter(entry -> playerIn.hasPermission("xenoncord.commandwhitelist." + entry.getKey().split("\\.")[0])
                         && playerIn.getServer().getInfo().getName().equals(entry.getKey().split("\\.")[1]))
                 .map(Map.Entry::getValue)
                 .noneMatch(groupData -> Arrays.asList(groupData.getCommands()).contains(command));
     }
+    /*
+
+                */
 
     private void clearAdd(TabCompleteEvent e, ProxiedPlayer playerIn) {
         e.suggestions = whitelistData.getPer_group().entrySet().stream()
