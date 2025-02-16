@@ -6,8 +6,6 @@ import ir.xenoncommunity.utils.Configuration;
 import ir.xenoncommunity.utils.Message;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
-import net.md_5.bungee.api.event.TabCompleteEvent;
-import net.md_5.bungee.api.event.TabCompleteResponseEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -31,17 +29,6 @@ public class CommandWhitelist implements Listener {
             Message.sendNoPermMessage(player);
             e.setCancelled(true);
         }
-    }
-    @EventHandler
-    public void onTabComplete(TabCompleteEvent event) {
-            event.getSuggestions().clear();
-        System.out.println("kir");
-    }
-
-    @EventHandler
-    public void onTabComplete(TabCompleteResponseEvent event) {
-        System.out.println("kir");
-        event.getSuggestions().clear();
     }
 
     private boolean doesnthavepermission(ProxiedPlayer playerIn, String command) {
