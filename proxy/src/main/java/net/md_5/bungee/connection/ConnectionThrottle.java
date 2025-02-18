@@ -23,7 +23,7 @@ public class ConnectionThrottle {
     }
 
     @VisibleForTesting
-    ConnectionThrottle(Ticker ticker, int throttleTime, int throttleLimit) {
+    public ConnectionThrottle(Ticker ticker, int throttleTime, int throttleLimit) {
         this.throttle = CacheBuilder.newBuilder()
                 .ticker(ticker)
                 .concurrencyLevel(Runtime.getRuntime().availableProcessors())
