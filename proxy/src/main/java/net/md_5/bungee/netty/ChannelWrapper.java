@@ -75,9 +75,7 @@ public class ChannelWrapper {
     }
 
     public void write(Object packet) {
-        final PacketSendEvent event = new PacketSendEvent(packet, ch.remoteAddress().toString().split(":")[0].substring(1));
-        XenonCore.instance.getBungeeInstance().getPluginManager().callEvent(event);
-        if(event.isCancelled()) return;
+        if(XenonCore.instance.getBungeeInstance().getPluginManager().callEvent( new PacketSendEvent(packet, ch.remoteAddress().toString())).isCancelled()) return;
         if (!closed) {
             DefinedPacket defined = null;
             if (packet instanceof PacketWrapper) {

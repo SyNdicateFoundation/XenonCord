@@ -136,59 +136,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         // Waterfall end
     }
 
-    @Override
-    public void handle(LegacyHandshake legacyHandshake) throws Exception {
-        Preconditions.checkState(!this.legacy, "Not expecting LegacyHandshake");
-        this.legacy = true;
-        ch.close(bungee.getTranslation("outdated_client", bungee.getGameVersion()));
-    }
-
-    @Override
-    public void handle(LegacyPing ping) throws Exception {
-        // IDK how is this possible but legacyping works even with channel CLOSED
-        if(bungee.getPluginManager().callEvent(
-                new PlayerHandshakeEvent(InitialHandler.this, handshake)).isCancelled()
-        || bungee.getPluginManager().callEvent(
-                new PacketSendEvent(null,
-                        ch.getRemoteAddress().toString().split(":")[0].substring(1))).isCancelled()) return;
-
-        Preconditions.checkState(!this.legacy, "Not expecting LegacyPing");
-        this.legacy = true;
-
-        ServerInfo forced = AbstractReconnectHandler.getForcedHost(this);
-        final String motd = (forced != null) ? forced.getMotd() : listener.getLoadmessage();
-        final int protocol = bungee.getProtocolVersion();
-
-        XenonCore.instance.getTaskManager().add(() -> {
-            Callback<ServerPing> pingBack = (result, error) -> {
-                if (error != null) {
-                    result = getPingInfo(bungee.getTranslation("ping_cannot_connect"), protocol);
-                    bungee.getLogger().log(Level.WARNING, "Error pinging remote server", error);
-                }
-
-                Callback<ProxyPingEvent> callback = (result1, error1) -> {
-                    final ServerPing legacy = result1.getResponse();
-                    if(legacy == null) return;
-                    ch.close(ping.isV1_5()
-                            ? ChatColor.DARK_BLUE + "\00" + 127
-                            + '\00' + legacy.getVersion().getName()
-                            + '\00' + getFirstLine(legacy.getDescription())
-                            + '\00' + ((legacy.getPlayers() != null) ? legacy.getPlayers().getOnline() : "-1")
-                            + '\00' + ((legacy.getPlayers() != null) ? legacy.getPlayers().getMax() : "-1")
-                            : ChatColor.stripColor(getFirstLine(legacy.getDescription()))
-                            + '\u00a7' + ((legacy.getPlayers() != null) ? legacy.getPlayers().getOnline() : "-1")
-                            + '\u00a7' + ((legacy.getPlayers() != null) ? legacy.getPlayers().getMax() : "-1"));
-                };
-
-                bungee.getPluginManager().callEvent(new ProxyPingEvent(InitialHandler.this, result, eventLoopCallback(callback)));
-            };
-
-            if (forced != null && listener.isPingPassthrough()) ((BungeeServerInfo) forced).ping(pingBack, protocol);
-            else pingBack.done(getPingInfo(motd, protocol), null);
-
-        });
-    }
-
     private ServerPing getPingInfo(String motd, int protocol) {
         return new ServerPing(
                 new ServerPing.Protocol(bungee.getName() + " " + bungee.getGameVersion(), protocol),
@@ -273,14 +220,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
             if(!(host != null && host.length() <= 255 && host.matches("[a-zA-Z0-9.-]+")))
                 event.setCancelled(true);
         } catch (Exception var3) {
-            XenonCore.instance.logdebugerror("Error while handling pre-login event");
+            XenonCore.instance.logdebugerror("Error while handling pre-login");
             event.setCancelled(true);
         }
 
         if (ch.isClosing()) {
             return;
-        }
-        if (event.isCancelled()) {
+        }else if (event.isCancelled()) {
+            ch.close();
+            return;
+        } else if(event.isIgnored()){
+            Thread.sleep(10000L);
             ch.close();
             return;
         }

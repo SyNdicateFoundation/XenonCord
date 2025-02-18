@@ -3,10 +3,6 @@ package net.md_5.bungee.protocol;
 import net.md_5.bungee.protocol.packet.*;
 
 public abstract class AbstractPacketHandler {
-
-    public void handle(LegacyPing ping) throws Exception {
-    }
-
     public void handle(TabCompleteResponse tabResponse) throws Exception {
     }
 
@@ -110,9 +106,6 @@ public abstract class AbstractPacketHandler {
     }
 
     public void handle(LoginSuccess loginSuccess) throws Exception {
-    }
-
-    public void handle(LegacyHandshake legacyHandshake) throws Exception {
     }
 
     public void handle(SetCompression setCompression) throws Exception {

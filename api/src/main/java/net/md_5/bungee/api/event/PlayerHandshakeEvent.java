@@ -31,4 +31,5 @@ public class PlayerHandshakeEvent extends Event implements Cancellable {
         this.handshake = handshake;
     }
     private boolean cancelled;
+    private boolean ignored;
 }
