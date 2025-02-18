@@ -23,8 +23,8 @@ public class ListenerInfo {
     /**
      * Displayed MOTD.
      */
-    private final String loadmessage;
-    private final String xenonMotd;
+    private final String default_bungee_motd;
+    private final String modifiedMotd;
     /**
      * Max amount of slots displayed on the ping page.
      */

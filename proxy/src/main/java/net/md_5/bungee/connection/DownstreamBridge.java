@@ -82,10 +82,6 @@ public class DownstreamBridge extends PacketHandler {
     public void disconnected(ChannelWrapper channel) {
         // We lost connection to the server
         server.getInfo().removePlayer(con);
-        if (bungee.getReconnectHandler() != null) {
-            bungee.getReconnectHandler().setServer(con);
-        }
-
         bungee.getPluginManager().callEvent(new ServerDisconnectEvent(con, server.getInfo()));
 
         if (server.isObsolete()) {

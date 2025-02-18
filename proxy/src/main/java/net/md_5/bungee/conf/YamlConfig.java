@@ -18,6 +18,7 @@ import org.yaml.snakeyaml.error.YAMLException;
 import java.io.*;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -49,16 +50,12 @@ public class YamlConfig implements ConfigurationAdapter {
 
     @Override
     public void load() {
-        load(true);
-    }
-
-    public void load(boolean doPermissions) {
         try {
             file.createNewFile();
 
-            try (InputStream is = new FileInputStream(file)) {
+            try (InputStream is = Files.newInputStream(file.toPath())) {
                 try {
-                    config = (Map) yaml.load(is);
+                    config = yaml.load(is);
                 } catch (YAMLException ex) {
                     throw new RuntimeException("Invalid configuration encountered - this is a configuration error and NOT a bug! Please attempt to fix the error or see https://www.spigotmc.org/ for help.", ex);
                 }
@@ -129,7 +126,7 @@ public class YamlConfig implements ConfigurationAdapter {
 
     private void save() {
         try {
-            try (Writer wr = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
+            try (Writer wr = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8)) {
                 yaml.dump(config, wr);
             }
         } catch (IOException ex) {
@@ -181,17 +178,16 @@ public class YamlConfig implements ConfigurationAdapter {
                         new HashMap()
                 }));
         Map<String, String> forcedDef = new HashMap<>();
-        forcedDef.put("pvp.md-5.net", "pvp");
 
         Collection<ListenerInfo> ret = new HashSet<>();
 
         for (Map<String, Object> val : base) {
-            String loadmessage = get("loadmessage", "&b&lPlease wait until XenonCord loads completely....", val);
-            loadmessage = Message.translateColor(loadmessage);
+            String default_bungee_motd = get("default_bungee_motd", "&b&lPlease wait until XenonCord loads completely....", val);
+            default_bungee_motd = Message.translateColor(default_bungee_motd);
 
             int maxPlayers = get("max_players", 1, val);
             boolean forceDefault = get("force_default_server", false, val);
-            String host = get("host", "0.0.0.0:25577", val);
+            String host = get("host", "0.0.0.0:25565", val);
             int tabListSize = get("tab_size", 60, val);
             SocketAddress address = Util.getAddr(host);
             Map<String, String> forced = new CaseInsensitiveMap<>(get("forced_hosts", forcedDef, val));
@@ -228,7 +224,7 @@ public class YamlConfig implements ConfigurationAdapter {
             }
             set("priorities", serverPriority, val);
 
-            ListenerInfo info = new ListenerInfo(address, loadmessage, XenonCore.instance.getCurrentMotd(), maxPlayers, tabListSize, serverPriority, forceDefault, forced, value.toString(), setLocalAddress, pingPassthrough, queryPort, query, proxyProtocol);
+            ListenerInfo info = new ListenerInfo(address, default_bungee_motd, XenonCore.instance.getCurrentMotd(), maxPlayers, tabListSize, serverPriority, forceDefault, forced, value.toString(), setLocalAddress, pingPassthrough, queryPort, query, proxyProtocol);
             ret.add(info);
         }
 

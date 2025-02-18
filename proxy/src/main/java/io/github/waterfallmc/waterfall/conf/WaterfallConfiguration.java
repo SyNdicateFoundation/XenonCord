@@ -10,13 +10,6 @@ import java.io.File;
 public class WaterfallConfiguration extends Configuration {
 
     /**
-     * Whether we log InitialHandler connections
-     * <p>
-     * Default is true
-     */
-    private boolean logInitialHandlerConnections = true;
-
-    /**
      * The supported versions displayed to the client
      * <p>Default is a comma separated list of supported versions. For example 1.8.x, 1.9.x, 1.10.x</p>
      */
@@ -66,9 +59,8 @@ public class WaterfallConfiguration extends Configuration {
     public void load() {
         super.load();
         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
-        config.load(false); // Load, but no permissions
-        logInitialHandlerConnections = config.getBoolean("log_initial_handler_connections", logInitialHandlerConnections);
-        gameVersion = config.getString("game_version", "").isEmpty() ? Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS) : config.getString("game_version", "");
+        config.load(); // Load, but no permissions
+        gameVersion = Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS);
         useNettyDnsResolver = config.getBoolean("use_netty_dns_resolver", useNettyDnsResolver);
         // Throttling options
         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
@@ -77,11 +69,6 @@ public class WaterfallConfiguration extends Configuration {
         disableTabListRewrite = config.getBoolean("disable_tab_list_rewrite", disableTabListRewrite);
         pluginChannelLimit = config.getInt("registered_plugin_channels_limit", pluginChannelLimit);
         pluginChannelNameLimit = config.getInt("plugin_channel_name_limit", pluginChannelNameLimit);
-    }
-
-    @Override
-    public boolean isLogInitialHandlerConnections() {
-        return logInitialHandlerConnections;
     }
 
     @Override

@@ -131,13 +131,6 @@ public interface ProxyConfig {
     boolean isOnlineMode();
 
     /**
-     * Whether proxy commands are logged to the proxy log.
-     *
-     * @return should the proxy log commands
-     */
-    boolean isLogCommands();
-
-    /**
      * Time in milliseconds to cache server list info from a ping request from
      * the proxy to a server.
      *
@@ -151,14 +144,6 @@ public interface ProxyConfig {
      * @return player limit
      */
     int getPlayerLimit();
-
-    /**
-     * A collection of disabled commands.
-     *
-     * @return a collection of disabled commands
-     */
-    Collection<String> getDisabledCommands();
-
     /**
      * Time in milliseconds before timing out a clients request to connect to a
      * server.
@@ -210,13 +195,6 @@ public interface ProxyConfig {
     //
     // Waterfall Options
     //
-
-    /**
-     * Whether we log InitialHandler connections
-     *
-     * @return whether we log InitialHandler connections
-     */
-    boolean isLogInitialHandlerConnections();
 
     /**
      * The supported versions

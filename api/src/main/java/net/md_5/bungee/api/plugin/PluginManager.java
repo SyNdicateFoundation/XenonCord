@@ -180,12 +180,12 @@ public final class PluginManager {
         String[] args = Arrays.copyOfRange(split, 1, split.length);
         if (tabResults == null) {
             try { // Waterfall - split command & tab complete exception handlers for exception event
-                if (proxy.getConfig().isLogCommands()) {
+                /*if (proxy.getConfig().isLogCommands()) {
                     proxy.getLogger().log(Level.INFO, "{0} executed command: /{1}", new Object[]
                             {
                                     sender.getName(), commandLine
                             });
-                }
+                }*/
                 command.execute(sender, args);
                 // Waterfall start - split command & tab complete exception handlers for exception event
             } catch (Exception ex) {

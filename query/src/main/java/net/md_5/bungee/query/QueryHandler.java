@@ -92,7 +92,10 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket> {
             // Waterfall start
             List<String> players = bungee.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
 
-            ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(players, ChatColor.translateAlternateColorCodes('&', listener.getXenonMotd()), "SMP",
+            String motd = listener.getModifiedMotd().isEmpty() || listener.getModifiedMotd().equals("def") ? listener.getDefault_bungee_motd() : listener.getModifiedMotd();
+            motd = ChatColor.translateAlternateColorCodes('&', motd);
+
+            ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(players, motd, "SMP",
                     "Waterfall_Proxy", bungee.getOnlineCount(), listener.getMaxPlayers(),
                     listener.getHost().getPort(), listener.getHost().getHostString(), "MINECRAFT", bungee.getGameVersion()));
             QueryResult result = bungee.getPluginManager().callEvent(event).getResult();

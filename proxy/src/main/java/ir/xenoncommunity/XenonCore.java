@@ -34,7 +34,7 @@ public class XenonCore {
     @Setter
     private Configuration.ConfigData configData;
     @Setter
-    private String currentMotd;
+    private String currentMotd = "def";
 
     /**
      * Initializes all required variables.
@@ -47,6 +47,7 @@ public class XenonCore {
         this.configuration = new Configuration();
         this.moduleManager = new ModuleManager();
         this.antibotManager = new AntibotManager();
+      //  if(currentMotd.equals("def")) currentMotd = getBungeeInstance().getConfig().get
     }
 
     /**

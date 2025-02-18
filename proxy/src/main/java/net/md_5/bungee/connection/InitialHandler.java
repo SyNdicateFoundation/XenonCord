@@ -150,7 +150,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         Preconditions.checkState(thisState == State.STATUS, "Not expecting STATUS");
 
         ServerInfo forced = AbstractReconnectHandler.getForcedHost(this);
-        final String motd = (forced != null) ? forced.getMotd() : listener.getLoadmessage();
+        final String motd = (forced != null) ? forced.getMotd() : (XenonCore.instance.getCurrentMotd().equals("def") || XenonCore.instance.getCurrentMotd().isEmpty()) ? listener.getDefault_bungee_motd() : listener.getModifiedMotd();
         final int protocol = (ProtocolConstants.SUPPORTED_VERSION_IDS.contains(handshake.getProtocolVersion())) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
 
         Callback<ServerPing> pingBack = new Callback<ServerPing>() {
@@ -240,9 +240,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         switch (handshake.getRequestedProtocol()) {
             case 1:
                 // Ping
-                if (bungee.getConfig().isLogPings()) {
-                    bungee.getLogger().log(Level.INFO, "{0} has pinged", this);
-                }
+                XenonCore.instance.logdebuginfo(String.format("%s has pinged", this));
+
                 thisState = State.STATUS;
                 ch.setProtocol(Protocol.STATUS);
                 break;
@@ -250,10 +249,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
             case 3:
                 transferred = handshake.getRequestedProtocol() == 3;
                 // Login
-                if (BungeeCord.getInstance().getConfig().isLogInitialHandlerConnections()) // Waterfall
-                {
-                    bungee.getLogger().log(Level.INFO, "{0} has connected", this);
-                }
+                XenonCore.instance.logdebuginfo(String.format("%s has connected", this));
+
                 thisState = State.USERNAME;
                 ch.setProtocol(Protocol.LOGIN);
 
@@ -473,12 +470,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
 
         ch.getHandle().pipeline().get(HandlerBoss.class).setHandler(new UpstreamBridge(bungee, userCon));
 
-        ServerInfo initialServer;
-        if (bungee.getReconnectHandler() != null) {
-            initialServer = bungee.getReconnectHandler().getServer(userCon);
-        } else {
-            initialServer = AbstractReconnectHandler.getForcedHost(InitialHandler.this);
-        }
+        ServerInfo initialServer = AbstractReconnectHandler.getForcedHost(InitialHandler.this);
+
         if (initialServer == null) {
             initialServer = bungee.getServerInfo(listener.getDefaultServer());
         }

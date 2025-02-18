@@ -135,9 +135,6 @@ public class BungeeCord extends ProxyServer {
     private Map<String, Format> messageFormats;
     @Getter
     @Setter
-    private ReconnectHandler reconnectHandler;
-    @Getter
-    @Setter
     private ConfigurationAdapter configurationAdapter = new YamlConfig();
     @Getter
     private ConnectionThrottle connectionThrottle;
@@ -242,15 +239,6 @@ public class BungeeCord extends ProxyServer {
             connectionThrottle = new ConnectionThrottle(config.getThrottle(), config.getThrottleLimit());
 
         startListeners();
-
-        saveThread.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (getReconnectHandler() != null) {
-                    getReconnectHandler().save();
-                }
-            }
-        }, 0, TimeUnit.MINUTES.toMillis(5));
 
         xenonInstance.logdebuginfo("Adding shutdown hook...");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> independentThreadStop(getTranslation("restart"), false)));
@@ -374,11 +362,6 @@ public class BungeeCord extends ProxyServer {
         } catch (InterruptedException ignored) {
         }
 
-        if (reconnectHandler != null) {
-            xenonInstance.logdebuginfo("Saving reconnect locations");
-            reconnectHandler.save();
-            reconnectHandler.close();
-        }
 
         saveThread.cancel();
 
@@ -653,7 +636,7 @@ public class BungeeCord extends ProxyServer {
 
     @Override
     public Collection<String> getDisabledCommands() {
-        return config.getDisabledCommands();
+        return Collections.emptyList();
     }
 
     @Override
