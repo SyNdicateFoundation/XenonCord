@@ -16,8 +16,10 @@ public class IpLimiter implements Listener {
         try {
             if(DOMAIN) {
                 final String domain = InetAddress.getByName(event.getPlayerIP()).getCanonicalHostName();
+                final String domain2 = InetAddress.getByName(event.getPlayerIP()).getHostName();
 
-                if (Arrays.stream(XenonCore.instance.getConfigData().getWhitelisted_ips()).noneMatch(element -> element.equals(domain)))
+                if (Arrays.stream(XenonCore.instance.getConfigData().getWhitelisted_ips()).noneMatch(element ->
+                        element.equals(domain) || element.equals(domain2)))
                     event.setCancelled(true);
 
                 System.out.println(domain
