@@ -1,6 +1,7 @@
 package net.md_5.bungee;
 
 import com.google.common.base.Ticker;
+import net.md_5.bungee.connection.ConnectionThrottle;
 import org.junit.jupiter.api.Test;
 
 import java.net.InetAddress;

@@ -29,6 +29,7 @@ import net.md_5.bungee.protocol.*;
 import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.util.AllowedCharacters;
 import net.md_5.bungee.util.BufUtil;
+import net.md_5.bungee.util.EncryptionUtil;
 import net.md_5.bungee.util.QuietException;
 
 import javax.crypto.SecretKey;

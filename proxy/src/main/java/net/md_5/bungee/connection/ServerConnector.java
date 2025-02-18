@@ -1,4 +1,4 @@
-package net.md_5.bungee;
+package net.md_5.bungee.connection;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
@@ -7,6 +7,9 @@ import io.netty.buffer.ByteBufAllocator;
 import ir.xenoncommunity.XenonCore;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.BungeeServerInfo;
+import net.md_5.bungee.Util;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -17,9 +20,6 @@ import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.score.Scoreboard;
 import net.md_5.bungee.chat.ComponentSerializer;
-import net.md_5.bungee.connection.CancelSendSignal;
-import net.md_5.bungee.connection.DownstreamBridge;
-import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.forge.ForgeConstants;
 import net.md_5.bungee.forge.ForgeServerHandler;
 import net.md_5.bungee.forge.ForgeUtils;

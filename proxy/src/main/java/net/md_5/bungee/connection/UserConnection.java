@@ -1,4 +1,4 @@
-package net.md_5.bungee;
+package net.md_5.bungee.connection;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
@@ -15,6 +15,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.BungeeServerInfo;
+import net.md_5.bungee.Util;
 import net.md_5.bungee.api.Title;
 import net.md_5.bungee.api.*;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -25,7 +28,6 @@ import net.md_5.bungee.api.event.PermissionCheckEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.score.Scoreboard;
 import net.md_5.bungee.chat.ComponentSerializer;
-import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.entitymap.EntityMap;
 import net.md_5.bungee.forge.ForgeClientHandler;
 import net.md_5.bungee.forge.ForgeConstants;
@@ -171,9 +173,9 @@ public final class UserConnection implements ProxiedPlayer {
     public void sendQueuedPackets() {
         ch.scheduleIfNecessary(() ->
         {
-            if (ch.isClosed()) {
+            if (ch.isClosed())
                 return;
-            }
+
             DefinedPacket packet;
             while ((packet = packetQueue.poll()) != null) {
                 unsafe().sendPacket(packet);

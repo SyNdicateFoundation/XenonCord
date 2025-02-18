@@ -1,4 +1,4 @@
-package net.md_5.bungee;
+package net.md_5.bungee.util;
 
 import com.google.gson.*;
 import net.md_5.bungee.api.ServerPing;

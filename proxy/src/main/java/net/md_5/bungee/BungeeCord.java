@@ -31,6 +31,8 @@ import net.md_5.bungee.command.ConsoleCommandSender;
 import net.md_5.bungee.compress.CompressFactory;
 import net.md_5.bungee.conf.Configuration;
 import net.md_5.bungee.conf.YamlConfig;
+import net.md_5.bungee.connection.ConnectionThrottle;
+import net.md_5.bungee.connection.UserConnection;
 import net.md_5.bungee.forge.ForgeConstants;
 import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -39,6 +41,8 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
 import net.md_5.bungee.query.RemoteQuery;
 import net.md_5.bungee.scheduler.BungeeScheduler;
 import net.md_5.bungee.util.CaseInsensitiveMap;
+import net.md_5.bungee.util.EncryptionUtil;
+import net.md_5.bungee.util.PlayerInfoSerializer;
 import org.reflections.Reflections;
 
 import java.io.File;

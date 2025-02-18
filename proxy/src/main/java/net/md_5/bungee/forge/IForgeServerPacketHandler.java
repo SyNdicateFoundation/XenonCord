@@ -1,6 +1,6 @@
 package net.md_5.bungee.forge;
 
-import net.md_5.bungee.UserConnection;
+import net.md_5.bungee.connection.UserConnection;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.packet.PluginMessage;
 
@@ -27,7 +27,7 @@ public interface IForgeServerPacketHandler<S> {
      *
      * @param message The {@link net.md_5.bungee.protocol.packet.PluginMessage}
      *                to send.
-     * @param con     The {@link net.md_5.bungee.UserConnection} to send packets to
+     * @param con     The {@link UserConnection} to send packets to
      *                or read from.
      * @return The state to transition to.
      */

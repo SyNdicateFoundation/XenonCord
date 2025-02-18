@@ -1,4 +1,4 @@
-package net.md_5.bungee;
+package net.md_5.bungee.util;
 
 import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Longs;
