@@ -139,7 +139,7 @@ public class YamlConfig implements ConfigurationAdapter {
 
     @Override
     public int getInt(String path, int def) {
-        return get(path, def);
+        return get(path, def).intValue();
     }
 
     @Override

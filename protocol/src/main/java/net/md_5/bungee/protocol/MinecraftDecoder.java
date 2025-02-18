@@ -110,7 +110,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
             packetTypeInfo = packetId;
 
             DefinedPacket packet = prot.createPacket(packetId, protocolVersion, supportsForge);
-            if (packet != null) {
+            if (packet != null ) {
                 packetTypeInfo = packet.getClass();
                 doLengthSanityChecks(in, packet, prot.getDirection(), packetId); // Waterfall: Additional DoS mitigations
                 packet.read(in, protocol, prot.getDirection(), protocolVersion);

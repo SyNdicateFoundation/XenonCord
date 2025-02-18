@@ -145,6 +145,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
 
     @Override
     public void handle(LegacyPing ping) throws Exception {
+        // IDK how is this possible but legacyping works even with channel CLOSED
+        if(bungee.getPluginManager().callEvent(
+                new PlayerHandshakeEvent(InitialHandler.this, handshake)).isCancelled()
+        || bungee.getPluginManager().callEvent(
+                new PacketSendEvent(null,
+                        ch.getRemoteAddress().toString().split(":")[0].substring(1))).isCancelled()) return;
+
         Preconditions.checkState(!this.legacy, "Not expecting LegacyPing");
         this.legacy = true;
 
@@ -178,6 +185,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
 
             if (forced != null && listener.isPingPassthrough()) ((BungeeServerInfo) forced).ping(pingBack, protocol);
             else pingBack.done(getPingInfo(motd, protocol), null);
+
         });
     }
 
@@ -205,14 +213,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
                     bungee.getLogger().log(Level.WARNING, "Error pinging remote server", error);
                 }
 
-                Callback<ProxyPingEvent> callback = new Callback<ProxyPingEvent>() {
-                    @Override
-                    public void done(ProxyPingEvent pingResult, Throwable error) {
-                        Gson gson = BungeeCord.getInstance().gson;
-                        unsafe.sendPacket(new StatusResponse(gson.toJson(pingResult.getResponse())));
-                        if (bungee.getConnectionThrottle() != null) {
-                            bungee.getConnectionThrottle().unthrottle(getSocketAddress());
-                        }
+                Callback<ProxyPingEvent> callback = (pingResult, error1) -> {
+                    Gson gson = BungeeCord.getInstance().gson;
+                    unsafe.sendPacket(new StatusResponse(gson.toJson(pingResult.getResponse())));
+                    if (bungee.getConnectionThrottle() != null) {
+                        bungee.getConnectionThrottle().unthrottle(getSocketAddress());
                     }
                 };
                 bungee.getPluginManager().callEvent(new ProxyPingEvent(InitialHandler.this, result, eventLoopCallback(callback)));
@@ -274,10 +279,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
 
         if (ch.isClosing()) {
             return;
-        }else if (event.isCancelled()) {
+        }
+        if (event.isCancelled()) {
             ch.close();
             return;
         }
+
 
         switch (handshake.getRequestedProtocol()) {
             case 1:

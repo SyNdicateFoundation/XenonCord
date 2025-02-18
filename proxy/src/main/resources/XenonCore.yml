@@ -32,11 +32,21 @@ reload_message: "PREFIX Proxy is now reloading...!"
 # Reload complete message
 reload_complete_message: "PREFIX Reload is now complete!"
 
+# IP Limiter
+# Limits remote hosts that can connect to your server
+# set to - "" to turn this off
+# if whitelist_ip_mode is set to DOMAIN, XenonCord will whitelist domain names, otherwise, it'll whitelist IPs
+whitelist_ip_mode: "DOMAIN"
+whitelisted_ips:
+  - localhost
+  - debian.bindaddress
+
 # Modules Settings
 modules:
   # Enabled Modules
   enables:
     - Antibot # Note: Experimental
+    - IpLimiter
     - MotdChanger
     - CommandSpy
     - StaffChat

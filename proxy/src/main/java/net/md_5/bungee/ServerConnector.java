@@ -106,6 +106,7 @@ public class ServerConnector extends PacketHandler {
 
                 user.getServerSentScoreboard().clear();
 
+
                 user.getSentBossBars().forEach(bossbar -> {
                     user.unsafe().sendPacket(new net.md_5.bungee.protocol.packet.BossBar(bossbar, 1));
                 });

@@ -102,9 +102,11 @@ public class Configuration {
     @Setter
     public static class ConfigData {
         private String prefix, loading_message, in_game_brandname, cannot_execute_as_console_message,
-                unknown_option_message, xenoncord_permission, reload_permission, reload_message, reload_complete_message;
+                unknown_option_message, xenoncord_permission, reload_permission, reload_message, reload_complete_message,
+                whitelist_ip_mode;
         private boolean debug, use_gui;
         private long gui_refresh_rate;
+        private String[] whitelisted_ips;
         private ModulesData modules;
         private MotdChangerData motd_changer;
         private CommandSpyData command_spy;

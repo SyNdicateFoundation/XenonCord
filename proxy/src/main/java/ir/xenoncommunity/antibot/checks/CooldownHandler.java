@@ -26,19 +26,6 @@ public class CooldownHandler extends ir.xenoncommunity.antibot.AntibotCheck impl
         this.disconnectCooldown = config.getDisconnect_cooldown();
         this.fastJoinThreshold = config.getFast_join_threshold();
     }
-    @EventHandler
-    public void onProxyPing(ProxyPingEvent e) {
-        final String playerIP = e.getConnection().getAddress().getAddress().getHostAddress();
-        final Long blockStart = blockedIPs.get(playerIP);
-
-        if(blockStart == null) return;
-
-        if(blockStart >= System.currentTimeMillis() - XenonCore.instance.getConfigData().getAntibot().getBlock_duration_millis()){
-            e.setResponse(null);
-        } else {
-            blockedIPs.remove(playerIP);
-        }
-    }
     @EventHandler(priority = Byte.MAX_VALUE)
     public void onPlayerHandshake(PlayerHandshakeEvent event){
         final String playerIP = event.getConnection().getAddress().getAddress().getHostAddress();

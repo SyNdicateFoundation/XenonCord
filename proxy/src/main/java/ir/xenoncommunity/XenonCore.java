@@ -2,6 +2,7 @@ package ir.xenoncommunity;
 
 import ir.xenoncommunity.antibot.AntibotManager;
 import ir.xenoncommunity.gui.SwingManager;
+import ir.xenoncommunity.handlers.IpLimiter;
 import ir.xenoncommunity.modules.ModuleManager;
 import ir.xenoncommunity.utils.Configuration;
 import ir.xenoncommunity.utils.TaskManager;
@@ -12,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -51,6 +53,8 @@ public class XenonCore {
      * Called when proxy is loaded.
      */
     public void init(long startTime) {
+        if(Arrays.stream(getConfigData().getWhitelisted_ips()).noneMatch(element -> element.equals("")))
+            getBungeeInstance().getPluginManager().registerListener(null, new IpLimiter());
         getLogger().info("Loading the proxy server itself has been done. took: {}ms", System.currentTimeMillis() - startTime);
         getTaskManager().async(() -> {
             while (!isProxyCompletlyLoaded)

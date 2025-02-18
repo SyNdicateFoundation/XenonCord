@@ -5,9 +5,11 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
+import ir.xenoncommunity.XenonCore;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.event.PacketSendEvent;
 import net.md_5.bungee.compress.PacketCompressor;
 import net.md_5.bungee.compress.PacketDecompressor;
 import net.md_5.bungee.netty.cipher.CipherEncoder;
@@ -73,6 +75,9 @@ public class ChannelWrapper {
     }
 
     public void write(Object packet) {
+        final PacketSendEvent event = new PacketSendEvent(packet, ch.remoteAddress().toString().split(":")[0].substring(1));
+        XenonCore.instance.getBungeeInstance().getPluginManager().callEvent(event);
+        if(event.isCancelled()) return;
         if (!closed) {
             DefinedPacket defined = null;
             if (packet instanceof PacketWrapper) {
@@ -101,7 +106,7 @@ public class ChannelWrapper {
     }
 
     public void close() {
-        close(null);
+       close(null);
     }
 
     public void close(Object packet) {
