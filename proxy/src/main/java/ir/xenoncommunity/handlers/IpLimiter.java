@@ -46,8 +46,6 @@ public class IpLimiter implements Listener {
                     element.equals(domain) /*|| element.equals(domain2))*/))
                 event.setIgnored(true);
 
-            System.out.println(domain
-            );
         } else {
             if (Arrays.stream(XenonCore.instance.getConfigData().getWhitelisted_ips()).noneMatch(element ->
                     element.equals(event
