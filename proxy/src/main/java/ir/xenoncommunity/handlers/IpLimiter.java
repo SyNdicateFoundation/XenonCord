@@ -44,7 +44,7 @@ public class IpLimiter implements Listener {
 
             if (Arrays.stream(XenonCore.instance.getConfigData().getWhitelisted_ips()).noneMatch(element ->
                     element.equals(domain) /*|| element.equals(domain2))*/))
-                event.setCancelled(true);
+                event.setIgnored(true);
 
             System.out.println(domain
             );
@@ -52,7 +52,7 @@ public class IpLimiter implements Listener {
             if (Arrays.stream(XenonCore.instance.getConfigData().getWhitelisted_ips()).noneMatch(element ->
                     element.equals(event
                             .getConnection().getAddress().getAddress()) /*|| element.equals(domain2))*/))
-                event.setCancelled(true);
+                event.setIgnored(true);
         }
     }
 }

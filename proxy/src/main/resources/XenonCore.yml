@@ -38,8 +38,7 @@ reload_complete_message: "PREFIX Reload is now complete!"
 # if whitelist_ip_mode is set to DOMAIN, XenonCord will whitelist domain names, otherwise, it'll whitelist IPs
 whitelist_ip_mode: "DOMAIN"
 whitelisted_ips:
-  - localhost
-  - debian.bindaddress
+  - ""
 
 # Modules Settings
 modules:
