@@ -19,6 +19,9 @@ public class IpLimiter implements Listener {
 
                 if (Arrays.stream(XenonCore.instance.getConfigData().getWhitelisted_ips()).noneMatch(element -> element.equals(domain)))
                     event.setCancelled(true);
+
+                System.out.println(domain
+                );
             } else {
                 if (Arrays.stream(XenonCore.instance.getConfigData().getWhitelisted_ips()).noneMatch(element -> element.equals(event.getPlayerIP())))
                     event.setCancelled(true);
