@@ -1,11 +1,10 @@
-package net.md_5.bungee.connection;
+package net.md_5.bungee;
 
 import com.google.common.base.Preconditions;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import net.md_5.bungee.BungeeServerInfo;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.netty.ChannelWrapper;
