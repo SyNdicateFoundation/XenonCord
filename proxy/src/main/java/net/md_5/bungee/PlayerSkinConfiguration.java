@@ -1,4 +1,4 @@
-package net.md_5.bungee.connection;
+package net.md_5.bungee;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

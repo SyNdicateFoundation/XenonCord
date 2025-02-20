@@ -17,6 +17,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.unix.DomainSocketAddress;
 import ir.xenoncommunity.XenonCore;
 import lombok.RequiredArgsConstructor;
+import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.connection.ServerConnection.KeepAliveData;
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.ProxyServer;

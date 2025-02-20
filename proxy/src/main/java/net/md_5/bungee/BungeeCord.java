@@ -32,7 +32,6 @@ import net.md_5.bungee.compress.CompressFactory;
 import net.md_5.bungee.conf.Configuration;
 import net.md_5.bungee.conf.YamlConfig;
 import net.md_5.bungee.connection.ConnectionThrottle;
-import net.md_5.bungee.connection.UserConnection;
 import net.md_5.bungee.forge.ForgeConstants;
 import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.DefinedPacket;

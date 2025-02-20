@@ -2,7 +2,7 @@ package net.md_5.bungee.forge;
 
 import com.google.common.base.Preconditions;
 import lombok.*;
-import net.md_5.bungee.connection.UserConnection;
+import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
 import net.md_5.bungee.protocol.packet.PluginMessage;
