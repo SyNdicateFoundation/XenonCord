@@ -639,7 +639,7 @@ public class BungeeCord extends ProxyServer {
 
     @Override
     public Collection<String> getDisabledCommands() {
-        return Collections.emptyList();
+        return config.getDisabledCommands();
     }
 
     @Override

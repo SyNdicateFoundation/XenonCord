@@ -19,10 +19,7 @@ import net.md_5.bungee.util.CaseInsensitiveSet;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -68,6 +65,7 @@ public abstract class Configuration implements ProxyConfig {
     private boolean preventProxyConnections;
     private boolean rejectTransfers;
     private boolean forgeSupport = true; // Waterfall: default to enabled
+    private Collection<String> disabledCommands;
 
     @Synchronized("serversLock") // Waterfall
     public void load() {
@@ -99,6 +97,7 @@ public abstract class Configuration implements ProxyConfig {
         preventProxyConnections = adapter.getBoolean("prevent_proxy_connections", preventProxyConnections);
         forgeSupport = adapter.getBoolean("forge_support", forgeSupport);
         rejectTransfers = adapter.getBoolean("reject_transfers", rejectTransfers);
+        disabledCommands = new CaseInsensitiveSet((Collection<String>) adapter.getList("disabled_commands", new ArrayList<>()));
 
         Preconditions.checkArgument(listeners != null && !listeners.isEmpty(), "No listeners defined.");
 
