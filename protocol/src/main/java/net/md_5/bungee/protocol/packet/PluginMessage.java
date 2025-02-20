@@ -24,29 +24,25 @@ import java.util.Locale;
 public class PluginMessage extends DefinedPacket {
     public static final String BUNGEE_CHANNEL_LEGACY = "BungeeCord";
     public static final String BUNGEE_CHANNEL_MODERN = "bungeecord:main";
-    public static final Function<String, String> MODERNISE = new Function<String, String>()
+    public static final Function<String, String> MODERNISE = tag ->
     {
-        @Override
-        public String apply(String tag)
+        // Transform as per Bukkit
+        if ( tag.equals( PluginMessage.BUNGEE_CHANNEL_LEGACY ) )
         {
-            // Transform as per Bukkit
-            if ( tag.equals( PluginMessage.BUNGEE_CHANNEL_LEGACY ) )
-            {
-                return PluginMessage.BUNGEE_CHANNEL_MODERN;
-            }
-            if ( tag.equals( PluginMessage.BUNGEE_CHANNEL_MODERN ) )
-            {
-                return PluginMessage.BUNGEE_CHANNEL_LEGACY;
-            }
-
-            // Code that gets to here is UNLIKELY to be viable on the Bukkit side of side things,
-            // but we keep it anyway. It will eventually be enforced API side.
-            if (tag.indexOf(':') != -1) {
-                return tag;
-            }
-
-            return "legacy:" + tag.toLowerCase(Locale.ROOT);
+            return PluginMessage.BUNGEE_CHANNEL_MODERN;
         }
+        if ( tag.equals( PluginMessage.BUNGEE_CHANNEL_MODERN ) )
+        {
+            return PluginMessage.BUNGEE_CHANNEL_LEGACY;
+        }
+
+        // Code that gets to here is UNLIKELY to be viable on the Bukkit side of side things,
+        // but we keep it anyway. It will eventually be enforced API side.
+        if (tag.indexOf(':') != -1) {
+            return tag;
+        }
+
+        return "legacy:" + tag.toLowerCase(Locale.ROOT);
     };
     private String tag;
     private byte[] data;

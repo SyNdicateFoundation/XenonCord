@@ -115,8 +115,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
 
     @Override
     public void exception(Throwable t) throws Exception {
-        if (canSendKickMessage()) disconnect(ChatColor.RED + Util.exception(t));
-        else ch.close();
+        if (canSendKickMessage())
+            unsafe.sendPacket( new Kick( TextComponent.fromLegacy( ChatColor.RED + Util.exception( t ) ) ) );
     }
 
     @Override

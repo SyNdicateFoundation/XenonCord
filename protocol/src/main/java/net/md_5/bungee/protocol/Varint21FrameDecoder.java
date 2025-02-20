@@ -9,7 +9,6 @@ import java.util.List;
 
 public class Varint21FrameDecoder extends ByteToMessageDecoder {
 
-    private static boolean DIRECT_WARNING;
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -32,25 +31,24 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder {
             }
 
             // Waterfall start
-            byte read = in.readByte();
-            if (read >= 0) {
+            if (in.readByte() >= 0) {
                 in.resetReaderIndex();
-                int length = DefinedPacket.readVarInt(in);
+                final int length = DefinedPacket.readVarInt(in);
                 // Waterfall end
-                if (false && length == 0) // Waterfall - ignore
+                if (length == 0) // Waterfall - ignore
                 {
                     throw new CorruptedFrameException("Empty Packet!");
                 }
 
                 if (in.readableBytes() < length) {
                     in.resetReaderIndex();
-                    return;
                     // Waterfall start
                 } else {
                     out.add(in.readRetainedSlice(length));
-                    return;
                     // Waterfall end
                 }
+
+                return;
             }
         }
 

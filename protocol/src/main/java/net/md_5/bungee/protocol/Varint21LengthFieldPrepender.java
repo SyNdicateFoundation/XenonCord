@@ -42,7 +42,7 @@ public class Varint21LengthFieldPrepender extends MessageToMessageEncoder<ByteBu
             list.add(ctx.alloc().compositeDirectBuffer(2).addComponents(true, buf, msg.retain()));
         } else {
             ByteBuf buf = ctx.alloc().directBuffer(headerLen + bodyLen);
-            DefinedPacket.writeVarInt(bodyLen, buf);
+            DefinedPacket.writeVarInt(bodyLen, buf, headerLen);
             buf.writeBytes(msg);
             list.add(buf);
         }

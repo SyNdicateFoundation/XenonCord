@@ -28,16 +28,8 @@ public abstract class PlayerCommand extends Command implements TabExecutor {
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
         final String lastArg = (args.length > 0) ? args[args.length - 1].toLowerCase(Locale.ROOT) : "";
-        return Iterables.transform(Iterables.filter(ProxyServer.getInstance().getPlayers(), new Predicate<ProxiedPlayer>() {
-            @Override
-            public boolean apply(ProxiedPlayer player) {
-                return player.getName().toLowerCase(Locale.ROOT).startsWith(lastArg);
-            }
-        }), new Function<ProxiedPlayer, String>() {
-            @Override
-            public String apply(ProxiedPlayer player) {
-                return player.getName();
-            }
-        });
+        return () -> ProxyServer.getInstance().getPlayers().stream()
+                .filter( (player) -> player.getName().toLowerCase( Locale.ROOT ).startsWith( lastArg ) )
+                .map( ProxiedPlayer::getName ).iterator();
     }
 }

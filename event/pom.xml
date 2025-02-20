@@ -16,4 +16,13 @@
 
     <name>Waterfall-Event</name>
     <description>Generic java event dispatching API intended for use with Waterfall.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>animal-sniffer-annotations</artifactId>
+            <version>1.20</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>
