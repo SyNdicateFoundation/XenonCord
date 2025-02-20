@@ -139,6 +139,9 @@ public class BungeeCord extends ProxyServer {
     @Getter
     private ConnectionThrottle connectionThrottle;
 
+    @Getter
+    @Setter
+    private ReconnectHandler reconnectHandler;
 
     @SuppressFBWarnings("DM_DEFAULT_ENCODING")
     public BungeeCord() throws IOException {

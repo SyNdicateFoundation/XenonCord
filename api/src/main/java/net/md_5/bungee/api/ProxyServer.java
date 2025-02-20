@@ -147,6 +147,13 @@ public abstract class ProxyServer {
     public abstract void setConfigurationAdapter(ConfigurationAdapter adapter);
 
     /**
+     * Get the currently in use reconnect handler.
+     *
+     * @return the in use reconnect handler
+     */
+    public abstract ReconnectHandler getReconnectHandler();
+
+    /**
      * Gracefully mark this instance for shutdown.
      */
     public abstract void stop();
