@@ -187,15 +187,12 @@ command_whitelist:
 # AntiBot Settings
 antibot:
   block_duration_millis: 20000
-  connection_interval_millis: 1000
-  slow_join_threshold: 10000
   player_specified_cooldown: 5000
   fast_join_threshold: 3000
   disconnect_cooldown: "PREFIX\n\nYour connection is still on cooldown.\nPlease try again later."
   disconnect_invalid_username: "PREFIX\n\nYour username is invalid.\nPlease try again with another username.\nformat should be:\nlength between 3 to 6\n^[a-zA-Z0-9_]+$"
-  disconnect_slow_connection: "PREFIX\n\nYour connection was too slow.\nPlease try again."
+  disconnect_please_wait_until_verify: "PREFIX\n\nYou will get verified in a few seconds.\nPlease try again in a few seconds."
   checks:
     - CooldownHandler
     - NameCheck
-    - JoinDelay
     - PingCheck

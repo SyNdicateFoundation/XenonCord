@@ -86,8 +86,8 @@ public class Configuration {
             configData.getPunish_manager().setUnban_console_log_message(Message.translateColor(configData.getPunish_manager().getUnban_console_log_message().replace("PREFIX", prefix)));
             configData.getPunish_manager().setUnmute_console_log_message(Message.translateColor(configData.getPunish_manager().getUnmute_console_log_message().replace("PREFIX", prefix)));
             configData.getAntibot().setDisconnect_cooldown(Message.translateColor(configData.getAntibot().getDisconnect_cooldown().replace("PREFIX", prefix)));
+            configData.getAntibot().setDisconnect_please_wait_until_verify(Message.translateColor(configData.getAntibot().getDisconnect_please_wait_until_verify().replace("PREFIX", prefix)));
             configData.getAntibot().setDisconnect_invalid_username(Message.translateColor(configData.getAntibot().getDisconnect_invalid_username().replace("PREFIX", prefix)));
-            configData.getAntibot().setDisconnect_slow_connection(Message.translateColor(configData.getAntibot().getDisconnect_slow_connection().replace("PREFIX", prefix)));
 
 
             logger.info("Successfully Initialized!");
@@ -217,8 +217,10 @@ public class Configuration {
     @Getter
     @Setter
     public static class AntiBotData {
-        private int block_duration_millis, connection_interval_millis, ping_reset_interval, slow_join_threshold, player_specified_cooldown, fast_join_threshold;
-        private String disconnect_cooldown, disconnect_invalid_username, disconnect_slow_connection;
+        private int block_duration_millis,
+                player_specified_cooldown,
+                fast_join_threshold;
+        private String disconnect_cooldown, disconnect_please_wait_until_verify, disconnect_invalid_username;
         private String[] checks;
     }
 
