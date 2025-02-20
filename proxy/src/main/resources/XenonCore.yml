@@ -45,7 +45,6 @@ modules:
   # Enabled Modules
   enables:
     - Antibot # Note: Experimental
-    - IpLimiter
     - MotdChanger
     - CommandSpy
     - StaffChat
