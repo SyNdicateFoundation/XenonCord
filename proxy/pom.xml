@@ -9,7 +9,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.github.waterfallmc</groupId>
     <artifactId>waterfall-proxy</artifactId>
     <version>1.21-R0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -65,13 +64,13 @@
         <dependency>
             <groupId>io.netty.incubator</groupId>
             <artifactId>netty-incubator-transport-native-io_uring</artifactId>
-            <version>0.0.25.Final</version>
+            <version>LATEST</version>
             <classifier>linux-x86_64</classifier>
         </dependency>
         <dependency>
             <groupId>io.netty.incubator</groupId>
             <artifactId>netty-incubator-transport-native-io_uring</artifactId>
-            <version>0.0.25.Final</version>
+            <version>LATEST</version>
             <classifier>linux-aarch_64</classifier>
         </dependency>
         <dependency>
@@ -114,7 +113,7 @@
         <dependency>
             <groupId>net.sf.jopt-simple</groupId>
             <artifactId>jopt-simple</artifactId>
-            <version>LATEST</version>
+            <version>5.0.4</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -127,19 +126,19 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-resolver-provider</artifactId>
-            <version>LATEST</version>
+            <version>3.9.6</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.resolver</groupId>
             <artifactId>maven-resolver-connector-basic</artifactId>
-            <version>LATEST</version>
+            <version>1.9.18</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.resolver</groupId>
             <artifactId>maven-resolver-transport-http</artifactId>
-            <version>LATEST</version>
+            <version>1.9.18</version>
             <scope>runtime</scope>
         </dependency>
         <!-- Waterfall start - Console improvements - bring back slf4j-->
@@ -183,7 +182,7 @@
         <dependency>
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
-            <version>LATEST</version>
+            <version>3.5.4</version>
         </dependency>
         <!-- Waterfall end -->
     </dependencies>
