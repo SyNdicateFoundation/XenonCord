@@ -30,8 +30,6 @@ public class XenonCore {
     private final ModuleManager moduleManager;
     private final AntibotManager antibotManager;
     @Setter
-    private boolean isProxyCompletlyLoaded;
-    @Setter
     private Configuration.ConfigData configData;
     @Setter
     private String currentMotd = "def";
@@ -47,20 +45,15 @@ public class XenonCore {
         this.configuration = new Configuration();
         this.moduleManager = new ModuleManager();
         this.antibotManager = new AntibotManager();
-      //  if(currentMotd.equals("def")) currentMotd = getBungeeInstance().getConfig().get
     }
 
     /**
      * Called when proxy is loaded.
      */
     public void init(long startTime) {
-        if(Arrays.stream(getConfigData().getWhitelisted_ips()).noneMatch(element -> element.equals("")))
+        if(Arrays.stream(getConfigData().getWhitelisted_ips()).noneMatch(String::isEmpty))
             getBungeeInstance().getPluginManager().registerListener(null, new IpLimiter());
-        getLogger().info("Loading the proxy server itself has been done. took: {}ms", System.currentTimeMillis() - startTime);
         getTaskManager().async(() -> {
-            while (!isProxyCompletlyLoaded)
-                bungeeInstance.getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect(configData.getLoading_message()));
-
             moduleManager.init();
             SwingManager.createAndShowGUI();
             getLogger().info("Successfully booted! Loading the proxy server with plugins took: {}ms", System.currentTimeMillis() - startTime);

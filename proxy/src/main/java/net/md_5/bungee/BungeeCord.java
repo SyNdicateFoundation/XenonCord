@@ -166,13 +166,8 @@ public class BungeeCord extends ProxyServer {
 
         if (Boolean.getBoolean("net.md_5.bungee.native.disable")) return;
 
-        if (xenonInstance.getConfigData().isDebug()) {
-            logger.info("Using " + (EncryptionUtil.nativeFactory.load() ? "mbed TLS based native" : "standard Java JCE") + " cipher.");
-            logger.info("Using " + (CompressFactory.zlib.load() ? "zlib based native" : "standard Java") + " compressor.");
-        } else {
-            EncryptionUtil.nativeFactory.load();
-            CompressFactory.zlib.load();
-        }
+        xenonInstance.logdebuginfo("Using " + (EncryptionUtil.nativeFactory.load() ? "mbed TLS based native" : "standard Java JCE") + " cipher.");
+        xenonInstance.logdebuginfo("Using " + (CompressFactory.zlib.load() ? "zlib based native" : "standard Java") + " compressor.");
     }
 
     public static BungeeCord getInstance() {
@@ -228,15 +223,12 @@ public class BungeeCord extends ProxyServer {
             xenonInstance.logdebuginfo("Commands are loaded!");
             xenonInstance.logdebuginfo("ASYNC task command registerer is shutting down...");
         });
-        XenonCore.instance.getTaskManager().cachedAsync(() -> {
-            xenonInstance.logdebuginfo("ASYNC task plugin loader is starting...");
-            pluginManager.detectPlugins(pluginsFolder);
-            pluginManager.loadPlugins();
-            XenonCore.instance.setProxyCompletlyLoaded(pluginManager.enablePlugins());
-            xenonInstance.logdebuginfo("Plugins are loaded!");
-            xenonInstance.logdebuginfo("ASYNC task plugin loader is shutting down...");
-        });
 
+        xenonInstance.logdebuginfo("plugin loader is starting...");
+        pluginManager.detectPlugins(pluginsFolder);
+        pluginManager.loadPlugins();
+        pluginManager.enablePlugins();
+        xenonInstance.logdebuginfo("Plugins are loaded!");
 
         if (config.getThrottle() > 0)
             connectionThrottle = new ConnectionThrottle(config.getThrottle(), config.getThrottleLimit());
@@ -288,9 +280,9 @@ public class BungeeCord extends ProxyServer {
                 final ChannelFutureListener bindListener = future -> {
                     if (future.isSuccess()) {
                         listeners.add(future.channel());
-                        getLogger().log(Level.INFO, "Started query on {0}", future.channel().localAddress());
+                        xenonInstance.logdebuginfo(String.format("Started query on %s", future.channel().localAddress()));
                     } else {
-                        getLogger().log(Level.WARNING, "Could not bind to host " + info.getSocketAddress(), future.cause());
+                        xenonInstance.logdebuginfo(String.format("Could not bind to host %s %s", info.getSocketAddress(), future.cause()));
                     }
                 };
 
@@ -354,7 +346,7 @@ public class BungeeCord extends ProxyServer {
 
         connectionLock.readLock().lock();
         try {
-            getLogger().log(Level.INFO, "Disconnecting {0} connections", connections.size());
+            xenonInstance.logdebuginfo(String.format("Disconnecting %s connections", connections.size()));
             connections.values().forEach(user -> user.disconnect(reason));
         } finally {
             connectionLock.readLock().unlock();
@@ -375,7 +367,7 @@ public class BungeeCord extends ProxyServer {
                 Arrays.stream(plugin.getLogger().getHandlers()).forEach(Handler::close);
             } catch (Throwable t) {
                 final String msg = "Exception disabling plugin " + plugin.getDescription().getName();
-                getLogger().log(Level.SEVERE, msg, t);
+                xenonInstance.logdebuginfo(String.format("%s %s", msg, t));
                 pluginManager.callEvent(new ProxyExceptionEvent(new ProxyPluginEnableDisableException(msg, t, plugin)));
             }
             getScheduler().cancel(plugin);
@@ -441,7 +433,7 @@ public class BungeeCord extends ProxyServer {
             try (FileReader rd = new FileReader(file)) {
                 cacheResourceBundle(cachedFormats, new PropertyResourceBundle(rd));
             } catch (IOException ex) {
-                getLogger().log(Level.SEVERE, "Could not load custom messages.properties", ex);
+                xenonInstance.logdebuginfo(String.format("Could not load custom messages.properties %s", ex));
             }
         }
 

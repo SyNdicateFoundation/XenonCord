@@ -52,7 +52,6 @@ public class Configuration {
             final ConfigData configData = new Yaml().loadAs(is, ConfigData.class);
             final String prefix = configData.prefix;
 
-            configData.setLoading_message(Message.translateColor(configData.getLoading_message().replace("PREFIX", prefix)));
             configData.setCannot_execute_as_console_message(Message.translateColor(configData.getCannot_execute_as_console_message().replace("PREFIX", prefix)));
             configData.setUnknown_option_message(Message.translateColor(configData.getUnknown_option_message().replace("PREFIX", prefix)));
             configData.setReload_message(Message.translateColor(configData.getReload_message().replace("PREFIX", prefix)));
@@ -101,7 +100,7 @@ public class Configuration {
     @Getter
     @Setter
     public static class ConfigData {
-        private String prefix, loading_message, in_game_brandname, cannot_execute_as_console_message,
+        private String prefix, in_game_brandname, cannot_execute_as_console_message,
                 unknown_option_message, xenoncord_permission, reload_permission, reload_message, reload_complete_message,
                 whitelist_ip_mode;
         private boolean debug, use_gui;

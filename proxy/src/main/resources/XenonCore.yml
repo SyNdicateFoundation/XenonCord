@@ -2,10 +2,6 @@
 prefix: "&9&lXenon&b&lCord"
 debug: true
 
-# Kick message during loading process
-# Placeholders: PREFIX: your prefix
-loading_message: "PREFIX\n&r&cstill loading.\n\n&cYou got disconnected to prevent problems."
-
 # In-game branding (F3 menu)
 in_game_brandname: "XenonCord"
 
