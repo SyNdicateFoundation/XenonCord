@@ -9,6 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <groupId>io.github.waterfallmc</groupId>
     <artifactId>waterfall-log4j</artifactId>
     <version>1.21-R0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -19,7 +20,7 @@
     </description>
 
     <properties>
-        <log4j2.version>2.24.3</log4j2.version>
+        <log4j2.version>2.20.0</log4j2.version>
     </properties>
 
     <dependencies>
