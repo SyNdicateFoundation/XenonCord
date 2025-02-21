@@ -2,7 +2,6 @@ package ir.xenoncommunity.antibot;
 
 import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.commands.XenonCord;
-import ir.xenoncommunity.utils.SQLManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -16,7 +15,6 @@ import net.md_5.bungee.api.xenoncord.PostPlayerHandshakeEvent;
 import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings({"unused", "deprecation"})
