@@ -289,7 +289,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
             return;
         }
 
-        if (BungeeCord.getInstance().config.isEnforceSecureProfile() && getVersion() < ProtocolConstants.MINECRAFT_1_19_3) {
+        if (BungeeCord.getInstance().config.isEnforceSecureProfile() && getVersion() < ProtocolConstants.MINECRAFT_1_19_3 && !bungee.getConfig().isIgnoreSecureProfileForOlderVersions()) {
             if (handshake.getProtocolVersion() < ProtocolConstants.MINECRAFT_1_19) {
                 disconnect(bungee.getTranslation("secure_profile_unsupported"));
                 return;

@@ -10,7 +10,9 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.SecureRandom;
 import java.util.Locale;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -24,7 +26,7 @@ public class Util {
      * Method to transform human readable addresses into usable address objects.
      *
      * @param hostline in the format of 'host:port'
-     * @return the constructed hostname + port.
+     * @return the constructed hostname  port.
      */
     public static SocketAddress getAddr(String hostline) {
         URI uri = null;
@@ -39,14 +41,14 @@ public class Util {
 
         if (uri == null || uri.getHost() == null) {
             try {
-                uri = new URI("tcp://" + hostline);
+                uri = new URI("tcp://"  +  hostline);
             } catch (URISyntaxException ex) {
-                throw new IllegalArgumentException("Bad hostline: " + hostline, ex);
+                throw new IllegalArgumentException("Bad hostline: " +  hostline, ex);
             }
         }
 
         if (uri.getHost() == null) {
-            throw new IllegalArgumentException("Invalid host/address: " + hostline);
+            throw new IllegalArgumentException("Invalid host/address: "  + hostline);
         }
 
         return new InetSocketAddress(uri.getHost(), (uri.getPort()) == -1 ? DEFAULT_PORT : uri.getPort());
@@ -69,7 +71,7 @@ public class Util {
      * @return the unicode representation of the character
      */
     public static String unicode(char c) {
-        return "\\u" + String.format("%04x", (int) c).toUpperCase(Locale.ROOT);
+        return "\\u"  +  String.format("%04x", (int) c).toUpperCase(Locale.ROOT);
     }
 
     /**
@@ -125,4 +127,22 @@ public class Util {
     public static UUID getUUID(String uuid) {
         return new UUID(UnsignedLongs.parseUnsignedLong(uuid.substring(0, 16), 16), UnsignedLongs.parseUnsignedLong(uuid.substring(16), 16));
     }
+
+    // Waterfall start: Forwarding rework
+    /**
+      * Generates an alphanumeric A-Z,a-z,0-9 byte-sequence.
+      *
+      * @param len the length of the sequence
+      * @return a UTF/ASCII compatible alphanumeric byte-sequence
+      */
+    public static byte[] randomAlphanumericSequence(int len){
+        Random random = new SecureRandom();
+        byte[] ret = new byte[len];
+        for(int i = 0; i < len; i++){
+            int seq = random.nextInt(62);
+            ret[i] = (byte) (seq < 10 ? seq + 48 : seq < 36 ? seq + 55 : seq + 61);
+        }
+        return ret;
+    }
+    // Waterfall end: Forwarding rework
 }

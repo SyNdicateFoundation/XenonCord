@@ -46,6 +46,7 @@ public class CommandSpy extends Command implements Listener {
     public void onCommand(ChatEvent e) {
         if (!(e.getMessage().startsWith("/") && e.getSender() instanceof ProxiedPlayer)) return;
 
+
         final ProxiedPlayer player = (ProxiedPlayer) e.getSender();
 
         if (player.hasPermission(XenonCore.instance.getConfigData().getCommand_spy().getSpy_bypass())) return;

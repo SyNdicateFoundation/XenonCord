@@ -2,6 +2,9 @@ package net.md_5.bungee.connection;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
+import io.github.waterfallmc.waterfall.forwarding.ForwardingMode;
+import io.github.waterfallmc.waterfall.forwarding.VelocityForwardingUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import ir.xenoncommunity.XenonCore;
@@ -32,10 +35,7 @@ import net.md_5.bungee.util.QuietException;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor
@@ -49,6 +49,8 @@ public class ServerConnector extends PacketHandler {
     @Getter
     private ForgeServerHandler handshakeHandler;
     private boolean obsolete;
+
+    private boolean didForwardInformation = false; // Waterfall: Forwarding rework
 
     public static void handleLogin(ProxyServer bungee, ChannelWrapper ch, UserConnection user, BungeeServerInfo target, ForgeServerHandler handshakeHandler, ServerConnection server, Login login) throws Exception {
         if (server.isForgeServer() && user.isForgeUser()) {
@@ -79,7 +81,7 @@ public class ServerConnector extends PacketHandler {
             ch.write(new PluginMessage(user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:register" : "REGISTER", Joiner.on("\0").join(registeredChannels).getBytes(StandardCharsets.UTF_8), false));
         }
 
-        // Something deeper is going wrong here, but, as it stands, this project is EOL, so, we'll just shove this through.
+        // Something deeper is going wrong here.
         if (user.getSettings() != null && (!user.isDisableEntityMetadataRewrite() || user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_20_2)) {
             ch.write(user.getSettings());
         }
@@ -224,6 +226,17 @@ public class ServerConnector extends PacketHandler {
             if (profile != null && profile.getProperties() != null && profile.getProperties().length > 0)
                 properties = profile.getProperties();
 
+            // Waterfall start: Forwarding rework
+            if (BungeeCord.getInstance().config.getForwardingMode() == ForwardingMode.BUNGEEGUARD) {
+                List<Property> temp = new ArrayList<>(Arrays.asList(properties));
+                temp.add(new Property("bungeeguard-token", new String(
+                        ((WaterfallConfiguration) BungeeCord.getInstance().config).getForwardingSecret(),
+                        StandardCharsets.UTF_8
+                ), null));
+                properties = temp.toArray(new Property[0]);
+            }
+            // Waterfall end: Forwarding rework
+
             if (user.getForgeClientHandler().isFmlTokenInHandshake()) {
                 // Get the current properties and copy them into a slightly bigger array.
                 final net.md_5.bungee.protocol.Property[] newp = Arrays.copyOf(properties, properties.length + 2);
@@ -276,6 +289,12 @@ public class ServerConnector extends PacketHandler {
 
     @Override
     public void handle(LoginSuccess loginSuccess) throws Exception {
+        // Waterfall start: Forwarding rework
+        if ( !didForwardInformation && BungeeCord.getInstance().config.isIpForward()
+                && BungeeCord.getInstance().config.getForwardingMode() == ForwardingMode.VELOCITY_MODERN) {
+            throw new QuietException(VelocityForwardingUtil.MODERN_IP_FORWARDING_FAILURE);
+        }
+        // Waterfall end: Forwarding rework
         Preconditions.checkState(thisState == State.LOGIN_SUCCESS, "Not expecting LOGIN_SUCCESS");
         if (user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_20_2) {
             cutThrough(new ServerConnection(ch, target));
@@ -427,6 +446,20 @@ public class ServerConnector extends PacketHandler {
 
     @Override
     public void handle(LoginPayloadRequest loginPayloadRequest) {
+        // Waterfall start: Forwarding rework
+        if ( !didForwardInformation && BungeeCord.getInstance().config.isIpForward()
+                && BungeeCord.getInstance().config.getForwardingMode() == ForwardingMode.VELOCITY_MODERN
+                && loginPayloadRequest.getChannel().equals(VelocityForwardingUtil.VELOCITY_IP_FORWARDING_CHANNEL)) {
+
+            byte[] forwardingData = VelocityForwardingUtil
+                    .writeForwardingData(user.getAddress().getAddress().getHostAddress(),
+                            user.getName(), user.getUniqueId(),
+                            user.getPendingConnection().getLoginProfile().getProperties());
+            ch.write(new LoginPayloadResponse(loginPayloadRequest.getId(), forwardingData));
+            didForwardInformation = true;
+            return;
+        }
+        // Waterfall end: Forwarding rework
         ch.write(new LoginPayloadResponse(loginPayloadRequest.getId(), null));
     }
 

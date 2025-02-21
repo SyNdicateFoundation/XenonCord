@@ -248,4 +248,10 @@ public class YamlConfig implements ConfigurationAdapter {
         return Collections.EMPTY_SET;
     }
 
+    // Waterfall start: Forwarding rework
+    public void regenerateForwardingSecret(){
+        set("forwarding_secret", new String(Util.randomAlphanumericSequence(12), StandardCharsets.UTF_8));
+    }
+    // Waterfall end: Forwarding rework
+
 }

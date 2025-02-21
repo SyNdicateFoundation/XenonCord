@@ -1,5 +1,6 @@
 package net.md_5.bungee.api;
 
+import io.github.waterfallmc.waterfall.forwarding.ForwardingMode;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.config.ServerInfo;
 
@@ -222,9 +223,9 @@ public interface ProxyConfig {
     int getTabThrottle();
 
     /**
-     * Should we disable the tab completion limit for 1.13+ clients
+     * Should we disable the tab completion limit for 1.13 clients
      *
-     * @return should we disable the tab completion limit for 1.13+ clients
+     * @return should we disable the tab completion limit for 1.13 clients
      */
     boolean isDisableModernTabLimiter();
 
@@ -239,6 +240,12 @@ public interface ProxyConfig {
      * @return {@code true} if tablist rewriting is disabled, {@code false} otherwise
      */
     boolean isDisableTabListRewrite();
+    
+    /**
+     * Represents the forwarding mode as configured.
+     * @return the mode set in the config
+     */
+    ForwardingMode getForwardingMode();
 
     /**
      * Gets the maximum number of registered plugin channels for any connection.

@@ -53,6 +53,7 @@ public abstract class Configuration implements ProxyConfig {
      * Whether to check the authentication server public key.
      */
     private boolean enforceSecureProfile;
+    private boolean ignoreSecureProfileForOlderVersions;
     private int remotePingCache = -1;
     private int playerLimit = -1;
     private int serverConnectTimeout = 5000;
@@ -86,6 +87,7 @@ public abstract class Configuration implements ProxyConfig {
         uuid = adapter.getString("stats", uuid);
         onlineMode = adapter.getBoolean("online_mode", onlineMode);
         enforceSecureProfile = adapter.getBoolean("enforce_secure_profile", enforceSecureProfile);
+        ignoreSecureProfileForOlderVersions = adapter.getBoolean("ignore_secure_profile_for_older_versions", ignoreSecureProfileForOlderVersions);
         remotePingCache = adapter.getInt("remote_ping_cache", remotePingCache);
         playerLimit = adapter.getInt("player_limit", playerLimit);
         serverConnectTimeout = adapter.getInt("server_connect_timeout", serverConnectTimeout);
