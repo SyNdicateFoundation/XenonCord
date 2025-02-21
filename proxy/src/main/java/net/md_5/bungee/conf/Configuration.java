@@ -19,7 +19,10 @@ import net.md_5.bungee.util.CaseInsensitiveSet;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**

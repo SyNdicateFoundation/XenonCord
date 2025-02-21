@@ -3,14 +3,10 @@ package ir.xenoncommunity.antibot.checks;
 import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.annotations.AntibotCheck;
 import ir.xenoncommunity.utils.Configuration;
-import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.PlayerHandshakeEvent;
-import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.xenoncord.PostPlayerHandshakeEvent;
 import net.md_5.bungee.event.EventHandler;
-
-import javax.imageio.spi.ServiceRegistry;
 
 @SuppressWarnings("unused")
 @AntibotCheck(name = "Still On Cooldown")

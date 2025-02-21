@@ -1,13 +1,10 @@
 package ir.xenoncommunity.handlers;
 
 import ir.xenoncommunity.XenonCore;
-import net.md_5.bungee.api.event.PacketSendEvent;
 import net.md_5.bungee.api.event.PlayerHandshakeEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.Arrays;
 
 @SuppressWarnings("unused")

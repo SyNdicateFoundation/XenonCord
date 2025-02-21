@@ -16,7 +16,6 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.incubator.channel.uring.*;
 import io.netty.util.AttributeKey;
 import io.netty.util.internal.PlatformDependent;
-import ir.xenoncommunity.XenonCore;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import net.md_5.bungee.BungeeCord;
