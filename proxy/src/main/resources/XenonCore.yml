@@ -65,11 +65,11 @@ motd_changer:
 # Requires CommandSpy module to be enabled.
 command_spy:
   spy_exceptions:
-    - "login"
-    - "reg"
-    - "register"
-    - "log"
-    - "l"
+    - "/login"
+    - "/reg"
+    - "/register"
+    - "/log"
+    - "/l"
   spy_bypass: "xenoncord.spy.bypass"
   spy_perm: "xenoncord.spy.alerts"
   spy_message: "PREFIX &r&dPLAYER &b» COMMAND"
