@@ -53,8 +53,9 @@ public class CommandSpy extends Command implements Listener {
 
         final String rawCommand = e.getMessage();
 
+        if (isSpyException(rawCommand.split(" ")[0])) return;
+
         XenonCore.instance.getTaskManager().add(() -> {
-            if (isSpyException(rawCommand)) return;
 
             spyPlayers.stream()
                     .filter(spyPlayerName -> {
@@ -79,6 +80,6 @@ public class CommandSpy extends Command implements Listener {
     private boolean isSpyException(String rawCommand) {
         return Arrays.stream(XenonCore.instance.getConfigData().getCommand_spy().getSpy_exceptions())
                 .map(String::toLowerCase)
-                .anyMatch(rawCommand.toLowerCase().split(" ")[0]::equals);
+                .anyMatch(rawCommand.toLowerCase()::equals);
     }
 }
