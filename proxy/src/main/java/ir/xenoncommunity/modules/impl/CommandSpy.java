@@ -79,6 +79,6 @@ public class CommandSpy extends Command implements Listener {
     private boolean isSpyException(String rawCommand) {
         return Arrays.stream(XenonCore.instance.getConfigData().getCommand_spy().getSpy_exceptions())
                 .map(String::toLowerCase)
-                .anyMatch(rawCommand.substring(1).toLowerCase().split(" ")[0]::equals);
+                .anyMatch(rawCommand.toLowerCase().split(" ")[0]::equals);
     }
 }
