@@ -19,6 +19,10 @@ unknown_option_message: "PREFIX &cUnknown option, available: OPTIONS"
 # XenonCord command perm
 xenoncord_permission: "xenoncord.xenoncord"
 
+# Backend support.
+# this is required by: XenonBanBackend, or any plugin with the need of command execution without plugin message
+socket_backend: true
+
 # "xenoncord reload" Command Permission
 reload_permission: "xenoncord.xenoncord.reload"
 
@@ -50,7 +54,7 @@ modules:
     - Ping
     - BPlugins
     - Playtime
-    - PunishManager
+    #- PunishManager
     #- StaffActivitySender
 
 # MotdChanger Settings
@@ -127,11 +131,6 @@ playtime:
 # Requires PunishManager module to be enabled.
 # NOTE: clearchat works for self, means to clear the whole chat for all players, you need to use global argument.
 punish_manager:
-  # XenonCord supports a plugin channel with XenonBanBackend
-  # on your spigot to actually execute the ban cmd on bungee console
-  # so it'll get litebans to work.
-  # available: XenonCord, LiteBans
-  mode: LiteBans
   ban_perm: "xenoncord.punishmanager.ban"
   ban_announce_message: "PREFIX &aPLAYER1 &cbanned &aPLAYER2 &cfor &aREASON &cuntil DURATION."
   ban_disconnect_message: "PREFIX\n\n&cPLAYER You are banned from this server.\nReason: REASON\nduration: DURATION"

@@ -6,12 +6,19 @@ import ir.xenoncommunity.handlers.IpLimiter;
 import ir.xenoncommunity.modules.ModuleManager;
 import ir.xenoncommunity.utils.Configuration;
 import ir.xenoncommunity.utils.TaskManager;
+import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import net.md_5.bungee.BungeeCord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,6 +65,9 @@ public class XenonCore {
             SwingManager.createAndShowGUI();
             getLogger().info("Successfully booted! Loading the proxy server with plugins took: {}ms", System.currentTimeMillis() - startTime);
         });
+
+
+        if(configData.isSocket_backend()) XenonCore.instance.getTaskManager().async(this::initBackend);
     }
 
     /**
@@ -98,5 +108,25 @@ public class XenonCore {
     public void logdebugerror(String msg) {
         if (configData.isDebug())
             logger.error(msg);
+    }
+
+    /**
+     * Initializes command execution backend support
+     */
+    @SneakyThrows
+    private void initBackend() {
+        @Cleanup final ServerSocket serverSocket = new ServerSocket(20019, 50, InetAddress.getByName("127.0.0.1"));
+
+        while (true) {
+            @Cleanup final Socket socket = serverSocket.accept();
+            @Cleanup final BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            String req;
+            while ((req = br.readLine()) != null) {
+                XenonCore.instance.getBungeeInstance().getPluginManager().dispatchCommand(
+                        XenonCore.instance.getBungeeInstance().getConsole(), req
+                );
+            }
+        }
     }
 }

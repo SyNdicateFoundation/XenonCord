@@ -103,7 +103,7 @@ public class Configuration {
         private String prefix, in_game_brandname, cannot_execute_as_console_message,
                 unknown_option_message, xenoncord_permission, reload_permission, reload_message, reload_complete_message,
                 whitelist_ip_mode;
-        private boolean debug, use_gui;
+        private boolean debug, use_gui, socket_backend;
         private long gui_refresh_rate;
         private String[] whitelisted_ips;
         private ModulesData modules;
@@ -185,7 +185,7 @@ public class Configuration {
     @Getter
     @Setter
     public static class PunishManagerData {
-        private String mode, ban_perm, ban_announce_message, ban_disconnect_message,
+        private String ban_perm, ban_announce_message, ban_disconnect_message,
                 mute_perm, mute_announce_message, mute_block_message,
                 kick_perm, kick_announce_message, kick_disconnect_message,
                 clear_chat_perm, global_clear_chat_perm, unban_console_log_message,

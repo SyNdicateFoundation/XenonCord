@@ -30,12 +30,6 @@ public class PunishManager implements Listener {
     private SQLManager sqlManager;
 
     public PunishManager() {
-        XenonCore.instance.getTaskManager().async(this::initBackend);
-        if (XenonCore.instance.getConfigData().getPunish_manager().getMode().equals("LiteBans")) {
-            XenonCore.instance.getBungeeInstance().getPluginManager().unregisterListener(this);
-            return;
-        }
-
         sqlManager = new SQLManager(XenonCore.instance.getConfiguration().getSqlPunishments(),
                 "CREATE TABLE IF NOT EXISTS Players (" +
                         "username TEXT PRIMARY KEY," +
@@ -64,10 +58,6 @@ public class PunishManager implements Listener {
 
     @EventHandler
     public void onJoin(LoginEvent e) {
-        if (XenonCore.instance.getConfigData().getPunish_manager().getMode().equals("LiteBans")) {
-            return;
-        }
-
         XenonCore.instance.getTaskManager().add(() -> handleJoinPunishment(e, e.getConnection().getName()));
     }
 
@@ -111,10 +101,6 @@ public class PunishManager implements Listener {
 
     @EventHandler
     public void onChat(ChatEvent e) {
-        if (XenonCore.instance.getConfigData().getPunish_manager().getMode().equals("LiteBans")) {
-            return;
-        }
-
         if (e.getMessage().startsWith("/") &&
                 Arrays.stream(XenonCore.instance.getConfigData().getPunish_manager().getMute_commands())
                         .noneMatch(element -> e.getMessage().split(" ")[0].equals(element))) {
@@ -160,20 +146,5 @@ public class PunishManager implements Listener {
         sqlManager.updateDB(preparedStatement);
     }
 
-    @SneakyThrows
-    private void initBackend() {
-        @Cleanup final ServerSocket serverSocket = new ServerSocket(20019, 50, InetAddress.getByName("127.0.0.1"));
 
-        while (true) {
-            @Cleanup final Socket socket = serverSocket.accept();
-            @Cleanup final BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            String req;
-            while ((req = br.readLine()) != null) {
-                XenonCore.instance.getBungeeInstance().getPluginManager().dispatchCommand(
-                        XenonCore.instance.getBungeeInstance().getConsole(), req
-                );
-            }
-        }
-    }
 }
