@@ -15,14 +15,23 @@ public class CooldownHandler extends ir.xenoncommunity.antibot.AntibotCheck impl
     private final long cooldownThreshold;
     private final String disconnectCooldown;
     private final long fastJoinThreshold;
-    private final String disconnectVerify;
 
     public CooldownHandler() {
         final Configuration.AntiBotData config = XenonCore.instance.getConfigData().getAntibot();
         this.cooldownThreshold = config.getPlayer_specified_cooldown();
         this.disconnectCooldown = config.getDisconnect_cooldown();
         this.fastJoinThreshold = config.getFast_join_threshold();
-        this.disconnectVerify = config.getDisconnect_please_wait_until_verify();
+        XenonCore.instance.getTaskManager().async(() -> {
+            while (true) {
+                resetData();
+
+                try {
+                    Thread.sleep(config.getData_clear_threshold());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
     }
     // block handler
     @EventHandler(priority = Byte.MAX_VALUE)
@@ -32,24 +41,14 @@ public class CooldownHandler extends ir.xenoncommunity.antibot.AntibotCheck impl
 
         if(blockStart == null) return;
 
-        blockedIPs.keySet().removeIf(key ->
+        if(!XenonCore.instance.getConfigData().getAntibot().isDont_unblock_blocks())
+            blockedIPs.keySet().removeIf(key ->
                 !(blockStart >= System.currentTimeMillis()
                         - XenonCore.instance.getConfigData().getAntibot().getBlock_duration_millis()));
 
         event.setCancelled(true);
     }
-    // cooldown handler
-    @EventHandler(priority = Byte.MAX_VALUE)
-    public void onPostPlayerHandshake(PostPlayerHandshakeEvent event) {
-        final String playerIp = event.getConnection().getAddress().getAddress().getHostAddress();
-        final long currentTime = System.currentTimeMillis();
 
-        cooldownMap.put(playerIp, currentTime);
-        firstJoinTimestamps.putIfAbsent(playerIp, currentTime);
-
-        if (currentTime - firstJoinTimestamps.get(playerIp) < cooldownThreshold)
-            cancelPostHandshake(event, disconnectVerify);
-    }
     // cooldown handler
     @EventHandler(priority = Byte.MAX_VALUE - 1)
     public void onPostPostPlayerHandshakeEvent(PostPlayerHandshakeEvent event) {

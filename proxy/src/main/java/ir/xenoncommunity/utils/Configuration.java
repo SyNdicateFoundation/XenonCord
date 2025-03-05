@@ -218,7 +218,8 @@ public class Configuration {
     public static class AntiBotData {
         private int block_duration_millis,
                 player_specified_cooldown,
-                fast_join_threshold;
+                fast_join_threshold, data_clear_threshold;
+        private boolean dont_unblock_blocks, clear_player_data;
         private String disconnect_cooldown, disconnect_please_wait_until_verify, disconnect_invalid_username;
         private String[] checks;
     }

@@ -183,6 +183,11 @@ antibot:
   block_duration_millis: 20000
   player_specified_cooldown: 5000
   fast_join_threshold: 3000
+  # enable this if you want somewhat result as same as firewall
+  dont_unblock_blocks: true
+  # clear all player data after this much
+  clear_player_data: true
+  data_clear_threshold: 300000
   disconnect_cooldown: "PREFIX\n\nYour connection is still on cooldown.\nPlease try again later."
   disconnect_invalid_username: "PREFIX\n\nYour username is invalid.\nPlease try again with another username.\nformat should be:\nlength between 3 to 6\n^[a-zA-Z0-9_]+$"
   disconnect_please_wait_until_verify: "PREFIX\n\nYou will get verified in a few seconds.\nPlease try again in a few seconds."
@@ -190,3 +195,4 @@ antibot:
     - CooldownHandler
     - NameCheck
     - PingCheck
+    - VerificationCheck

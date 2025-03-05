@@ -84,12 +84,6 @@ public abstract class AntibotCheck {
         event.setCancelReason(reason);
     }
 
-    private void cleanupExpiredEntries() {
-        joinTimeMap.clear();
-        firstJoinTimestamps.clear();
-        cooldownMap.clear();
-    }
-
     public static void log(){
         if(isLogging) return;
 
@@ -115,7 +109,12 @@ public abstract class AntibotCheck {
         joinTimeMap.put(playerName, currentTime);
         cooldownMap.remove(playerName);
     }
-
+    public void resetData(){
+        blockedIPs.clear();
+        cooldownMap.clear();
+        joinTimeMap.clear();
+        firstJoinTimestamps.clear();
+    }
     public static void sendStats() {
         final Runtime runtime = Runtime.getRuntime();
         final String stats = "§b§lXenonCord §8» §7CPS/s§8: §f" +
