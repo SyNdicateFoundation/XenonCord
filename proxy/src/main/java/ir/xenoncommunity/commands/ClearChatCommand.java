@@ -9,7 +9,7 @@ import net.md_5.bungee.api.plugin.Command;
 public class ClearChatCommand extends Command {
 
     public ClearChatCommand() {
-        super("clearchat", XenonCore.instance.getConfigData().getPunish_manager().getClear_chat_perm(), "cls");
+        super("clearchat", "xenoncord.clearchat","cls");
     }
 
     @Override
@@ -20,6 +20,11 @@ public class ClearChatCommand extends Command {
             }
             return;
         }
+
+        if(!sender.hasPermission("xenoncord.clearchat.global"))
+            for (int i = 0; i <= 100; i++) {
+                Message.send(sender, "", false);
+            }
 
         if (!args[0].equals("global"))
             Message.send(sender,

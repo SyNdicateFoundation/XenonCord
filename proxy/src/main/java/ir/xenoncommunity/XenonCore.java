@@ -1,9 +1,7 @@
 package ir.xenoncommunity;
 
-import ir.xenoncommunity.antibot.AntibotManager;
 import ir.xenoncommunity.gui.SwingManager;
 import ir.xenoncommunity.handlers.IpLimiter;
-import ir.xenoncommunity.modules.ModuleManager;
 import ir.xenoncommunity.utils.Configuration;
 import ir.xenoncommunity.utils.TaskManager;
 import lombok.Cleanup;
@@ -34,12 +32,8 @@ public class XenonCore {
     private final TaskManager taskManager;
     private final BungeeCord bungeeInstance;
     private final Configuration configuration;
-    private final ModuleManager moduleManager;
-    private final AntibotManager antibotManager;
     @Setter
     private Configuration.ConfigData configData;
-    @Setter
-    private String currentMotd = "def";
 
     /**
      * Initializes all required variables.
@@ -50,8 +44,7 @@ public class XenonCore {
         this.taskManager = new TaskManager();
         this.bungeeInstance = BungeeCord.getInstance();
         this.configuration = new Configuration();
-        this.moduleManager = new ModuleManager();
-        this.antibotManager = new AntibotManager();
+        configData = getConfiguration().init();
     }
 
     /**
@@ -61,11 +54,9 @@ public class XenonCore {
         if(Arrays.stream(getConfigData().getWhitelisted_ips()).noneMatch(String::isEmpty))
             getBungeeInstance().getPluginManager().registerListener(null, new IpLimiter());
         getTaskManager().async(() -> {
-            moduleManager.init();
             SwingManager.createAndShowGUI();
             getLogger().info("Successfully booted! Loading the proxy server with plugins took: {}ms", System.currentTimeMillis() - startTime);
         });
-
 
         if(configData.isSocket_backend()) XenonCore.instance.getTaskManager().async(this::initBackend);
     }

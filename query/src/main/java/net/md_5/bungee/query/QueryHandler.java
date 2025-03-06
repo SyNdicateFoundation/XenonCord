@@ -92,7 +92,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket> {
             // Waterfall start
             List<String> players = bungee.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
 
-            String motd = listener.getModifiedMotd().isEmpty() || listener.getModifiedMotd().equals("def") ? listener.getDefault_bungee_motd() : listener.getModifiedMotd();
+            String motd = listener.getDefault_bungee_motd();
             motd = ChatColor.translateAlternateColorCodes('&', motd);
 
             ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(players, motd, "SMP",

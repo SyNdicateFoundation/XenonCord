@@ -25,12 +25,6 @@ public class Message {
         XenonCore.instance.getLogger().info(translateColor(message));
     }
 
-    public void sendNoPermMessage(CommandSender senderIn) {
-        if ((senderIn instanceof ConsoleCommandSender)) return;
-
-        senderIn.sendMessage(translateColor(XenonCore.instance.getConfigData().getCommand_whitelist().getBlock_message()));
-    }
-
     public String translateColor(String msg) {
         return ChatColor.translateAlternateColorCodes('&', msg);
     }

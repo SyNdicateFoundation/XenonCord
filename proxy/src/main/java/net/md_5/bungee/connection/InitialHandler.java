@@ -153,7 +153,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         Preconditions.checkState(thisState == State.STATUS, "Not expecting STATUS");
 
         ServerInfo forced = AbstractReconnectHandler.getForcedHost(this);
-        final String motd = (forced != null) ? forced.getMotd() : (XenonCore.instance.getCurrentMotd().equals("def") || XenonCore.instance.getCurrentMotd().isEmpty()) ? listener.getDefault_bungee_motd() : listener.getModifiedMotd();
+        final String motd = (forced != null) ? forced.getMotd() :  listener.getDefault_bungee_motd();
         final int protocol = (ProtocolConstants.SUPPORTED_VERSION_IDS.contains(handshake.getProtocolVersion())) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
 
         Callback<ServerPing> pingBack = new Callback<ServerPing>() {
