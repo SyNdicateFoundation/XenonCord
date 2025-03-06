@@ -1,17 +1,17 @@
 # XenonCord: A lightweight, easy to use, scaleable bungeecord instance.
 
-Note: This project is currently in the status of recode.
+Note: All the actual "addons" are migrated into a bungeecord plugin now.
 
 ## Overview
 
 - this project is a waterfall fork, which is a fork of bungeecord.
-- this project contains some fixes, patches, and as well as new features, such as anti bot and etc.
+- this project contains some fixes, patches, and as well as new features, such as bungeeguard native forwarding & etc.
 - we will add features and complete this readme.md file.
 
 ### Key Features 🚀
 
 Lightweight - this project is focused on being clean code & optimized.
-Provided features - this proxy software provides many features by default. eg. staffchat, commandwhitelist, and etc.
+Provided features - this proxy software provides some additions to BungeeCord
 C:ustomizable this proxy is designed to be customizable. means, if you wanted to use these default features, or not, we
 granted you the ability to remove it, by a simple configuration.
 
