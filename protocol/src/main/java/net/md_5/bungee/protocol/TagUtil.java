@@ -15,9 +15,9 @@ public final class TagUtil {
 
     public static SpecificTag fromJson(JsonElement json) {
         if (json instanceof JsonPrimitive) {
-            JsonPrimitive jsonPrimitive = (JsonPrimitive) json;
+            final JsonPrimitive jsonPrimitive = (JsonPrimitive) json;
             if (jsonPrimitive.isNumber()) {
-                Number number = json.getAsNumber();
+                final Number number = json.getAsNumber();
 
                 if (number instanceof Byte) {
                     return new ByteTag((Byte) number);
@@ -40,21 +40,30 @@ public final class TagUtil {
                 throw new IllegalArgumentException("Unknown JSON primitive: " + jsonPrimitive);
             }
         } else if (json instanceof JsonObject) {
-            CompoundTag compoundTag = new CompoundTag();
-            for (Map.Entry<String, JsonElement> property : ((JsonObject) json).entrySet()) {
-                compoundTag.add(property.getKey(), fromJson(property.getValue()));
-            }
+            return new CompoundTag() {{
+                ((JsonObject) json).entrySet().forEach(entry -> add(entry.getKey(), fromJson(entry.getValue())));
+            }};
 
-            return compoundTag;
         } else if (json instanceof JsonArray) {
             List<JsonElement> jsonArray = ((JsonArray) json).asList();
 
-            if (jsonArray.isEmpty()) {
-                return new ListTag(Tag.TAG_END, Collections.emptyList());
+            Integer listType = null;
+            for ( JsonElement jsonEl : jsonArray )
+            {
+                int type = fromJson( jsonEl ).tagType();
+                if ( listType == null )
+                {
+                    listType = type;
+                } else if ( listType != type )
+                {
+                    listType = Tag.TAG_COMPOUND;
+                    break;
+                }
             }
+            if ( listType == null )
+                return new ListTag(Tag.TAG_END, Collections.emptyList());
 
             SpecificTag listTag;
-            int listType = fromJson(jsonArray.get(0)).tagType();
             switch (listType) {
                 case Tag.TAG_BYTE:
                     byte[] bytes = new byte[jsonArray.size()];
@@ -85,7 +94,7 @@ public final class TagUtil {
 
                     for (JsonElement jsonEl : jsonArray) {
                         SpecificTag subTag = fromJson(jsonEl);
-                        if (!(subTag instanceof CompoundTag)) {
+                        if ( listType == Tag.TAG_COMPOUND && !( subTag instanceof CompoundTag ) ){
                             CompoundTag wrapper = new CompoundTag();
                             wrapper.add("", subTag);
                             subTag = wrapper;
