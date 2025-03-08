@@ -14,6 +14,7 @@ import net.md_5.bungee.compress.PacketCompressor;
 import net.md_5.bungee.compress.PacketDecompressor;
 import net.md_5.bungee.netty.cipher.CipherEncoder;
 import net.md_5.bungee.protocol.*;
+import net.md_5.bungee.protocol.channel.CompressionThresholdSignal;
 import net.md_5.bungee.protocol.packet.Kick;
 
 import java.net.SocketAddress;
@@ -165,6 +166,7 @@ public class ChannelWrapper {
 
         // disable use of composite buffers if we use natives
         updateComposite();
+        ch.pipeline().fireUserEventTriggered( new CompressionThresholdSignal( compressionThreshold ) )
     }
 
     /*
