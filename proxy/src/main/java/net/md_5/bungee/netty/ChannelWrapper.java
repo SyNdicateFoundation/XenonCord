@@ -166,7 +166,7 @@ public class ChannelWrapper {
 
         // disable use of composite buffers if we use natives
         updateComposite();
-        ch.pipeline().fireUserEventTriggered( new CompressionThresholdSignal( compressionThreshold ) )
+        ch.pipeline().fireUserEventTriggered( new CompressionThresholdSignal( compressionThreshold ) );
     }
 
     /*
