@@ -38,7 +38,7 @@ public class BungeeTitle implements Title {
         if (packet == null) return;
 
         if (player.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_17) {
-            ((UserConnection) player).sendPacketQueued(packet.newPacket);
+            player.unsafe().sendPacketQueued(packet.newPacket);
         } else {
             player.unsafe().sendPacket(packet.oldPacket);
         }

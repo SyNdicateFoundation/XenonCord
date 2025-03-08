@@ -10,6 +10,7 @@ import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
+import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.PluginMessage;
 
 import java.net.InetSocketAddress;
@@ -34,6 +35,18 @@ public class ServerConnection implements Server {
         public void sendPacket(DefinedPacket packet) {
             ch.write(packet);
         }
+
+        @Override
+        public void sendPacketQueued(DefinedPacket packet)
+        {
+            if ( ch.getEncodeVersion() >= ProtocolConstants.MINECRAFT_1_20_2 )
+            {
+                ServerConnection.this.sendPacketQueued( packet );
+            } else
+            {
+                sendPacket( packet );
+            }
+        }
     };
     @Getter
     @Setter
@@ -45,8 +58,8 @@ public class ServerConnection implements Server {
             if (ch.isClosed()) {
                 return;
             }
-            Protocol encodeProtocol = ch.getEncodeProtocol();
-            if (!encodeProtocol.TO_SERVER.hasPacket(packet.getClass(), ch.getEncodeVersion())) {
+            if (!ch.getEncodeProtocol().TO_SERVER.hasPacket(packet.getClass(), ch.getEncodeVersion())) {
+                Preconditions.checkState( packetQueue.size() <= 4096, "too many queued packets" );
                 packetQueue.add(packet);
             } else {
                 unsafe().sendPacket(packet);

@@ -66,6 +66,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         public void sendPacket(DefinedPacket packet) {
             ch.write(packet);
         }
+        @Override
+        public void sendPacketQueued(DefinedPacket packet)
+        {
+            throw new UnsupportedOperationException( "Not supported" );
+        }
     };
     @Getter
     private Handshake handshake;

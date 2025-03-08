@@ -80,6 +80,18 @@ public final class UserConnection implements ProxiedPlayer {
         public void sendPacket(DefinedPacket packet) {
             ch.write(packet);
         }
+
+        @Override
+        public void sendPacketQueued(DefinedPacket packet)
+        {
+            if ( pendingConnection.getVersion() >= ProtocolConstants.MINECRAFT_1_20_2 )
+            {
+                UserConnection.this.sendPacketQueued( packet );
+            } else
+            {
+                sendPacket( packet );
+            }
+        }
     };
     /*========================================================================*/
     @Getter
@@ -162,6 +174,7 @@ public final class UserConnection implements ProxiedPlayer {
             }
 
             if (!ch.getEncodeProtocol().TO_CLIENT.hasPacket(packet.getClass(), getPendingConnection().getVersion())) {
+                Preconditions.checkState( packetQueue.size() <= 4096, "too many queued packets" );
                 packetQueue.add(packet);
             } else {
                 unsafe().sendPacket(packet);
