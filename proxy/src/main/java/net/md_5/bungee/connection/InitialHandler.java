@@ -500,7 +500,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
             future = requestedLoginPayloads.remove(response.getId());
         }
         Preconditions.checkState(future != null, "Unexpected custom LoginPayloadResponse");
-        XenonCore.instance.getTaskManager().async(() -> future.complete(response.getData()));
+        future.complete(response.getData());
         throw CancelSendSignal.INSTANCE;
     }
 

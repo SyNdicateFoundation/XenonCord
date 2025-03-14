@@ -182,6 +182,7 @@ public class BungeeCord extends ProxyServer {
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void start(long startTime) throws Exception {
+        pluginManager.detectPlugins(pluginsFolder);
 
         xenonInstance.getLogger().info(String.format("Enabled XenonCord %s", XenonCore.instance.getVersion()));
 
@@ -218,13 +219,11 @@ public class BungeeCord extends ProxyServer {
                     XenonCore.instance.getLogger().error(e.getMessage());
                 }
             });
-            new XenonCord();
             xenonInstance.logdebuginfo("Commands are loaded!");
             xenonInstance.logdebuginfo("ASYNC task command registerer is shutting down...");
         });
 
         xenonInstance.logdebuginfo("plugin loader is starting...");
-        pluginManager.detectPlugins(pluginsFolder);
         pluginManager.loadPlugins();
         pluginManager.enablePlugins();
         xenonInstance.logdebuginfo("Plugins are loaded!");

@@ -64,11 +64,9 @@ public class ServerConnector extends PacketHandler {
         final Queue<DefinedPacket> packetQueue = target.getPacketQueue();
 
         synchronized (packetQueue) {
-            XenonCore.instance.getTaskManager().async(() -> {
-                while (!packetQueue.isEmpty()) {
-                    ch.write(packetQueue.poll());
-                }
-            });
+            while (!packetQueue.isEmpty()) {
+                ch.write(packetQueue.poll());
+            }
         }
 
         final PluginMessage brandMessage = user.getPendingConnection().getBrandMessage();

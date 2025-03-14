@@ -21,10 +21,7 @@ public class ClearChatCommand extends Command {
             return;
         }
 
-        if(!sender.hasPermission("xenoncord.clearchat.global"))
-            for (int i = 0; i <= 100; i++) {
-                Message.send(sender, "", false);
-            }
+        if(!sender.hasPermission("xenoncord.clearchat.global")) return;
 
         if (!args[0].equals("global"))
             Message.send(sender,
