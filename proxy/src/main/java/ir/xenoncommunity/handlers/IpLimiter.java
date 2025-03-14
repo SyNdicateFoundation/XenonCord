@@ -13,7 +13,7 @@ private final boolean isDomainMode = XenonCore.instance.getConfigData().getWhite
 
     @EventHandler
     public void onHandshake(PlayerHandshakeEvent event) {
-        if (DOMAIN) {
+        if (isDomainMode) {
             final String domain = (event.getConnection().getVirtualHost() != null && 
                        event.getConnection().getVirtualHost().getHostString() != null)
                       ? event.getConnection().getVirtualHost().getHostString().trim().toLowerCase()
