@@ -9,15 +9,18 @@ import java.util.Arrays;
 
 @SuppressWarnings("unused")
 public class IpLimiter implements Listener {
-    private final boolean DOMAIN = XenonCore.instance.getConfigData().getWhitelist_ip_mode().equals("DOMAIN");
+private final boolean isDomainMode = XenonCore.instance.getConfigData().getWhitelist_ip_mode().equals("DOMAIN");
 
     @EventHandler
     public void onHandshake(PlayerHandshakeEvent event) {
-        if (DOMAIN) {
-            final String domain = event.getConnection().getVirtualHost().getHostString();
+        if (isDomainMode) {
+            final String domain = (event.getConnection().getVirtualHost() != null && 
+                       event.getConnection().getVirtualHost().getHostString() != null)
+                      ? event.getConnection().getVirtualHost().getHostString().trim().toLowerCase()
+                      : "";
 
-            if (Arrays.stream(XenonCore.instance.getConfigData().getWhitelisted_ips()).noneMatch(element ->
-                    element.equals(domain) /*|| element.equals(domain2))*/))
+            if (Arrays.stream(XenonCore.instance.getConfigData().getWhitelisted_ips())
+                    .noneMatch(element -> element.trim().toLowerCase().equals(domain)))
                 event.setIgnored(true);
 
         } else {
