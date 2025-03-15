@@ -51,14 +51,14 @@ public class XenonCore {
      * Called when proxy is loaded.
      */
     public void init(long startTime) {
-        if(Arrays.stream(getConfigData().getWhitelisted_ips()).noneMatch(String::isEmpty))
+        if (Arrays.stream(getConfigData().getWhitelisted_ips()).noneMatch(String::isEmpty))
             getBungeeInstance().getPluginManager().registerListener(null, new IpLimiter());
         getTaskManager().async(() -> {
             SwingManager.createAndShowGUI();
             getLogger().info("Successfully booted! Loading the proxy server with plugins took: {}ms", System.currentTimeMillis() - startTime);
         });
 
-        if(configData.isSocket_backend()) XenonCore.instance.getTaskManager().async(this::initBackend);
+        if (configData.isSocket_backend()) XenonCore.instance.getTaskManager().async(this::initBackend);
     }
 
     /**

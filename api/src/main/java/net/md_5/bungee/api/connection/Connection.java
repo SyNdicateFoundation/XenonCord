@@ -83,6 +83,7 @@ public interface Connection {
          * @param packet the packet to send
          */
         void sendPacket(DefinedPacket packet);
+
         /**
          * Queue a packet to this connection.
          * If the packet is not registered for the connections current encoder protocol, it will be queued until it is,

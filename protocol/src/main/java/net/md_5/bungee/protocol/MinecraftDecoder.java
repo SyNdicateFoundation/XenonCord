@@ -28,6 +28,8 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
             new BadPacketException("Couldn't read all bytes from a packet. For more "
                     + "information, launch Waterfall with -Dwaterfall.packet-decode-logging=true");
     private final boolean server;
+    private final int MAX_PACKET_SIZE = 4096;
+    private final int MAX_HANDSHAKE_LENGTH = 255;
     @Getter
     @Setter
     private Protocol protocol;
@@ -35,6 +37,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
     private int protocolVersion;
     @Setter
     private boolean supportsForge = false;
+
     public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion) {
         this.protocol = protocol;
         this.server = server;
@@ -52,7 +55,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
             if (size > 5) {
                 throw new RuntimeException("VarInt too large");
             }
-        } while((b & 128) == 128);
+        } while ((b & 128) == 128);
 
         return value;
     }
@@ -81,9 +84,6 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
         }
     }
 
-    private final int MAX_PACKET_SIZE = 4096;
-    private final int MAX_HANDSHAKE_LENGTH = 255;
-
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         // See Varint21FrameDecoder for the general reasoning. We add this here as ByteToMessageDecoder#handlerRemoved()
@@ -91,7 +91,6 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
         if (!ctx.channel().isActive()) {
             return;
         }
-
 
 
         Protocol.DirectionData prot = (server) ? protocol.TO_SERVER : protocol.TO_CLIENT;
@@ -110,7 +109,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
             packetTypeInfo = packetId;
 
             DefinedPacket packet = prot.createPacket(packetId, protocolVersion, supportsForge);
-            if (packet != null ) {
+            if (packet != null) {
                 packetTypeInfo = packet.getClass();
                 doLengthSanityChecks(in, packet, prot.getDirection(), packetId); // Waterfall: Additional DoS mitigations
                 packet.read(in, protocol, prot.getDirection(), protocolVersion);
@@ -164,7 +163,6 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
                 slice.release();
             }
         }
-
 
 
     }

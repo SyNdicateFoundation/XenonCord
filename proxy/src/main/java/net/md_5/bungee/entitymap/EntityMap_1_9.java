@@ -39,6 +39,24 @@ class EntityMap_1_9 extends EntityMap {
         addRewrite(0x14, ProtocolConstants.Direction.TO_SERVER, true);
     }
 
+    public static void rewriteSpawnObject(ByteBuf packet, int oldId, int newId) {
+        if (oldId == newId) return;
+        DefinedPacket.skipVarInt(packet);
+        DefinedPacket.skipUUID(packet);
+        int type = packet.readUnsignedByte();
+        if (type == 60 || type == 90 || type == 91) {
+            if (type == 60 || type == 91) {
+                oldId++;
+                newId++;
+            }
+            packet.skipBytes(26);
+            int pos = packet.readerIndex();
+            int read = packet.readInt();
+            if (read == oldId) packet.setInt(pos, newId);
+            else if (read == newId) packet.setInt(pos, oldId);
+        }
+    }
+
     @Override
     @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
     public void rewriteClientbound(ByteBuf packet, int oldId, int newId) {
@@ -89,23 +107,5 @@ class EntityMap_1_9 extends EntityMap {
             EntityMap_1_8.rewriteSpectateUuid(packet, initIndex, afterPID);
         }
         packet.readerIndex(initIndex);
-    }
-
-    public static void rewriteSpawnObject(ByteBuf packet, int oldId, int newId) {
-        if (oldId == newId) return;
-        DefinedPacket.skipVarInt(packet);
-        DefinedPacket.skipUUID(packet);
-        int type = packet.readUnsignedByte();
-        if (type == 60 || type == 90 || type == 91) {
-            if (type == 60 || type == 91) {
-                oldId++;
-                newId++;
-            }
-            packet.skipBytes(26);
-            int pos = packet.readerIndex();
-            int read = packet.readInt();
-            if (read == oldId) packet.setInt(pos, newId);
-            else if (read == newId) packet.setInt(pos, oldId);
-        }
     }
 }

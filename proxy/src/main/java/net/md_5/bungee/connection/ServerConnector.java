@@ -7,12 +7,13 @@ import io.github.waterfallmc.waterfall.forwarding.ForwardingMode;
 import io.github.waterfallmc.waterfall.forwarding.VelocityForwardingUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import ir.xenoncommunity.XenonCore;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.*;
+import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.ServerConnectRequest;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -157,9 +158,10 @@ public class ServerConnector extends PacketHandler {
             }
 
             user.setDimensionChange(true);
-            if (!user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension()) // Waterfall - defer
-                user.unsafe().sendPacket(new Respawn((Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(),
-                        (byte) 0, login.getDeathLocation(), login.getPortalCooldown(), login.getSeaLevel()));
+            if (!user.isDisableEntityMetadataRewrite()) // Waterfall - defer
+                user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(),  (byte) 0, login.getDeathLocation(), login.getPortalCooldown(), login.getSeaLevel() ) );
+            //user.unsafe().sendPacket(new Respawn((Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(),
+                  //      (byte) 0, login.getDeathLocation(), login.getPortalCooldown(), login.getSeaLevel()));
 
             user.setServerEntityId(login.getEntityId());
 
@@ -288,7 +290,7 @@ public class ServerConnector extends PacketHandler {
     @Override
     public void handle(LoginSuccess loginSuccess) throws Exception {
         // Waterfall start: Forwarding rework
-        if ( !didForwardInformation && BungeeCord.getInstance().config.isIpForward()
+        if (!didForwardInformation && BungeeCord.getInstance().config.isIpForward()
                 && BungeeCord.getInstance().config.getForwardingMode() == ForwardingMode.VELOCITY_MODERN) {
             throw new QuietException(VelocityForwardingUtil.MODERN_IP_FORWARDING_FAILURE);
         }
@@ -364,6 +366,9 @@ public class ServerConnector extends PacketHandler {
 
         user.setServer(server);
         ch.getHandle().pipeline().get(HandlerBoss.class).setHandler(new DownstreamBridge(bungee, user, server));
+        ch.setFlushSignalingTarget( user.getCh().getFlushConsolidationHandler( false ) );
+        user.getCh().setFlushSignalingTarget( ch.getFlushConsolidationHandler( true ) );
+
         bungee.getPluginManager().callEvent(new ServerSwitchEvent(user, from));
         thisState = State.FINISHED;
 
@@ -387,13 +392,19 @@ public class ServerConnector extends PacketHandler {
             event.setCancelled(true);
         }
         bungee.getPluginManager().callEvent(event);
+        final String message = bungee.getTranslation("connect_kick", target.getName(), event.getKickReason());
         if (event.isCancelled() && event.getCancelServer() != null) {
             obsolete = true;
-            user.connect(event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT);
+            Callback<ServerConnectRequest.Result> callback = (result, error) -> {
+                if ( result != ServerConnectRequest.Result.SUCCESS )
+                {
+                    user.disconnect( message );
+                }
+            };
+            user.connect( ServerConnectRequest.builder().target( event.getCancelServer() ).callback( callback ).retry( false ).reason( ServerConnectEvent.Reason.KICK_REDIRECT ).build() );
             throw CancelSendSignal.INSTANCE;
         }
 
-        String message = bungee.getTranslation("connect_kick", target.getName(), event.getKickReason());
         if (user.isDimensionChange()) {
             user.disconnect(message);
         } else {
@@ -445,7 +456,7 @@ public class ServerConnector extends PacketHandler {
     @Override
     public void handle(LoginPayloadRequest loginPayloadRequest) {
         // Waterfall start: Forwarding rework
-        if ( !didForwardInformation && BungeeCord.getInstance().config.isIpForward()
+        if (!didForwardInformation && BungeeCord.getInstance().config.isIpForward()
                 && BungeeCord.getInstance().config.getForwardingMode() == ForwardingMode.VELOCITY_MODERN
                 && loginPayloadRequest.getChannel().equals(VelocityForwardingUtil.VELOCITY_IP_FORWARDING_CHANNEL)) {
 

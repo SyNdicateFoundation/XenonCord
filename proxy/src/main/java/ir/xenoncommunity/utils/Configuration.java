@@ -53,6 +53,7 @@ public class Configuration {
         }
         return null;
     }
+
     @Getter
     @Setter
     public static class ConfigData {

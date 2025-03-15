@@ -27,12 +27,10 @@ public class PluginMessage extends DefinedPacket {
     public static final Function<String, String> MODERNISE = tag ->
     {
         // Transform as per Bukkit
-        if ( tag.equals( PluginMessage.BUNGEE_CHANNEL_LEGACY ) )
-        {
+        if (tag.equals(PluginMessage.BUNGEE_CHANNEL_LEGACY)) {
             return PluginMessage.BUNGEE_CHANNEL_MODERN;
         }
-        if ( tag.equals( PluginMessage.BUNGEE_CHANNEL_MODERN ) )
-        {
+        if (tag.equals(PluginMessage.BUNGEE_CHANNEL_MODERN)) {
             return PluginMessage.BUNGEE_CHANNEL_LEGACY;
         }
 
@@ -81,10 +79,10 @@ public class PluginMessage extends DefinedPacket {
 
     @Override
     public void handle(AbstractPacketHandler handler) throws Exception {
-        try{
+        try {
             handler.handle(this);
-        } catch (OutOfMemoryError e){
-                System.gc();
+        } catch (OutOfMemoryError e) {
+            System.gc();
         }
     }
 

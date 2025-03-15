@@ -40,6 +40,24 @@ final class EntityMap_1_14 extends EntityMap {
         addRewrite(0x1B, ProtocolConstants.Direction.TO_SERVER, true);
     }
 
+    public static void rewriteSpawnObject(ByteBuf packet, int oldId, int newId, int arrowId, int fishingBobberId, int spectralArrowId) {
+        DefinedPacket.skipVarInt(packet);
+        DefinedPacket.skipUUID(packet);
+        final int type = DefinedPacket.readVarInt(packet);
+        if (type == arrowId || type == fishingBobberId || type == spectralArrowId) {
+            final int modOldId = (type == arrowId || type == spectralArrowId) ? oldId + 1 : oldId;
+            final int modNewId = (type == arrowId || type == spectralArrowId) ? newId + 1 : newId;
+            packet.skipBytes(26);
+            final int position = packet.readerIndex();
+            final int readId = packet.readInt();
+            if (readId == modOldId) {
+                packet.setInt(position, modNewId);
+            } else if (readId == modNewId) {
+                packet.setInt(position, modOldId);
+            }
+        }
+    }
+
     @Override
     @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
     public void rewriteClientbound(ByteBuf packet, int oldId, int newId, int protocolVersion) {
@@ -96,23 +114,5 @@ final class EntityMap_1_14 extends EntityMap {
             EntityMap_1_8.rewriteSpectateUuid(packet, readerIndex, readerIndexAfterPID);
         }
         packet.readerIndex(readerIndex);
-    }
-
-    public static void rewriteSpawnObject(ByteBuf packet, int oldId, int newId, int arrowId, int fishingBobberId, int spectralArrowId) {
-        DefinedPacket.skipVarInt(packet);
-        DefinedPacket.skipUUID(packet);
-        final int type = DefinedPacket.readVarInt(packet);
-        if (type == arrowId || type == fishingBobberId || type == spectralArrowId) {
-            final int modOldId = (type == arrowId || type == spectralArrowId) ? oldId + 1 : oldId;
-            final int modNewId = (type == arrowId || type == spectralArrowId) ? newId + 1 : newId;
-            packet.skipBytes(26);
-            final int position = packet.readerIndex();
-            final int readId = packet.readInt();
-            if (readId == modOldId) {
-                packet.setInt(position, modNewId);
-            } else if (readId == modNewId) {
-                packet.setInt(position, modOldId);
-            }
-        }
     }
 }

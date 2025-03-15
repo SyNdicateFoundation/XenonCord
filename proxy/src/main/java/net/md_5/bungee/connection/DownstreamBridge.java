@@ -21,7 +21,9 @@ import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.ServerConnection.KeepAliveData;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.Util;
+import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.ServerConnectRequest;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -54,6 +56,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DownstreamBridge extends PacketHandler {
 
+    public static final Map<Connection, Long> PACKET_USAGE = new ConcurrentHashMap<>();
+    public static final Map<Connection, AtomicInteger> CHANNELS_REGISTERED = new ConcurrentHashMap<>();
     // #3246: Recent versions of MinecraftForge alter Vanilla behaviour and require a command so that the executable flag is set
     // If the flag is not set, then the command will appear and successfully tab complete, but cannot be successfully executed
     private static final com.mojang.brigadier.Command DUMMY_COMMAND = (context) -> 0;
@@ -73,8 +77,22 @@ public class DownstreamBridge extends PacketHandler {
         final ServerInfo def = con.updateAndGetNextServer(server.getInfo());
         if (def != null) {
             server.setObsolete(true);
-            con.connectNow(def, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
-            con.sendMessage(bungee.getTranslation("server_went_down", def.getName()));
+            Callback<ServerConnectRequest.Result> callback = (result, error) -> {
+                if ( result == ServerConnectRequest.Result.SUCCESS )
+                {
+                    con.sendMessage( bungee.getTranslation( "server_went_down", server.getInfo().getName(), def.getName() ) );
+                } else
+                {
+                    con.disconnect( Util.exception( t ) );
+                }
+            };
+            con.connect( ServerConnectRequest.builder()
+                    .callback( callback )
+                    .retry( false )
+                    .reason( ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT )
+                    .target( def )
+                    .build() );
+            con.setDimensionChange( true ); // NOTE: Dim Change Connect
         } else {
             con.disconnect(Util.exception(t));
         }
@@ -244,8 +262,6 @@ public class DownstreamBridge extends PacketHandler {
             });
         }
     }
-    public static final Map<Connection, Long> PACKET_USAGE = new ConcurrentHashMap<>();
-    public static final Map<Connection, AtomicInteger> CHANNELS_REGISTERED = new ConcurrentHashMap<>();
 
     private boolean elapsed(long from, long required) {
         return from == -1L || System.currentTimeMillis() - from > required;
@@ -304,7 +320,7 @@ public class DownstreamBridge extends PacketHandler {
         }
 
 
-        if ( pluginMessage.getTag().equals( PluginMessage.BUNGEE_CHANNEL_LEGACY ) ) {
+        if (pluginMessage.getTag().equals(PluginMessage.BUNGEE_CHANNEL_LEGACY)) {
             final DataInput in = pluginMessage.getStream();
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             final String subChannel = in.readUTF();
@@ -532,10 +548,8 @@ public class DownstreamBridge extends PacketHandler {
 
     @Override
     public void handle(Kick kick) throws Exception {
-        ServerInfo def = con.updateAndGetNextServer(server.getInfo());
-        if (java.util.Objects.equals(server.getInfo(), def)) {
-            def = null;
-        }
+        final ServerInfo nextServer = con.updateAndGetNextServer(server.getInfo());
+        final ServerInfo def = java.util.Objects.equals(server.getInfo(), nextServer) ? null : nextServer;
         final ServerKickEvent event = bungee.getPluginManager().callEvent(
                 new ServerKickEvent(
                         con,
@@ -547,7 +561,28 @@ public class DownstreamBridge extends PacketHandler {
                 )
         ); // Waterfall
         if (event.isCancelled() && event.getCancelServer() != null) {
-            con.connectNow(event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT);
+            if ( event.getCancelServer().equals( server.getInfo() ) )
+            {
+                // Just in case a plugin tries to do this. No point trying to reconnect to same server.
+                // This also prevents the code setting the connection to obsolete from reoccurring.
+                throw CancelSendSignal.INSTANCE;
+            }
+            Callback<ServerConnectRequest.Result> callback = (result, error) -> {
+                if ( result == ServerConnectRequest.Result.SUCCESS )
+                {
+                    con.sendMessage( bungee.getTranslation( "server_went_down", server.getInfo().getName(), def.getName() ) );
+                } else
+                {
+                    con.disconnect(event.getKickReasonComponent());
+                }
+            };
+            con.connect( ServerConnectRequest.builder()
+                    .callback( callback )
+                    .retry( false )
+                    .reason( ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT )
+                    .target( def )
+                    .build() );
+            con.setDimensionChange( true ); // NOTE: Dim Change Connect
         } else {
             con.disconnect(event.getKickReasonComponent()); // TODO: Prefix our own stuff.
         }

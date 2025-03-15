@@ -75,28 +75,24 @@ public final class UserConnection implements ProxiedPlayer {
     private final Multimap<Integer, Integer> potions = HashMultimap.create();
     /*========================================================================*/
     private final Queue<DefinedPacket> packetQueue = new ArrayDeque<>();
-    private final Unsafe unsafe = new Unsafe() {
+    /*========================================================================*/
+    @Getter
+    @Setter
+    private ServerConnection server;    private final Unsafe unsafe = new Unsafe() {
         @Override
         public void sendPacket(DefinedPacket packet) {
             ch.write(packet);
         }
 
         @Override
-        public void sendPacketQueued(DefinedPacket packet)
-        {
-            if ( pendingConnection.getVersion() >= ProtocolConstants.MINECRAFT_1_20_2 )
-            {
-                UserConnection.this.sendPacketQueued( packet );
-            } else
-            {
-                sendPacket( packet );
+        public void sendPacketQueued(DefinedPacket packet) {
+            if (pendingConnection.getVersion() >= ProtocolConstants.MINECRAFT_1_20_2) {
+                UserConnection.this.sendPacketQueued(packet);
+            } else {
+                sendPacket(packet);
             }
         }
     };
-    /*========================================================================*/
-    @Getter
-    @Setter
-    private ServerConnection server;
     @Getter
     @Setter
     private Object dimension;
@@ -174,7 +170,7 @@ public final class UserConnection implements ProxiedPlayer {
             }
 
             if (!ch.getEncodeProtocol().TO_CLIENT.hasPacket(packet.getClass(), getPendingConnection().getVersion())) {
-                Preconditions.checkState( packetQueue.size() <= 4096, "too many queued packets" );
+                Preconditions.checkState(packetQueue.size() <= 4096, "too many queued packets");
                 packetQueue.add(packet);
             } else {
                 unsafe().sendPacket(packet);
@@ -333,8 +329,11 @@ public final class UserConnection implements ProxiedPlayer {
 
                 final ServerInfo def = updateAndGetNextServer(target);
                 if (request.isRetry() && def != null && (getServer() == null || !def.equals(getServer().getInfo()))) {
-                    if (request.isSendFeedback()) sendMessage(bungee.getTranslation("fallback_lobby"));
-                    connect(def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout(), request.isSendFeedback());
+                    connect(def, (result, error) -> {
+                        if (result && request.isSendFeedback()){
+                            sendMessage( bungee.getTranslation( "fallback_lobby" ) );
+                        }
+                    }, true, ServerConnectEvent.Reason.LOBBY_FALLBACK);
                 } else if (dimensionChange) {
                     disconnect(bungee.getTranslation("fallback_kick", connectionFailMessage(future.cause())));
                 } else {
@@ -446,9 +445,11 @@ public final class UserConnection implements ProxiedPlayer {
 
         final int version = getPendingConnection().getVersion();
 
-        if (position == ChatMessageType.ACTION_BAR && version < ProtocolConstants.MINECRAFT_1_17) {
+        if (position == ChatMessageType.ACTION_BAR) {
             if (version <= ProtocolConstants.MINECRAFT_1_10)
                 message = new TextComponent(BaseComponent.toLegacyText(message));
+            else if ( getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_17 )
+                unsafe.sendPacket(new ActionBar(ComponentSerializer.toString(message)));
             else {
                 net.md_5.bungee.protocol.packet.Title title = new net.md_5.bungee.protocol.packet.Title();
                 title.setAction(net.md_5.bungee.protocol.packet.Title.Action.ACTIONBAR);
@@ -675,5 +676,7 @@ public final class UserConnection implements ProxiedPlayer {
     public boolean isDisableEntityMetadataRewrite() {
         return entityRewrite == net.md_5.bungee.entitymap.EntityMap_Dummy.INSTANCE;
     }
+
+
     // Waterfall end
 }

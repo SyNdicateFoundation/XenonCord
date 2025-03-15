@@ -145,6 +145,7 @@ public interface ProxyConfig {
      * @return player limit
      */
     int getPlayerLimit();
+
     /**
      * Time in milliseconds before timing out a clients request to connect to a
      * server.
@@ -240,9 +241,10 @@ public interface ProxyConfig {
      * @return {@code true} if tablist rewriting is disabled, {@code false} otherwise
      */
     boolean isDisableTabListRewrite();
-    
+
     /**
      * Represents the forwarding mode as configured.
+     *
      * @return the mode set in the config
      */
     ForwardingMode getForwardingMode();

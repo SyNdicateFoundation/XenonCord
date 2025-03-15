@@ -9,7 +9,7 @@ import net.md_5.bungee.api.plugin.Command;
 public class ClearChatCommand extends Command {
 
     public ClearChatCommand() {
-        super("clearchat", "xenoncord.clearchat","cls");
+        super("clearchat", "xenoncord.clearchat", "cls");
     }
 
     @Override
@@ -21,7 +21,7 @@ public class ClearChatCommand extends Command {
             return;
         }
 
-        if(!sender.hasPermission("xenoncord.clearchat.global")) return;
+        if (!sender.hasPermission("xenoncord.clearchat.global")) return;
 
         if (!args[0].equals("global"))
             Message.send(sender,

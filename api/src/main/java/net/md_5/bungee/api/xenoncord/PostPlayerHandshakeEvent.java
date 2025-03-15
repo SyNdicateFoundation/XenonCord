@@ -25,11 +25,10 @@ public class PostPlayerHandshakeEvent extends Event implements Cancellable {
      * The handshake.
      */
     private final Handshake handshake;
-
+    private boolean cancelled;
+    private String reason;
     public PostPlayerHandshakeEvent(PendingConnection connection, Handshake handshake) {
         this.connection = connection;
         this.handshake = handshake;
     }
-    private boolean cancelled;
-    private String reason;
 }

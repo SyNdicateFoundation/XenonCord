@@ -8,7 +8,6 @@ import se.llbit.nbt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TagUtil {
@@ -48,19 +47,16 @@ public final class TagUtil {
             List<JsonElement> jsonArray = ((JsonArray) json).asList();
 
             Integer listType = null;
-            for ( JsonElement jsonEl : jsonArray )
-            {
-                int type = fromJson( jsonEl ).tagType();
-                if ( listType == null )
-                {
+            for (JsonElement jsonEl : jsonArray) {
+                int type = fromJson(jsonEl).tagType();
+                if (listType == null) {
                     listType = type;
-                } else if ( listType != type )
-                {
+                } else if (listType != type) {
                     listType = Tag.TAG_COMPOUND;
                     break;
                 }
             }
-            if ( listType == null )
+            if (listType == null)
                 return new ListTag(Tag.TAG_END, Collections.emptyList());
 
             SpecificTag listTag;
@@ -94,7 +90,7 @@ public final class TagUtil {
 
                     for (JsonElement jsonEl : jsonArray) {
                         SpecificTag subTag = fromJson(jsonEl);
-                        if ( listType == Tag.TAG_COMPOUND && !( subTag instanceof CompoundTag ) ){
+                        if (listType == Tag.TAG_COMPOUND && !(subTag instanceof CompoundTag)) {
                             CompoundTag wrapper = new CompoundTag();
                             wrapper.add("", subTag);
                             subTag = wrapper;

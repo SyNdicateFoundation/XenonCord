@@ -2,12 +2,13 @@ package net.md_5.bungee.entitymap;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
-import java.util.UUID;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.ProtocolConstants;
+
+import java.util.UUID;
 
 class EntityMap_1_8 extends EntityMap {
 
@@ -43,49 +44,6 @@ class EntityMap_1_8 extends EntityMap {
 
         addRewrite(0x02, ProtocolConstants.Direction.TO_SERVER, true);
         addRewrite(0x0B, ProtocolConstants.Direction.TO_SERVER, true);
-    }
-
-    @Override
-    @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
-    public void rewriteClientbound(ByteBuf packet, int oldId, int newId) {
-        super.rewriteClientbound(packet, oldId, newId);
-        final int startReader = packet.readerIndex();
-        final int packetId = DefinedPacket.readVarInt(packet);
-        final int afterPid = packet.readerIndex();
-        switch (packetId) {
-            case 0x1B:
-                rewriteInt(packet, oldId, newId, afterPid + 4);
-                break;
-            case 0x0D:
-                DefinedPacket.skipVarInt(packet);
-                rewriteVarInt(packet, oldId, newId, packet.readerIndex());
-                break;
-            case 0x13:
-                rewriteEntityIdArray(packet, oldId, newId, afterPid);
-                break;
-            case 0x0E:
-                rewriteSpawnObject(packet, oldId, newId);
-                break;
-            case 0x0C:
-                rewriteSpawnPlayerUuid(packet, startReader);
-                break;
-            case 0x42:
-                rewriteCombatEvent(packet, oldId, newId);
-                break;
-        }
-        packet.readerIndex(startReader);
-    }
-
-    @Override
-    public void rewriteServerbound(ByteBuf packet, int oldId, int newId) {
-        super.rewriteServerbound(packet, oldId, newId);
-        final int startReader = packet.readerIndex();
-        final int packetId = DefinedPacket.readVarInt(packet);
-        final int afterPid = packet.readerIndex();
-        if (packetId == 0x18 && !BungeeCord.getInstance().getConfig().isIpForward()) {
-            rewriteSpectateUuid(packet, startReader, afterPid);
-        }
-        packet.readerIndex(startReader);
     }
 
     public static void rewriteCombatEvent(ByteBuf packet, int oldId, int newId) {
@@ -167,5 +125,48 @@ class EntityMap_1_8 extends EntityMap {
             DefinedPacket.writeUUID(((UserConnection) player).getPendingConnection().getOfflineId(), packet);
             packet.writerIndex(prevWriter);
         }
+    }
+
+    @Override
+    @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
+    public void rewriteClientbound(ByteBuf packet, int oldId, int newId) {
+        super.rewriteClientbound(packet, oldId, newId);
+        final int startReader = packet.readerIndex();
+        final int packetId = DefinedPacket.readVarInt(packet);
+        final int afterPid = packet.readerIndex();
+        switch (packetId) {
+            case 0x1B:
+                rewriteInt(packet, oldId, newId, afterPid + 4);
+                break;
+            case 0x0D:
+                DefinedPacket.skipVarInt(packet);
+                rewriteVarInt(packet, oldId, newId, packet.readerIndex());
+                break;
+            case 0x13:
+                rewriteEntityIdArray(packet, oldId, newId, afterPid);
+                break;
+            case 0x0E:
+                rewriteSpawnObject(packet, oldId, newId);
+                break;
+            case 0x0C:
+                rewriteSpawnPlayerUuid(packet, startReader);
+                break;
+            case 0x42:
+                rewriteCombatEvent(packet, oldId, newId);
+                break;
+        }
+        packet.readerIndex(startReader);
+    }
+
+    @Override
+    public void rewriteServerbound(ByteBuf packet, int oldId, int newId) {
+        super.rewriteServerbound(packet, oldId, newId);
+        final int startReader = packet.readerIndex();
+        final int packetId = DefinedPacket.readVarInt(packet);
+        final int afterPid = packet.readerIndex();
+        if (packetId == 0x18 && !BungeeCord.getInstance().getConfig().isIpForward()) {
+            rewriteSpectateUuid(packet, startReader, afterPid);
+        }
+        packet.readerIndex(startReader);
     }
 }

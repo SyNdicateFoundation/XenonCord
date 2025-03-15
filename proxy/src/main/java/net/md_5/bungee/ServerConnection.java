@@ -9,7 +9,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.PluginMessage;
 
@@ -30,27 +29,23 @@ public class ServerConnection implements Server {
     @Getter
     private final Queue<KeepAliveData> keepAlives = new ArrayDeque<>();
     private final Queue<DefinedPacket> packetQueue = new ArrayDeque<>();
-    private final Unsafe unsafe = new Unsafe() {
+    @Getter
+    @Setter
+    private boolean isObsolete;    private final Unsafe unsafe = new Unsafe() {
         @Override
         public void sendPacket(DefinedPacket packet) {
             ch.write(packet);
         }
 
         @Override
-        public void sendPacketQueued(DefinedPacket packet)
-        {
-            if ( ch.getEncodeVersion() >= ProtocolConstants.MINECRAFT_1_20_2 )
-            {
-                ServerConnection.this.sendPacketQueued( packet );
-            } else
-            {
-                sendPacket( packet );
+        public void sendPacketQueued(DefinedPacket packet) {
+            if (ch.getEncodeVersion() >= ProtocolConstants.MINECRAFT_1_20_2) {
+                ServerConnection.this.sendPacketQueued(packet);
+            } else {
+                sendPacket(packet);
             }
         }
     };
-    @Getter
-    @Setter
-    private boolean isObsolete;
 
     public void sendPacketQueued(DefinedPacket packet) {
         ch.scheduleIfNecessary(() ->
@@ -59,7 +54,7 @@ public class ServerConnection implements Server {
                 return;
             }
             if (!ch.getEncodeProtocol().TO_SERVER.hasPacket(packet.getClass(), ch.getEncodeVersion())) {
-                Preconditions.checkState( packetQueue.size() <= 4096, "too many queued packets" );
+                Preconditions.checkState(packetQueue.size() <= 4096, "too many queued packets");
                 packetQueue.add(packet);
             } else {
                 unsafe().sendPacket(packet);
@@ -129,4 +124,6 @@ public class ServerConnection implements Server {
         private final long id;
         private final long time;
     }
+
+
 }

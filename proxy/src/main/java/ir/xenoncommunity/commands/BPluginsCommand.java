@@ -20,10 +20,12 @@ import java.util.logging.Handler;
 
 @SuppressWarnings("unused")
 public class BPluginsCommand extends Command {
+    private final String doesntExistMessage = "&cPlugin doesn't exist!";
+
     public BPluginsCommand() {
         super("BPlugins", "xenoncord.bplugins");
     }
-    private final String doesntExistMessage = "&cPlugin doesn't exist!";
+
     @Override
     @SneakyThrows
     public void execute(CommandSender sender, String[] args) {

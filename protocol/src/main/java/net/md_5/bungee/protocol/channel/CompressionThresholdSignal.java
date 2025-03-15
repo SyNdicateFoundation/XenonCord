@@ -12,8 +12,7 @@ import lombok.ToString;
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
-public class CompressionThresholdSignal
-{
+public class CompressionThresholdSignal {
 
     /**
      * The compression threshold.

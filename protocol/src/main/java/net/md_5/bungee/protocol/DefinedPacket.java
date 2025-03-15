@@ -227,24 +227,20 @@ public abstract class DefinedPacket {
     }
 
     public static void writeVarInt(int value, ByteBuf output) {
-        if ( ( value & 0xFFFFFF80 ) == 0 )
-        {
-            output.writeByte( value );
-        } else if ( ( value & 0xFFFFC000 ) == 0 )
-        {
-            output.writeShort( ( value & 0x7F | 0x80 ) << 8 | ( value >>> 7 & 0x7F ) );
-        } else if ( ( value & 0xFFE00000 ) == 0 )
-        {
-            output.writeMedium( ( value & 0x7F | 0x80 ) << 16 | ( value >>> 7 & 0x7F | 0x80 ) << 8 | ( value >>> 14 & 0x7F ) );
-        } else if ( ( value & 0xF0000000 ) == 0 )
-        {
-            output.writeInt( ( value & 0x7F | 0x80 ) << 24 | ( value >>> 7 & 0x7F | 0x80 ) << 16 | ( value >>> 14 & 0x7F | 0x80 ) << 8 | ( value >>> 21 & 0x7F ) );
-        } else
-        {
-            output.writeInt( ( value & 0x7F | 0x80 ) << 24 | ( value >>> 7 & 0x7F | 0x80 ) << 16 | ( value >>> 14 & 0x7F | 0x80 ) << 8 | ( value >>> 21 & 0x7F | 0x80 ) );
-            output.writeByte( value >>> 28 );
+        if ((value & 0xFFFFFF80) == 0) {
+            output.writeByte(value);
+        } else if ((value & 0xFFFFC000) == 0) {
+            output.writeShort((value & 0x7F | 0x80) << 8 | (value >>> 7 & 0x7F));
+        } else if ((value & 0xFFE00000) == 0) {
+            output.writeMedium((value & 0x7F | 0x80) << 16 | (value >>> 7 & 0x7F | 0x80) << 8 | (value >>> 14 & 0x7F));
+        } else if ((value & 0xF0000000) == 0) {
+            output.writeInt((value & 0x7F | 0x80) << 24 | (value >>> 7 & 0x7F | 0x80) << 16 | (value >>> 14 & 0x7F | 0x80) << 8 | (value >>> 21 & 0x7F));
+        } else {
+            output.writeInt((value & 0x7F | 0x80) << 24 | (value >>> 7 & 0x7F | 0x80) << 16 | (value >>> 14 & 0x7F | 0x80) << 8 | (value >>> 21 & 0x7F | 0x80));
+            output.writeByte(value >>> 28);
         }
     }
+
     public static void writeVarInt(int value, ByteBuf output, int len) {
         switch (len) {
             case 1:
@@ -455,6 +451,36 @@ public abstract class DefinedPacket {
         buf.writeBytes(Arrays.copyOf(bits.toByteArray(), (size + 7) >> 3));
     }
 
+    // Waterfall end
+    public static void skipString(ByteBuf buf) {
+        skipString(buf, Short.MAX_VALUE);
+    }
+
+    public static void skipString(ByteBuf buf, int maxLen) {
+        final int len = readVarInt(buf);
+        if (len > maxLen * 3) {
+            throw new OverflowPacketException("Cannot receive string longer than " + maxLen * 3 + " (got " + len + " bytes)");
+        }
+
+        buf.skipBytes(len);
+    }
+
+    public static void skipVarInt(ByteBuf input) {
+        skipVarInt(input, 5);
+    }
+
+    public static void skipVarInt(ByteBuf input, int maxBytes) {
+        for (int i = 0; i < maxBytes; i++) {
+            if ((input.readByte() & 0x80) == 0)
+                return;
+        }
+        throw new RuntimeException("VarInt too big");
+    }
+
+    public static void skipUUID(ByteBuf input) {
+        input.skipBytes(16);
+    }
+
     public <T> T readNullable(Function<ByteBuf, T> reader, ByteBuf buf) {
         return buf.readBoolean() ? reader.apply(buf) : null;
     }
@@ -513,37 +539,5 @@ public abstract class DefinedPacket {
 
     public int expectedMinLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
         return 0;
-    }
-    // Waterfall end
-    public static void skipString(ByteBuf buf)
-    {
-        skipString( buf, Short.MAX_VALUE );
-    }
-
-    public static void skipString(ByteBuf buf, int maxLen)
-    {
-        final int len = readVarInt( buf );
-        if ( len > maxLen * 3 )
-        {
-            throw new OverflowPacketException( "Cannot receive string longer than " + maxLen * 3 + " (got " + len + " bytes)" );
-        }
-
-        buf.skipBytes( len );
-    }
-    public static void skipVarInt(ByteBuf input)
-    {
-        skipVarInt( input, 5 );
-    }
-
-    public static void skipVarInt(ByteBuf input, int maxBytes) {
-        for (int i = 0; i < maxBytes; i++) {
-            if ((input.readByte() & 0x80) == 0)
-                return;
-        }
-        throw new RuntimeException("VarInt too big");
-    }
-    public static void skipUUID(ByteBuf input)
-    {
-        input.skipBytes( 16 );
     }
 }

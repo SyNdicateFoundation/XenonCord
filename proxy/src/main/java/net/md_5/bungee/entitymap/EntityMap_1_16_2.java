@@ -8,8 +8,7 @@ import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.protocol.DefinedPacket;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-final class EntityMap_1_16_2 extends EntityMap
-{
+final class EntityMap_1_16_2 extends EntityMap {
     static final EntityMap_1_16_2 INSTANCE_1_16_2 = new EntityMap_1_16_2(0x04, 0x2D);
     static final EntityMap_1_16_2 INSTANCE_1_17 = new EntityMap_1_16_2(0x04, 0x2D);
     static final EntityMap_1_16_2 INSTANCE_1_18 = new EntityMap_1_16_2(0x04, 0x2D);
@@ -28,26 +27,22 @@ final class EntityMap_1_16_2 extends EntityMap
 
     @Override
     @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
-    public void rewriteClientbound(ByteBuf packet, int oldId, int newId, int protocolVersion)
-    {
+    public void rewriteClientbound(ByteBuf packet, int oldId, int newId, int protocolVersion) {
         final int originalReaderIndex = packet.readerIndex();
         final int packetId = DefinedPacket.readVarInt(packet);
         final int packetIdLength = packet.readerIndex() - originalReaderIndex;
-        if (packetId == spawnPlayerId)
-        {
+        if (packetId == spawnPlayerId) {
             EntityMap_1_8.rewriteSpawnPlayerUuid(packet, originalReaderIndex);
         }
         packet.readerIndex(originalReaderIndex);
     }
 
     @Override
-    public void rewriteServerbound(ByteBuf packet, int oldId, int newId)
-    {
+    public void rewriteServerbound(ByteBuf packet, int oldId, int newId) {
         final int originalReaderIndex = packet.readerIndex();
         final int packetId = DefinedPacket.readVarInt(packet);
         final int packetIdLength = packet.readerIndex() - originalReaderIndex;
-        if (packetId == spectateId && !BungeeCord.getInstance().getConfig().isIpForward())
-        {
+        if (packetId == spectateId && !BungeeCord.getInstance().getConfig().isIpForward()) {
             EntityMap_1_8.rewriteSpectateUuid(packet, originalReaderIndex, packetIdLength);
         }
         packet.readerIndex(originalReaderIndex);

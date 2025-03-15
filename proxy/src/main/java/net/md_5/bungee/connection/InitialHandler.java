@@ -66,10 +66,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         public void sendPacket(DefinedPacket packet) {
             ch.write(packet);
         }
+
         @Override
-        public void sendPacketQueued(DefinedPacket packet)
-        {
-            throw new UnsupportedOperationException( "Not supported" );
+        public void sendPacketQueued(DefinedPacket packet) {
+            throw new UnsupportedOperationException("Not supported");
         }
     };
     @Getter
@@ -124,7 +124,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
     @Override
     public void exception(Throwable t) throws Exception {
         if (canSendKickMessage())
-            unsafe.sendPacket( new Kick( TextComponent.fromLegacy( ChatColor.RED + Util.exception( t ) ) ) );
+            unsafe.sendPacket(new Kick(TextComponent.fromLegacy(ChatColor.RED + Util.exception(t))));
     }
 
     @Override
@@ -158,7 +158,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         Preconditions.checkState(thisState == State.STATUS, "Not expecting STATUS");
 
         ServerInfo forced = AbstractReconnectHandler.getForcedHost(this);
-        final String motd = (forced != null) ? forced.getMotd() :  listener.getDefault_bungee_motd();
+        final String motd = (forced != null) ? forced.getMotd() : listener.getDefault_bungee_motd();
         final int protocol = (ProtocolConstants.SUPPORTED_VERSION_IDS.contains(handshake.getProtocolVersion())) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
 
         Callback<ServerPing> pingBack = new Callback<ServerPing>() {
@@ -221,12 +221,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
 
         this.virtualHost = InetSocketAddress.createUnresolved(handshake.getHost(), handshake.getPort());
 
-        final PlayerHandshakeEvent event =  new PlayerHandshakeEvent(InitialHandler.this, handshake);
+        final PlayerHandshakeEvent event = new PlayerHandshakeEvent(InitialHandler.this, handshake);
         bungee.getPluginManager().callEvent(event);
 
         try {
             final String host = event.getConnection().getVirtualHost().getHostString();
-            if(!(host != null && host.length() <= 255 && host.matches("[a-zA-Z0-9.-]+")))
+            if (!(host != null && host.length() <= 255 && host.matches("[a-zA-Z0-9.-]+")))
                 event.setCancelled(true);
         } catch (Exception var3) {
             XenonCore.instance.logdebugerror("Error while handling pre-login");
@@ -235,10 +235,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
 
         if (ch.isClosing()) {
             return;
-        }else if (event.isCancelled()) {
+        } else if (event.isCancelled()) {
             ch.close();
             return;
-        } else if(event.isIgnored()){
+        } else if (event.isIgnored()) {
             Thread.sleep(10000L);
             ch.close();
             return;
@@ -262,9 +262,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
                 thisState = State.USERNAME;
                 ch.setProtocol(Protocol.LOGIN);
 
-                final PostPlayerHandshakeEvent postEvent =  new PostPlayerHandshakeEvent(InitialHandler.this, handshake);
+                final PostPlayerHandshakeEvent postEvent = new PostPlayerHandshakeEvent(InitialHandler.this, handshake);
                 bungee.getPluginManager().callEvent(postEvent);
-                if(postEvent.isCancelled()){
+                if (postEvent.isCancelled()) {
                     disconnect(postEvent.getReason());
                     return;
                 }

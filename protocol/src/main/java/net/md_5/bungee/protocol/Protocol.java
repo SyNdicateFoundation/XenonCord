@@ -433,6 +433,11 @@ public enum Protocol {
                     map(ProtocolConstants.MINECRAFT_1_21_5, 0x58)
             );
             TO_CLIENT.registerPacket(
+                    ActionBar.class,
+                    ActionBar::new,
+                    map( ProtocolConstants.MINECRAFT_1_17, 0x41 )
+            );
+            TO_CLIENT.registerPacket(
                     ServerData.class,
                     ServerData::new,
                     map(ProtocolConstants.MINECRAFT_1_19, 0x3F),
@@ -867,7 +872,7 @@ public enum Protocol {
         private ProtocolData getProtocolData(int version) {
             ProtocolData protocol = protocols.get(version);
             if (protocol == null && (protocolPhase != Protocol.GAME)) {
-                protocol = protocols.valueCollection().stream().findFirst().orElse( null );
+                protocol = protocols.valueCollection().stream().findFirst().orElse(null);
             }
             return protocol;
         }

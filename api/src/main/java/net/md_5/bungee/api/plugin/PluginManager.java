@@ -404,9 +404,9 @@ public final class PluginManager {
                         Preconditions.checkNotNull(desc.getMain(), "Plugin from %s has no main", file);
 
                         // Waterfall start: Forwarding rework
-                        if(desc.getName().equals("BungeeGuard")) {
-                            proxy.getLogger().warning("Detected the plugin BungeeGuard. "+
-                                    "XenonCord now supports the functionality this plugin provides natively. "+
+                        if (desc.getName().equals("BungeeGuard")) {
+                            proxy.getLogger().warning("Detected the plugin BungeeGuard. " +
+                                    "XenonCord now supports the functionality this plugin provides natively. " +
                                     "Please refer to the SyNdicateFoundation documentation for more information.");
                         }
                         // Waterfall end: Forwarding rework

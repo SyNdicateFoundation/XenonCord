@@ -15,7 +15,6 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.util.ResourceLeakDetector;
 import ir.xenoncommunity.XenonCore;
-import ir.xenoncommunity.commands.XenonCord;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Synchronized;
@@ -202,7 +201,7 @@ public class BungeeCord extends ProxyServer {
         config.load();
 
         xenonInstance.logdebuginfo("Registering channels...");
-        registerChannel( PluginMessage.BUNGEE_CHANNEL_LEGACY );
+        registerChannel(PluginMessage.BUNGEE_CHANNEL_LEGACY);
         registerChannel(ForgeConstants.FML_TAG);
         registerChannel(ForgeConstants.FML_HANDSHAKE_TAG);
         registerChannel(ForgeConstants.FORGE_REGISTER);
@@ -544,9 +543,9 @@ public class BungeeCord extends ProxyServer {
 
     public PluginMessage registerChannels(int protocolVersion) {
         if (protocolVersion >= ProtocolConstants.MINECRAFT_1_13) {
-            return new PluginMessage( "minecraft:register", pluginChannels.stream()
-                    .map( PluginMessage.MODERNISE )
-                    .collect( Collectors.joining( "\00" ) ).getBytes( StandardCharsets.UTF_8 ), false );
+            return new PluginMessage("minecraft:register", pluginChannels.stream()
+                    .map(PluginMessage.MODERNISE)
+                    .collect(Collectors.joining("\00")).getBytes(StandardCharsets.UTF_8), false);
         }
 
         return new PluginMessage("REGISTER", String.join("\00", pluginChannels).getBytes(StandardCharsets.UTF_8), false);

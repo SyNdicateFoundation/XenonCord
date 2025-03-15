@@ -13,6 +13,8 @@ import net.md_5.bungee.api.event.PacketSendEvent;
 import net.md_5.bungee.compress.PacketCompressor;
 import net.md_5.bungee.compress.PacketDecompressor;
 import net.md_5.bungee.netty.cipher.CipherEncoder;
+import net.md_5.bungee.netty.flush.BungeeFlushConsolidationHandler;
+import net.md_5.bungee.netty.flush.FlushSignalingHandler;
 import net.md_5.bungee.protocol.*;
 import net.md_5.bungee.protocol.channel.CompressionThresholdSignal;
 import net.md_5.bungee.protocol.packet.Kick;
@@ -43,6 +45,37 @@ public class ChannelWrapper {
 
     public void setDecodeProtocol(Protocol protocol) {
         getMinecraftDecoder().setProtocol(protocol);
+    }
+
+    /**
+     * Set the {@link FlushSignalingHandler} target. If the handler is absent, one will be added.
+     * @param target the (new) target for the flush signaling handler
+     */
+    public void setFlushSignalingTarget(BungeeFlushConsolidationHandler target)
+    {
+        FlushSignalingHandler handler = ch.pipeline().get( FlushSignalingHandler.class );
+        if ( handler == null )
+        {
+            ch.pipeline().addFirst( PipelineUtils.FLUSH_SIGNALING, new FlushSignalingHandler( target ) );
+        } else
+        {
+            handler.setTarget( target );
+        }
+    }
+
+    /**
+     * Get the flush consolidation handler of this channel. If none is present, one will be added.
+     * @param toClient whether this channel is a bungee-client connection
+     * @return the flush consolidation handler for this channel
+     */
+    public BungeeFlushConsolidationHandler getFlushConsolidationHandler(boolean toClient)
+    {
+        BungeeFlushConsolidationHandler handler = ch.pipeline().get( BungeeFlushConsolidationHandler.class );
+        if ( handler == null )
+        {
+            ch.pipeline().addFirst( PipelineUtils.FLUSH_CONSOLIDATION, handler = BungeeFlushConsolidationHandler.newInstance( toClient ) );
+        }
+        return handler;
     }
 
     public Protocol getEncodeProtocol() {
@@ -76,7 +109,8 @@ public class ChannelWrapper {
     }
 
     public void write(Object packet) {
-        if(XenonCore.instance.getBungeeInstance().getPluginManager().callEvent( new PacketSendEvent(packet, ch.remoteAddress().toString())).isCancelled()) return;
+        if (XenonCore.instance.getBungeeInstance().getPluginManager().callEvent(new PacketSendEvent(packet, ch.remoteAddress().toString())).isCancelled())
+            return;
         if (!closed) {
             DefinedPacket defined = null;
             if (packet instanceof PacketWrapper) {
@@ -105,7 +139,7 @@ public class ChannelWrapper {
     }
 
     public void close() {
-       close(null);
+        close(null);
     }
 
     public void close(Object packet) {
@@ -166,7 +200,7 @@ public class ChannelWrapper {
 
         // disable use of composite buffers if we use natives
         updateComposite();
-        ch.pipeline().fireUserEventTriggered( new CompressionThresholdSignal( compressionThreshold ) );
+        ch.pipeline().fireUserEventTriggered(new CompressionThresholdSignal(compressionThreshold));
     }
 
     /*

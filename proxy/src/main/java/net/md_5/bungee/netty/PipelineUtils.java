@@ -43,8 +43,9 @@ public class PipelineUtils {
     public static final String DECRYPT_HANDLER = "decrypt";
     public static final String FRAME_DECODER = "frame-decoder";
     public static final String FRAME_PREPENDER = "frame-prepender";
-    public static final String LEGACY_DECODER = "legacy-decoder";
     public static final String LEGACY_KICKER = "legacy-kick";
+    public static final String FLUSH_CONSOLIDATION = "flush-consolidation";
+    public static final String FLUSH_SIGNALING = "flush-signaling";
     private static final KickStringWriter legacyKicker = new KickStringWriter();
     private static final Varint21LengthFieldExtraBufPrepender serverFramePrepender = new Varint21LengthFieldExtraBufPrepender();
     private static final ChannelFactory<? extends ServerChannel> serverChannelFactory;

@@ -6,13 +6,11 @@ import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.ProtocolConstants;
 
-final class EntityMap_1_15 extends EntityMap
-{
+final class EntityMap_1_15 extends EntityMap {
 
     static final EntityMap_1_15 INSTANCE = new EntityMap_1_15();
 
-    private EntityMap_1_15()
-    {
+    private EntityMap_1_15() {
         addRewrite(0x00, ProtocolConstants.Direction.TO_CLIENT, true);
         addRewrite(0x01, ProtocolConstants.Direction.TO_CLIENT, true);
         addRewrite(0x03, ProtocolConstants.Direction.TO_CLIENT, true);
@@ -43,14 +41,12 @@ final class EntityMap_1_15 extends EntityMap
 
     @Override
     @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
-    public void rewriteClientbound(ByteBuf packet, int oldId, int newId, int protocolVersion)
-    {
+    public void rewriteClientbound(ByteBuf packet, int oldId, int newId, int protocolVersion) {
         super.rewriteClientbound(packet, oldId, newId);
         final int readerIndex = packet.readerIndex();
         final int packetId = DefinedPacket.readVarInt(packet);
         final int readerIndexAfterPID = packet.readerIndex();
-        switch (packetId)
-        {
+        switch (packetId) {
             case 0x45:
                 rewriteInt(packet, oldId, newId, readerIndexAfterPID + 4);
                 break;
@@ -92,14 +88,12 @@ final class EntityMap_1_15 extends EntityMap
     }
 
     @Override
-    public void rewriteServerbound(ByteBuf packet, int oldId, int newId)
-    {
+    public void rewriteServerbound(ByteBuf packet, int oldId, int newId) {
         super.rewriteServerbound(packet, oldId, newId);
         final int readerIndex = packet.readerIndex();
         final int packetId = DefinedPacket.readVarInt(packet);
         final int readerIndexAfterPID = packet.readerIndex();
-        if (packetId == 0x2B && !BungeeCord.getInstance().getConfig().isIpForward())
-        {
+        if (packetId == 0x2B && !BungeeCord.getInstance().getConfig().isIpForward()) {
             EntityMap_1_8.rewriteSpectateUuid(packet, readerIndex, readerIndexAfterPID);
         }
         packet.readerIndex(readerIndex);

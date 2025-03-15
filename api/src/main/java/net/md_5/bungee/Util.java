@@ -41,14 +41,14 @@ public class Util {
 
         if (uri == null || uri.getHost() == null) {
             try {
-                uri = new URI("tcp://"  +  hostline);
+                uri = new URI("tcp://" + hostline);
             } catch (URISyntaxException ex) {
-                throw new IllegalArgumentException("Bad hostline: " +  hostline, ex);
+                throw new IllegalArgumentException("Bad hostline: " + hostline, ex);
             }
         }
 
         if (uri.getHost() == null) {
-            throw new IllegalArgumentException("Invalid host/address: "  + hostline);
+            throw new IllegalArgumentException("Invalid host/address: " + hostline);
         }
 
         return new InetSocketAddress(uri.getHost(), (uri.getPort()) == -1 ? DEFAULT_PORT : uri.getPort());
@@ -71,7 +71,7 @@ public class Util {
      * @return the unicode representation of the character
      */
     public static String unicode(char c) {
-        return "\\u"  +  String.format("%04x", (int) c).toUpperCase(Locale.ROOT);
+        return "\\u" + String.format("%04x", (int) c).toUpperCase(Locale.ROOT);
     }
 
     /**
@@ -129,20 +129,21 @@ public class Util {
     }
 
     // Waterfall start: Forwarding rework
+
     /**
-      * Generates an alphanumeric A-Z,a-z,0-9 byte-sequence.
-      *
-      * @param len the length of the sequence
-      * @return a UTF/ASCII compatible alphanumeric byte-sequence
-      */
-    public static byte[] randomAlphanumericSequence(int len){
+     * Generates an alphanumeric A-Z,a-z,0-9 byte-sequence.
+     *
+     * @param len the length of the sequence
+     * @return a UTF/ASCII compatible alphanumeric byte-sequence
+     */
+    public static byte[] randomAlphanumericSequence(int len) {
         Random random = new SecureRandom();
         byte[] ret = new byte[len];
-        for(int i = 0; i < len; i++){
+        for (int i = 0; i < len; i++) {
             int seq = random.nextInt(62);
             ret[i] = (byte) (seq < 10 ? seq + 48 : seq < 36 ? seq + 55 : seq + 61);
         }
         return ret;
     }
-    // Waterfall end: Forwarding rework
+    // Waterfall end: Forwarding rework 
 }

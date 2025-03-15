@@ -34,6 +34,7 @@ public class ServerPing {
     public ServerPing(Protocol version, Players players, String description, String favicon) {
         this(version, players, TextComponent.fromLegacy(description), favicon == null ? null : Favicon.create(favicon));
     }
+
     @Deprecated
     public ServerPing(Protocol version, Players players, String description, Favicon favicon) {
         this(version, players, TextComponent.fromLegacy(description), favicon);

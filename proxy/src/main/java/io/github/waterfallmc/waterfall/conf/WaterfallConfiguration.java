@@ -80,8 +80,8 @@ public class WaterfallConfiguration extends Configuration {
 
         forwardingMode = ForwardingMode.valueOf(config.getString("forwarding_mode", ForwardingMode.BUNGEECORD_LEGACY.toString()).toUpperCase());
         final Logger logger = XenonCore.instance.getLogger();
-        if(super.isIpForward()) {
-            switch(forwardingMode) {
+        if (super.isIpForward()) {
+            switch (forwardingMode) {
                 case BUNGEECORD_LEGACY:
                     logger.info("Forwarding mode is set to Bungeecord/Legacy forwarding. " +
                             "It is recommended to use another forwarding method to mitigate information spoofing attacks.");
@@ -102,7 +102,7 @@ public class WaterfallConfiguration extends Configuration {
                     "configure forwarding and on your servers.");
         }
 
-        if(config.getString("forwarding_secret", "").isEmpty()) {
+        if (config.getString("forwarding_secret", "").isEmpty()) {
             config.regenerateForwardingSecret();
             logger.warn("A new forwarding secret has been generated. If this was the " +
                     "first start of the proxy please configure forwarding for your network.");
@@ -152,6 +152,7 @@ public class WaterfallConfiguration extends Configuration {
     public int getPluginChannelNameLimit() {
         return pluginChannelNameLimit;
     }
+
     @Override
     public ForwardingMode getForwardingMode() {
         return forwardingMode;

@@ -14,7 +14,6 @@ import net.md_5.bungee.connection.PingHandler;
 import net.md_5.bungee.protocol.BadPacketException;
 import net.md_5.bungee.protocol.OverflowPacketException;
 import net.md_5.bungee.protocol.PacketWrapper;
-import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.util.QuietException;
 
 import java.io.IOException;
@@ -71,54 +70,42 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof HAProxyMessage) {
-            HAProxyMessage proxy = (HAProxyMessage) msg;
+            final HAProxyMessage proxy = (HAProxyMessage) msg;
             try {
-                if (proxy.sourceAddress() != null) {
-                    InetSocketAddress newAddress = new InetSocketAddress(proxy.sourceAddress(), proxy.sourcePort());
-
-                    ProxyServer.getInstance().getLogger().log(Level.FINE, "Set remote address via PROXY {0} -> {1}", new Object[]
-                            {
-                                    channel.getRemoteAddress(), newAddress
-                            });
-
-                    channel.setRemoteAddress(newAddress);
-                } else {
-                    healthCheck = true;
-                }
+                final InetSocketAddress newAddress = new InetSocketAddress(proxy.sourceAddress(), proxy.sourcePort());
+                ProxyServer.getInstance().getLogger().log(Level.FINE, "Set remote address via PROXY {0} -> {1}",
+                        new Object[]{ channel.getRemoteAddress(), newAddress });
+                channel.setRemoteAddress(newAddress);
+            } catch (OutOfMemoryError e) {
+                System.gc();
             } finally {
                 proxy.release();
             }
-            return;
-        }
-
-        PacketWrapper packet = (PacketWrapper) msg;
-        if (packet.packet != null) {
-            Protocol nextProtocol = packet.packet.nextProtocol();
-            if (nextProtocol != null) {
-                channel.setDecodeProtocol(nextProtocol);
-            }
-        }
-
-        if (handler != null) {
-            boolean sendPacket = handler.shouldHandle(packet);
+        } else if (msg instanceof PacketWrapper) {
+            final PacketWrapper packet = (PacketWrapper) msg;
+            boolean sendPacket;
             try {
-                if (sendPacket && packet.packet != null) {
-                    try {
-                        packet.packet.handle(handler);
-                    } catch (CancelSendSignal ex) {
-                        sendPacket = false;
+                if (handler != null) {
+                    sendPacket = handler.shouldHandle(packet);
+                    if (sendPacket && packet.packet != null) {
+                        try {
+                            packet.packet.handle(handler);
+                        } catch (CancelSendSignal ex) {
+                            sendPacket = false;
+                        }
+                    }
+                    if (sendPacket) {
+                        handler.handle(packet);
                     }
                 }
-                if (sendPacket) {
-                    handler.handle(packet);
-                }
-            } catch(OutOfMemoryError e){
+            } catch (OutOfMemoryError e) {
                 System.gc();
-            } finally{
+            } finally {
                 packet.trySingleRelease();
             }
         }
     }
+
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {

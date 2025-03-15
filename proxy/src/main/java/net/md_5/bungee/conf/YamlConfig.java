@@ -1,7 +1,6 @@
 package net.md_5.bungee.conf;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.utils.Message;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.Util;
@@ -24,19 +23,9 @@ import java.util.logging.Level;
 
 public class YamlConfig implements ConfigurationAdapter {
 
-    /**
-     * The default tab list options available for picking.
-     */
-    @RequiredArgsConstructor
-    private enum DefaultTabList {
-
-        GLOBAL(), GLOBAL_PING(), SERVER();
-    }
-
     private final Yaml yaml;
-    private Map<String, Object> config;
     private final File file;
-
+    private Map<String, Object> config;
     public YamlConfig() {
         this(new File("config.yml"));
     }
@@ -249,8 +238,17 @@ public class YamlConfig implements ConfigurationAdapter {
     }
 
     // Waterfall start: Forwarding rework
-    public void regenerateForwardingSecret(){
+    public void regenerateForwardingSecret() {
         set("forwarding_secret", new String(Util.randomAlphanumericSequence(12), StandardCharsets.UTF_8));
+    }
+
+    /**
+     * The default tab list options available for picking.
+     */
+    @RequiredArgsConstructor
+    private enum DefaultTabList {
+
+        GLOBAL(), GLOBAL_PING(), SERVER();
     }
     // Waterfall end: Forwarding rework
 

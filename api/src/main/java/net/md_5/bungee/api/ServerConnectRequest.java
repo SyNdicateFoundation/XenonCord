@@ -46,6 +46,7 @@ public class ServerConnectRequest {
     @Setter
     private boolean sendFeedback;
     // Waterfall start
+
     /**
      * The result from this callback after request has been executed by proxy.
      */
