@@ -43,7 +43,7 @@ final class EntityMap_1_15 extends EntityMap
 
     @Override
     @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
-    public void rewriteClientbound(final ByteBuf packet, final int oldId, final int newId, final int protocolVersion)
+    public void rewriteClientbound(ByteBuf packet, int oldId, int newId, int protocolVersion)
     {
         super.rewriteClientbound(packet, oldId, newId);
         final int readerIndex = packet.readerIndex();
@@ -92,7 +92,7 @@ final class EntityMap_1_15 extends EntityMap
     }
 
     @Override
-    public void rewriteServerbound(final ByteBuf packet, final int oldId, final int newId)
+    public void rewriteServerbound(ByteBuf packet, int oldId, int newId)
     {
         super.rewriteServerbound(packet, oldId, newId);
         final int readerIndex = packet.readerIndex();
