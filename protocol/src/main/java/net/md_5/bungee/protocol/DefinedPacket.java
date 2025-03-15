@@ -515,4 +515,35 @@ public abstract class DefinedPacket {
         return 0;
     }
     // Waterfall end
+    public static void skipString(ByteBuf buf)
+    {
+        skipString( buf, Short.MAX_VALUE );
+    }
+
+    public static void skipString(ByteBuf buf, int maxLen)
+    {
+        final int len = readVarInt( buf );
+        if ( len > maxLen * 3 )
+        {
+            throw new OverflowPacketException( "Cannot receive string longer than " + maxLen * 3 + " (got " + len + " bytes)" );
+        }
+
+        buf.skipBytes( len );
+    }
+    public static void skipVarInt(ByteBuf input)
+    {
+        skipVarInt( input, 5 );
+    }
+
+    public static void skipVarInt(ByteBuf input, int maxBytes) {
+        for (int i = 0; i < maxBytes; i++) {
+            if ((input.readByte() & 0x80) == 0)
+                return;
+        }
+        throw new RuntimeException("VarInt too big");
+    }
+    public static void skipUUID(ByteBuf input)
+    {
+        input.skipBytes( 16 );
+    }
 }

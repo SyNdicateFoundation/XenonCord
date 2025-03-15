@@ -5,15 +5,11 @@ import io.netty.buffer.ByteBuf;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.UserConnection;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.DefinedPacket;
 
-import java.util.UUID;
-
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-class EntityMap_1_16_2 extends EntityMap {
-
+final class EntityMap_1_16_2 extends EntityMap
+{
     static final EntityMap_1_16_2 INSTANCE_1_16_2 = new EntityMap_1_16_2(0x04, 0x2D);
     static final EntityMap_1_16_2 INSTANCE_1_17 = new EntityMap_1_16_2(0x04, 0x2D);
     static final EntityMap_1_16_2 INSTANCE_1_18 = new EntityMap_1_16_2(0x04, 0x2D);
@@ -26,55 +22,34 @@ class EntityMap_1_16_2 extends EntityMap {
     static final EntityMap_1_16_2 INSTANCE_1_21_2 = new EntityMap_1_16_2(-1, 0x39);
     static final EntityMap_1_16_2 INSTANCE_1_21_4 = new EntityMap_1_16_2(-1, 0x3B);
     static final EntityMap_1_16_2 INSTANCE_1_21_5 = new EntityMap_1_16_2(-1, 0x3C);
-    //
+
     private final int spawnPlayerId;
     private final int spectateId;
 
     @Override
     @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
-    public void rewriteClientbound(ByteBuf packet, int oldId, int newId, int protocolVersion) {
-        if (spawnPlayerId == -1) {
-            return;
+    public void rewriteClientbound(final ByteBuf packet, final int oldId, final int newId, final int protocolVersion)
+    {
+        final int originalReaderIndex = packet.readerIndex();
+        final int packetId = DefinedPacket.readVarInt(packet);
+        final int packetIdLength = packet.readerIndex() - originalReaderIndex;
+        if (packetId == spawnPlayerId)
+        {
+            EntityMap_1_8.rewriteSpawnPlayerUuid(packet, originalReaderIndex);
         }
-        // Special cases
-        int readerIndex = packet.readerIndex();
-        int packetId = DefinedPacket.readVarInt(packet);
-        int packetIdLength = packet.readerIndex() - readerIndex;
-
-        if (packetId == spawnPlayerId) {
-            DefinedPacket.readVarInt(packet); // Entity ID
-            int idLength = packet.readerIndex() - readerIndex - packetIdLength;
-            UUID uuid = DefinedPacket.readUUID(packet);
-            UserConnection player;
-            if ((player = BungeeCord.getInstance().getPlayerByOfflineUUID(uuid)) != null) {
-                int previous = packet.writerIndex();
-                packet.readerIndex(readerIndex);
-                packet.writerIndex(readerIndex + packetIdLength + idLength);
-                DefinedPacket.writeUUID(player.getRewriteId(), packet);
-                packet.writerIndex(previous);
-            }
-        }
-        packet.readerIndex(readerIndex);
+        packet.readerIndex(originalReaderIndex);
     }
 
     @Override
-    public void rewriteServerbound(ByteBuf packet, int oldId, int newId) {
-        // Special cases
-        int readerIndex = packet.readerIndex();
-        int packetId = DefinedPacket.readVarInt(packet);
-        int packetIdLength = packet.readerIndex() - readerIndex;
-
-        if (packetId == spectateId) {
-            UUID uuid = DefinedPacket.readUUID(packet);
-            ProxiedPlayer player;
-            if ((player = BungeeCord.getInstance().getPlayer(uuid)) != null) {
-                int previous = packet.writerIndex();
-                packet.readerIndex(readerIndex);
-                packet.writerIndex(readerIndex + packetIdLength);
-                DefinedPacket.writeUUID(((UserConnection) player).getRewriteId(), packet);
-                packet.writerIndex(previous);
-            }
+    public void rewriteServerbound(final ByteBuf packet, final int oldId, final int newId)
+    {
+        final int originalReaderIndex = packet.readerIndex();
+        final int packetId = DefinedPacket.readVarInt(packet);
+        final int packetIdLength = packet.readerIndex() - originalReaderIndex;
+        if (packetId == spectateId && !BungeeCord.getInstance().getConfig().isIpForward())
+        {
+            EntityMap_1_8.rewriteSpectateUuid(packet, originalReaderIndex, packetIdLength);
         }
-        packet.readerIndex(readerIndex);
+        packet.readerIndex(originalReaderIndex);
     }
 }
