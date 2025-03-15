@@ -1,43 +1,69 @@
-# XenonCord: A lightweight, easy to use, scaleable bungeecord instance.
+# 🌌 XenonCord  
 
-Note: All the actual "addons" are migrated into a bungeecord plugin now.
+*A lightweight, easy-to-use, and scalable BungeeCord proxy.*  
 
-## Overview
+---
 
-- this project is a waterfall fork, which is a fork of bungeecord.
-- this project contains some fixes, patches, and as well as new features, such as bungeeguard native forwarding & etc.
-- we will add features and complete this readme.md file.
+## 🚀 Overview  
+XenonCord is a **fork of Waterfall**, which itself is a fork of **BungeeCord**. This project introduces various **fixes, patches, and new features**, including:  
+- ✔ **BungeeGuard native forwarding**  
+- ✔ **Optimizations for performance & scalability**  
+- ✔ **Additional features to enhance BungeeCord**  
 
-### Key Features 🚀
+🔹 **Note:** All "addons" have been migrated into a **BungeeCord plugin** now.  
 
-Lightweight - this project is focused on being clean code & optimized.
-Provided features - this proxy software provides some additions to BungeeCord
-C:ustomizable this proxy is designed to be customizable. means, if you wanted to use these default features, or not, we
-granted you the ability to remove it, by a simple configuration.
+---
 
-## Getting Started 🚧
+## ✨ Key Features  
 
-- NOTE: We removed waterfall's patch system, and we're going to add updates manually.
+✅ **Lightweight & Optimized**  
+- Focused on **clean code** and **high performance** for seamless Minecraft server proxying.  
 
-- setting up:
-- As a proxy:
-- download jar file
-- put it into your minecraft server folder, and then use your start script to run it.
+✅ **Feature-Rich**  
+- Provides enhancements beyond vanilla **BungeeCord**, improving functionality and security.  
 
-- As a development workspace:
-- git clone it in Intelij, and use it.
+✅ **Customizable**  
+- Enable or disable built-in features via a **simple configuration file**.  
 
-## TODO 📝
+✅ **Developer-Friendly**  
+- Fork, modify, and extend as needed—**open-source and easy to integrate**.  
 
-- optimize
-- add features
+---
 
-## Credits:
+## 🛠 Getting Started  
 
-- thanks to BungeeCord by SpigotMC for their hard work.
-- thanks to Waterfall by PaperMC to make stuff easier for us.
-- thanks to whom who helped in designing a better GUI.
+### 📌 As a Proxy  
+1. **Download** the latest `.jar` file from [Releases](#).  
+2. **Place** it in your **Minecraft server folder**.  
+3. **Run** it using your server's start script.  
 
-## Contribution Guidelines
+### 💻 As a Development Workspace  
+1. **Clone the repository**:  
+   ```bash
+   git clone https://github.com/SyNdicateFoundation/XenonCord/
+   ```
+2. **Open in IntelliJ IDEA**
 
-Feel free to contribute to the development of XenonCord. we will notice it.
+---
+
+## 🚧 TODO  
+📌 **Optimizations** – Improve performance & reduce overhead.  
+📌 **Feature Additions** – Expand functionality with new capabilities.  
+
+---
+
+## 🎖 Credits  
+
+Special thanks to:  
+- **[BungeeCord](https://www.spigotmc.org/wiki/bungeecord/) by SpigotMC** – for laying the foundation.  
+- **[Waterfall](https://papermc.io/) by PaperMC** – for making proxy development easier.  
+- **Contributors & Community** – for helping improve XenonCord.  
+
+---
+
+## We welcome contributions! 🚀
+  
+💡 **Fork the repo, submit a PR, and we’ll review it.**  
+Need help or want to contribute? **Join our community on Discord!**  
+
+[![Discord](https://img.shields.io/discord/1189580010957324298?color=5865F2&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/vTF2W5UKxr)  
