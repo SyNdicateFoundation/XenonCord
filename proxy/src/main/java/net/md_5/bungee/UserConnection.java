@@ -445,11 +445,9 @@ public final class UserConnection implements ProxiedPlayer {
 
         final int version = getPendingConnection().getVersion();
 
-        if (position == ChatMessageType.ACTION_BAR) {
+        if (position == ChatMessageType.ACTION_BAR && version < ProtocolConstants.MINECRAFT_1_17) {
             if (version <= ProtocolConstants.MINECRAFT_1_10)
                 message = new TextComponent(BaseComponent.toLegacyText(message));
-            else if ( getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_17 )
-                unsafe.sendPacket(new ActionBar(ComponentSerializer.toString(message)));
             else {
                 net.md_5.bungee.protocol.packet.Title title = new net.md_5.bungee.protocol.packet.Title();
                 title.setAction(net.md_5.bungee.protocol.packet.Title.Action.ACTIONBAR);

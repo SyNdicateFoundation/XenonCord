@@ -433,11 +433,6 @@ public enum Protocol {
                     map(ProtocolConstants.MINECRAFT_1_21_5, 0x58)
             );
             TO_CLIENT.registerPacket(
-                    ActionBar.class,
-                    ActionBar::new,
-                    map( ProtocolConstants.MINECRAFT_1_17, 0x41 )
-            );
-            TO_CLIENT.registerPacket(
                     ServerData.class,
                     ServerData::new,
                     map(ProtocolConstants.MINECRAFT_1_19, 0x3F),
