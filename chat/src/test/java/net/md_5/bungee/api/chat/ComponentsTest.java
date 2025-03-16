@@ -392,7 +392,7 @@ public class ComponentsTest {
         TextComponent component = new TextComponent("test");
         component.setHoverEvent(hoverEvent);
         assertEquals(component.getHoverEvent().getContents().size(), 1);
-        assertTrue(component.getHoverEvent().getContents().get(0) instanceof Text);
+        assertInstanceOf(Text.class, component.getHoverEvent().getContents().get(0));
         assertEquals(((Text) component.getHoverEvent().getContents().get(0)).getValue(), advancement);
     }
 
@@ -589,12 +589,12 @@ public class ComponentsTest {
 
         ClickEvent url1 = test2[1].getClickEvent();
         assertNotNull(url1);
-        assertTrue(url1.getAction() == ClickEvent.Action.OPEN_URL);
+        assertSame(url1.getAction(), ClickEvent.Action.OPEN_URL);
         assertEquals("http://spigotmc.org", url1.getValue());
 
         ClickEvent url2 = test2[3].getClickEvent();
         assertNotNull(url2);
-        assertTrue(url2.getAction() == ClickEvent.Action.OPEN_URL);
+        assertSame(url2.getAction(), ClickEvent.Action.OPEN_URL);
         assertEquals("http://google.com/test", url2.getValue());
     }
 

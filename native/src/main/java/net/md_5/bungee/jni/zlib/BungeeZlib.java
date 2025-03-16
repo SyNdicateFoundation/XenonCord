@@ -6,7 +6,7 @@ import java.util.zip.DataFormatException;
 
 public interface BungeeZlib {
 
-    public static final int OUTPUT_BUFFER_SIZE = 8192;
+    int OUTPUT_BUFFER_SIZE = 8192;
 
     void init(boolean compress, int level);
 

@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 
-    private static io.github.waterfallmc.waterfall.utils.FastException cachedNoSessionException = new io.github.waterfallmc.waterfall.utils.FastException("No Session!");
+    private static final io.github.waterfallmc.waterfall.utils.FastException cachedNoSessionException = new io.github.waterfallmc.waterfall.utils.FastException("No Session!");
     private final ProxyServer bungee;
     private final ListenerInfo listener;
     /*========================================================================*/

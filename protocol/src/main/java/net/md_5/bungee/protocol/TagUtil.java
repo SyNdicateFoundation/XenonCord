@@ -64,7 +64,7 @@ public final class TagUtil {
                 case Tag.TAG_BYTE:
                     byte[] bytes = new byte[jsonArray.size()];
                     for (int i = 0; i < bytes.length; i++) {
-                        bytes[i] = (Byte) ((JsonPrimitive) jsonArray.get(i)).getAsNumber();
+                        bytes[i] = (Byte) jsonArray.get(i).getAsNumber();
                     }
 
                     listTag = new ByteArrayTag(bytes);
@@ -72,7 +72,7 @@ public final class TagUtil {
                 case Tag.TAG_INT:
                     int[] ints = new int[jsonArray.size()];
                     for (int i = 0; i < ints.length; i++) {
-                        ints[i] = (Integer) ((JsonPrimitive) jsonArray.get(i)).getAsNumber();
+                        ints[i] = (Integer) jsonArray.get(i).getAsNumber();
                     }
 
                     listTag = new IntArrayTag(ints);
@@ -80,7 +80,7 @@ public final class TagUtil {
                 case Tag.TAG_LONG:
                     long[] longs = new long[jsonArray.size()];
                     for (int i = 0; i < longs.length; i++) {
-                        longs[i] = (Long) ((JsonPrimitive) jsonArray.get(i)).getAsNumber();
+                        longs[i] = (Long) jsonArray.get(i).getAsNumber();
                     }
 
                     listTag = new LongArrayTag(longs);

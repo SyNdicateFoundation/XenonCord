@@ -11,6 +11,6 @@ public class NumberFormat {
     public enum Type {
         BLANK,
         STYLED,
-        FIXED;
+        FIXED
     }
 }

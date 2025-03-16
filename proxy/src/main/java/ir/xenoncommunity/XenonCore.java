@@ -1,7 +1,6 @@
 package ir.xenoncommunity;
 
-import ir.xenoncommunity.gui.SwingManager;
-import ir.xenoncommunity.handlers.IpLimiter;
+import ir.xenoncommunity.utils.ClassHelper;
 import ir.xenoncommunity.utils.Configuration;
 import ir.xenoncommunity.utils.TaskManager;
 import lombok.Cleanup;
@@ -18,7 +17,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -51,10 +49,13 @@ public class XenonCore {
      * Called when proxy is loaded.
      */
     public void init(long startTime) {
-        if (Arrays.stream(getConfigData().getWhitelisted_ips()).noneMatch(String::isEmpty))
-            getBungeeInstance().getPluginManager().registerListener(null, new IpLimiter());
+//        if (Arrays.stream(getConfigData().getWhitelisted_ips()).noneMatch(String::isEmpty))
+//            getBungeeInstance().getPluginManager().registerListener(null, new IpLimiter());
+
         getTaskManager().async(() -> {
-            SwingManager.createAndShowGUI();
+
+            ClassHelper.registerModules();
+
             getLogger().info("Successfully booted! Loading the proxy server with plugins took: {}ms", System.currentTimeMillis() - startTime);
         });
 

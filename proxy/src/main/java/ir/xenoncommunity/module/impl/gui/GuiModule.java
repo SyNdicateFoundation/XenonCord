@@ -5,27 +5,35 @@ THANKS FOR SUPPORTING XENON COMMUNITY.
 
  */
 
-package ir.xenoncommunity.gui;
+package ir.xenoncommunity.module.impl.gui;
 
 import com.sun.management.OperatingSystemMXBean;
 import ir.xenoncommunity.XenonCore;
-import lombok.experimental.UtilityClass;
+import ir.xenoncommunity.annotations.ModuleInfo;
+import ir.xenoncommunity.module.ModuleBase;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.lang.management.ManagementFactory;
 
-@UtilityClass
-public class SwingManager {
+@ModuleInfo(name = "GUI-Interface", version = 1.0, description = "UI Module for server analytics")
+public class GuiModule extends ModuleBase {
     private JLabel onlinePlayersLabel;
     private JLabel memoryUsageLabel;
     private JLabel cpuUsageLabel;
     private JTextArea playerListArea;
     private OperatingSystemMXBean osBean;
 
+
+    @Override
+    public void onInit() {
+        if (!getConfig().getModules().getGui_module().isEnabled())
+            return;
+        createAndShowGUI();
+    }
+
     public void createAndShowGUI() {
-        if (!XenonCore.instance.getConfigData().isUse_gui()) return;
         osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         JFrame frame = new JFrame("XenonCord Proxy");
         frame.setSize(600, 400);

@@ -24,15 +24,9 @@
  */
 package net.md_5.bungee.netty.flush;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelOutboundHandler;
-import io.netty.channel.ChannelOutboundInvoker;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.ChannelPromise;
+import io.netty.channel.*;
 import io.netty.util.internal.ObjectUtil;
+
 import java.util.concurrent.Future;
 
 /**

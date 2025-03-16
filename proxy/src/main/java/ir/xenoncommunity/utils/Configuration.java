@@ -57,12 +57,39 @@ public class Configuration {
     @Getter
     @Setter
     public static class ConfigData {
-        private String in_game_brandname, cannot_execute_as_console_message,
-                unknown_option_message, xenoncord_permission, reload_permission, reload_message, reload_complete_message,
-                whitelist_ip_mode;
-        private boolean debug, use_gui, socket_backend;
+        private String cannot_execute_as_console_message,
+                unknown_option_message, xenoncord_permission, reload_permission, reload_message, reload_complete_message;
+        private boolean debug, socket_backend;
         private long gui_refresh_rate;
-        private String[] whitelisted_ips;
+        private Modules modules;
     }
 
+    @Getter
+    @Setter
+    public static class Modules {
+        private GuiModule gui_module;
+        private IPWhitelist ip_whitelist_module;
+        private BrandModule brand_module;
+    }
+
+    @Getter
+    @Setter
+    public static class GuiModule {
+        private boolean enabled;
+    }
+
+    @Getter
+    @Setter
+    public static class BrandModule {
+        private boolean enabled;
+        private String brand_name;
+    }
+
+    @Getter
+    @Setter
+    public static class IPWhitelist {
+        private boolean enabled;
+        private String whitelist_ip_mode;
+        private String[] whitelisted_ips;
+    }
 }

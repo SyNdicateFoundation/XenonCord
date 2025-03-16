@@ -96,13 +96,13 @@ public class PlayerListItem extends DefinedPacket {
         }
     }
 
-    public static enum Action {
+    public enum Action {
 
         ADD_PLAYER,
         UPDATE_GAMEMODE,
         UPDATE_LATENCY,
         UPDATE_DISPLAY_NAME,
-        REMOVE_PLAYER;
+        REMOVE_PLAYER
     }
 
     @Data

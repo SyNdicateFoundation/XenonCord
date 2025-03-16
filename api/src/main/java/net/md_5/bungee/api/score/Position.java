@@ -23,5 +23,5 @@ public enum Position {
     SIDEBAR_RED,
     SIDEBAR_LIGHT_PURPLE,
     SIDEBAR_YELLOW,
-    SIDEBAR_WHITE;
+    SIDEBAR_WHITE
 }

@@ -294,8 +294,6 @@ public final class PluginManager {
                 String msg = "Exception encountered when loading plugin: " + plugin.getDescription().getName();
                 ProxyServer.getInstance().getLogger().log(Level.WARNING, msg, t);
                 this.callEvent(new ProxyExceptionEvent(new ProxyPluginEnableDisableException(msg, t, plugin)));
-            } finally {
-                // countDown.countDown();
             }
         });
         //}).start());
@@ -513,9 +511,7 @@ public final class PluginManager {
         Preconditions.checkArgument(depend != null, "depend");
 
         if (dependencyGraph.nodes().contains(plugin.getName())) {
-            if (Graphs.reachableNodes(dependencyGraph, plugin.getName()).contains(depend.getName())) {
-                return true;
-            }
+            return Graphs.reachableNodes(dependencyGraph, plugin.getName()).contains(depend.getName());
         }
         return false;
     }

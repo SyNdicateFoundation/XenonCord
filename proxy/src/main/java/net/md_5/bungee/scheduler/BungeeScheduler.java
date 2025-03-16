@@ -22,7 +22,7 @@ public class BungeeScheduler implements TaskScheduler {
     private final Object lock = new Object();
     private final AtomicInteger taskCounter = new AtomicInteger();
     private final TIntObjectMap<BungeeTask> tasks = TCollections.synchronizedMap(new TIntObjectHashMap<BungeeTask>());
-    private final Multimap<Plugin, BungeeTask> tasksByPlugin = Multimaps.synchronizedMultimap(HashMultimap.<Plugin, BungeeTask>create());
+    private final Multimap<Plugin, BungeeTask> tasksByPlugin = Multimaps.synchronizedMultimap(HashMultimap.create());
     //
     private final Unsafe unsafe = new Unsafe() {
 

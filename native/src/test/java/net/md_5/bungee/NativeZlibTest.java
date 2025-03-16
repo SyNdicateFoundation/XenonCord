@@ -12,8 +12,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.zip.DataFormatException;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NativeZlibTest {
 
@@ -72,7 +71,7 @@ public class NativeZlibTest {
         long elapsed = System.currentTimeMillis() - start;
         System.out.println("Took: " + elapsed + "ms");
 
-        assertTrue(Arrays.equals(dataBuf, check), "Results do not match");
+        assertArrayEquals(dataBuf, check, "Results do not match");
     }
 
     private void testExceptionImpl(BungeeZlib zlib) throws DataFormatException {

@@ -427,7 +427,7 @@ public final class UserConnection implements ProxiedPlayer {
 
     @Override
     public void sendMessage(ChatMessageType position, BaseComponent message) {
-        sendMessage(position, (UUID) null, message);
+        sendMessage(position, null, message);
     }
 
     @Override

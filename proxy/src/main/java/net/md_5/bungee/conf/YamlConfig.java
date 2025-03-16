@@ -77,7 +77,7 @@ public class YamlConfig implements ConfigurationAdapter {
             return (T) val;
         } else {
             String first = path.substring(0, index);
-            String second = path.substring(index + 1, path.length());
+            String second = path.substring(index + 1);
             Map sub = (Map) submap.get(first);
             if (sub == null) {
                 sub = new LinkedHashMap();
@@ -103,7 +103,7 @@ public class YamlConfig implements ConfigurationAdapter {
             save();
         } else {
             String first = path.substring(0, index);
-            String second = path.substring(index + 1, path.length());
+            String second = path.substring(index + 1);
             Map sub = (Map) submap.get(first);
             if (sub == null) {
                 sub = new LinkedHashMap();
@@ -248,7 +248,7 @@ public class YamlConfig implements ConfigurationAdapter {
     @RequiredArgsConstructor
     private enum DefaultTabList {
 
-        GLOBAL(), GLOBAL_PING(), SERVER();
+        GLOBAL(), GLOBAL_PING(), SERVER()
     }
     // Waterfall end: Forwarding rework
 

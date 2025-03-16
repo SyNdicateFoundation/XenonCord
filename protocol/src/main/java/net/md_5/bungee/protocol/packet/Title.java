@@ -95,7 +95,7 @@ public class Title extends DefinedPacket {
         }
     }
 
-    public static enum Action {
+    public enum Action {
 
         TITLE,
         SUBTITLE,

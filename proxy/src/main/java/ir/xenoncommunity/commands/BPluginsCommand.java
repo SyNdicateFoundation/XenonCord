@@ -67,7 +67,7 @@ public class BPluginsCommand extends Command {
         } catch (Exception e) {
             XenonCore.instance.logdebugerror("Error while handing a plugin action");
             e.printStackTrace();
-            Message.send(sender, String.format("&b&lXenonCord &cAn error occurred while processing the plugin. Check the console for details."), true);
+            Message.send(sender, "&b&lXenonCord &cAn error occurred while processing the plugin. Check the console for details.", true);
         }
     }
 

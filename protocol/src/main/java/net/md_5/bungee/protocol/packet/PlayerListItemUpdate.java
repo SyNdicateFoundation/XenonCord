@@ -123,7 +123,7 @@ public class PlayerListItemUpdate extends DefinedPacket {
         }
     }
 
-    public static enum Action {
+    public enum Action {
 
         ADD_PLAYER,
         INITIALIZE_CHAT,
@@ -132,6 +132,6 @@ public class PlayerListItemUpdate extends DefinedPacket {
         UPDATE_LATENCY,
         UPDATE_DISPLAY_NAME,
         UPDATE_LIST_ORDER,
-        UPDATE_HAT;
+        UPDATE_HAT
     }
 }

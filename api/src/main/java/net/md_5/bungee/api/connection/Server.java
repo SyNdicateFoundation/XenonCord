@@ -12,7 +12,7 @@ public interface Server extends Connection {
      *
      * @return the {@link ServerInfo} for this server
      */
-    public ServerInfo getInfo();
+    ServerInfo getInfo();
 
     /**
      * Send data by any available means to this server.
@@ -24,5 +24,5 @@ public interface Server extends Connection {
      * @param channel the channel to send this data via
      * @param data    the data to send
      */
-    public abstract void sendData(String channel, byte[] data);
+    void sendData(String channel, byte[] data);
 }

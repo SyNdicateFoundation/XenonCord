@@ -84,6 +84,6 @@ public class ClientSettings extends DefinedPacket {
     public enum ParticleStatus {
         ALL,
         DECREASED,
-        MINIMAL;
+        MINIMAL
     }
 }
