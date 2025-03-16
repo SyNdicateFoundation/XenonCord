@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.logging.log4j.Logger;
+import org.bstats.json.JsonObjectBuilder;
 
 public class Metrics {
 
@@ -19,11 +20,16 @@ public class Metrics {
             return;
         }
         new MetricsBase("server-implementation",
-                XenonCore.instance.getBungeeInstance().getConfig().getUuid(),
+                config.getServerUUID(),
                 id,
                 config.isEnabled(),
-                null,
-                null,
+                (builder) -> {
+                    builder.appendField("osName", System.getProperty("os.name"));
+                    builder.appendField("osArch", System.getProperty("os.arch"));
+                    builder.appendField("osVersion", System.getProperty("os.version"));
+                    builder.appendField("coreCount", Runtime.getRuntime().availableProcessors());
+                },
+                jsonObjectBuilder -> {},
                 null,
                 () -> true,
                 logger::warn,
@@ -33,5 +39,4 @@ public class Metrics {
                 config.isLogResponseStatusTextEnabled()
         );
     }
-///25130
 }
