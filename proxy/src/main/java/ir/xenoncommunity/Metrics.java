@@ -1,6 +1,7 @@
 package ir.xenoncommunity;
 
 import org.bstats.MetricsBase;
+import org.bstats.charts.SingleLineChart;
 import org.bstats.config.MetricsConfig;
 
 import java.io.File;
@@ -19,7 +20,7 @@ public class Metrics {
             e.printStackTrace();
             return;
         }
-        new MetricsBase("server-implementation",
+        final MetricsBase metricsBase =  new MetricsBase("server-implementation",
                 config.getServerUUID(),
                 id,
                 config.isEnabled(),
@@ -37,6 +38,9 @@ public class Metrics {
                 config.isLogErrorsEnabled(),
                 config.isLogSentDataEnabled(),
                 config.isLogResponseStatusTextEnabled()
+        );
+        metricsBase.addCustomChart(
+                new SingleLineChart("players", XenonCore.instance.getBungeeInstance().getPlayers()::size)
         );
     }
 }
