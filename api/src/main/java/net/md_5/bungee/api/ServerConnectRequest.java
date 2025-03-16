@@ -81,7 +81,7 @@ public class ServerConnectRequest {
      */
     public static class Builder {
 
-        private final int connectTimeout = ProxyServer.getInstance().getConfig().getServerConnectTimeout();
-        private final boolean isSendFeedback = true; // Waterfall # God. f##king. lombok.
+        private int connectTimeout = ProxyServer.getInstance().getConfig().getServerConnectTimeout();
+        private boolean isSendFeedback = true; // Waterfall # God. f##king. lombok.
     }
 }
