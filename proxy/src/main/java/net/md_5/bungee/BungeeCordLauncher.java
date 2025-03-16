@@ -23,6 +23,7 @@ public class BungeeCordLauncher {
         parser.allowsUnrecognizedOptions();
         parser.acceptsAll(Collections.singletonList("help"), "Show the help");
         parser.acceptsAll(Arrays.asList("v", "version"), "Print version and exit");
+        parser.acceptsAll(Arrays.asList("d", "dev"), "Starts the session in development mode");
         parser.acceptsAll(Collections.singletonList("noconsole"), "Disable console input");
 
         if (options.has("help") || options.has("version")) {
@@ -30,12 +31,11 @@ public class BungeeCordLauncher {
             System.out.println(BungeeCord.class.getPackage().getImplementationVersion());
             return;
         }
-        new BungeeCord(args).start(System.currentTimeMillis());
+
+        new BungeeCord(Arrays.asList(args).contains("dev")).start(System.currentTimeMillis());
 
         if (options.has("noconsole")) return;
 
         new io.github.waterfallmc.waterfall.console.WaterfallConsole().start();
-
-        XenonCore.instance.setArgs(args);
     }
 }

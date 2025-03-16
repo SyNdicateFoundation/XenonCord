@@ -142,9 +142,9 @@ public class BungeeCord extends ProxyServer {
     private ReconnectHandler reconnectHandler;
 
     @SuppressFBWarnings("DM_DEFAULT_ENCODING")
-    public BungeeCord(String[] args) throws IOException {
+    public BungeeCord(boolean isDev) throws IOException {
         ProxyServer.setInstance(this);
-        this.xenonInstance = new XenonCore(args);
+        this.xenonInstance = new XenonCore(isDev);
         // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
         Preconditions.checkState(new File(".").getAbsolutePath().indexOf('!') == -1, "Cannot use Waterfall in directory with ! in path.");
 

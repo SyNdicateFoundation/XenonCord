@@ -33,19 +33,16 @@ public class XenonCore {
     private final Configuration configuration;
     @Setter
     private Configuration.ConfigData configData;
-    @Setter
-    private String[] args;
     /**
      * Initializes all required variables.
      */
-    public XenonCore(String[] args) {
+    public XenonCore(boolean isDev) {
         instance = this;
         this.logger = LogManager.getLogger(this.getClass().getSimpleName());
         this.taskManager = new TaskManager();
         this.bungeeInstance = BungeeCord.getInstance();
         this.configuration = new Configuration();
-        this.args = args;
-        if(!Arrays.asList(args).contains("-dev"))
+        if(!isDev)
             new Metrics(this.logger, 25130);
 
     }
