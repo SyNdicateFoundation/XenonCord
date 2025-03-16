@@ -1,5 +1,6 @@
 package net.md_5.bungee;
 
+import ir.xenoncommunity.XenonCore;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
@@ -29,10 +30,12 @@ public class BungeeCordLauncher {
             System.out.println(BungeeCord.class.getPackage().getImplementationVersion());
             return;
         }
-        new BungeeCord().start(System.currentTimeMillis());
+        new BungeeCord(args).start(System.currentTimeMillis());
 
         if (options.has("noconsole")) return;
 
         new io.github.waterfallmc.waterfall.console.WaterfallConsole().start();
+
+        XenonCore.instance.setArgs(args);
     }
 }

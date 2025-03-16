@@ -67,6 +67,12 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>ir.xenoncommunity.shaded.bstats</shadedPattern>
+                        </relocation>
+                    </relocations>
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>

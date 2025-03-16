@@ -142,9 +142,9 @@ public class BungeeCord extends ProxyServer {
     private ReconnectHandler reconnectHandler;
 
     @SuppressFBWarnings("DM_DEFAULT_ENCODING")
-    public BungeeCord() throws IOException {
+    public BungeeCord(String[] args) throws IOException {
         ProxyServer.setInstance(this);
-        this.xenonInstance = new XenonCore();
+        this.xenonInstance = new XenonCore(args);
         // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
         Preconditions.checkState(new File(".").getAbsolutePath().indexOf('!') == -1, "Cannot use Waterfall in directory with ! in path.");
 
@@ -181,9 +181,7 @@ public class BungeeCord extends ProxyServer {
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void start(long startTime) throws Exception {
-        pluginManager.detectPlugins(pluginsFolder);
-
-        xenonInstance.getLogger().info(String.format("Enabled XenonCord %s", XenonCore.instance.getVersion()));
+        xenonInstance.getLogger().info("Enabled XenonCord {}", XenonCore.instance.getVersion());
 
         System.setProperty("io.netty.selectorAutoRebuildThreshold", "0"); // Seems to cause Bungee to stop accepting connections
 
@@ -223,6 +221,7 @@ public class BungeeCord extends ProxyServer {
         });
 
         xenonInstance.logdebuginfo("plugin loader is starting...");
+        pluginManager.detectPlugins(pluginsFolder);
         pluginManager.loadPlugins();
         pluginManager.enablePlugins();
         xenonInstance.logdebuginfo("Plugins are loaded!");

@@ -17,6 +17,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -32,17 +33,21 @@ public class XenonCore {
     private final Configuration configuration;
     @Setter
     private Configuration.ConfigData configData;
-
+    @Setter
+    private String[] args;
     /**
      * Initializes all required variables.
      */
-    public XenonCore() {
+    public XenonCore(String[] args) {
         instance = this;
         this.logger = LogManager.getLogger(this.getClass().getSimpleName());
         this.taskManager = new TaskManager();
         this.bungeeInstance = BungeeCord.getInstance();
         this.configuration = new Configuration();
-        configData = getConfiguration().init();
+        this.args = args;
+        if(!Arrays.asList(args).contains("-dev"))
+            new Metrics(this.logger, 25130);
+
     }
 
     /**
