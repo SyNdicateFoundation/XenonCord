@@ -69,6 +69,7 @@ public class Configuration {
         private GuiModule gui_module;
         private IPWhitelist ip_whitelist_module;
         private BrandModule brand_module;
+        private AntiProxyModule anti_proxy_module;
     }
 
     @Getter
@@ -76,6 +77,14 @@ public class Configuration {
     public static class GuiModule {
         private long gui_refresh_rate;
         private boolean enabled;
+    }
+
+    @Getter
+    @Setter
+    public static class AntiProxyModule {
+        private boolean enabled;
+        private int update_interval;
+        private String[] proxy_links;
     }
 
     @Getter

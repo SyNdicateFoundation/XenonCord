@@ -19,13 +19,7 @@ public class SchedulerTest {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        scheduler.runAsync(DummyPlugin.INSTANCE, new Runnable() {
-
-            @Override
-            public void run() {
-                latch.countDown();
-            }
-        });
+        scheduler.runAsync(DummyPlugin.INSTANCE, latch::countDown);
 
         latch.await(5, TimeUnit.SECONDS);
 
