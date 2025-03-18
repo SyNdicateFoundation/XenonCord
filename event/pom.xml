@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>animal-sniffer-annotations</artifactId>
-            <version>LATEST</version>
+            <version>1.24</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
