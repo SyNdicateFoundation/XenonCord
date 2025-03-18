@@ -59,6 +59,6 @@ public class AntiProxyModule extends ModuleBase {
 
     @EventHandler
     public void onHandshake(PlayerHandshakeEvent event) {
-        event.setCancelled(proxyList.contains(event.getConnection().getAddress().getAddress().getHostAddress()));
+        if(proxyList.contains(event.getConnection().getAddress().getAddress().getHostAddress())) event.setCancelled(true);
     }
 }
