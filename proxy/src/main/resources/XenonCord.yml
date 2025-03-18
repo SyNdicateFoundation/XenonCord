@@ -1,8 +1,5 @@
 # General Settings
 debug: true
-
-# GUI refresh rate in milliseconds
-gui_refresh_rate: 3000
 # Console error messages
 cannot_execute_as_console_message: "&b&lXenonCord &cCannot execute this command as console."
 # Command error messages
@@ -21,6 +18,7 @@ reload_complete_message: "&b&lXenonCord Reload is now complete!"
 
 modules:
   gui_module:
+    gui_refresh_rate: 3000
     enabled: false
 
   # Limits remote hosts that can connect to your server

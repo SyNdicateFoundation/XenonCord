@@ -60,7 +60,6 @@ public class Configuration {
         private String cannot_execute_as_console_message,
                 unknown_option_message, xenoncord_permission, reload_permission, reload_message, reload_complete_message;
         private boolean debug, socket_backend;
-        private long gui_refresh_rate;
         private Modules modules;
     }
 
@@ -75,6 +74,7 @@ public class Configuration {
     @Getter
     @Setter
     public static class GuiModule {
+        private long gui_refresh_rate;
         private boolean enabled;
     }
 
