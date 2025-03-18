@@ -19,10 +19,10 @@ import java.util.regex.Pattern;
 public class AntiProxyModule extends ModuleBase {
 
 
-    final Pattern ipPattern = Pattern.compile("\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b");
+    private final Pattern ipPattern = Pattern.compile("\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b");
 
     @Getter
-    private static final ConcurrentLinkedQueue<String> proxyList = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<String> proxyList = new ConcurrentLinkedQueue<>();
 
 
     @Override
@@ -59,6 +59,6 @@ public class AntiProxyModule extends ModuleBase {
 
     @EventHandler
     public void onHandshake(PlayerHandshakeEvent event) {
-        //TODO: Check the ip if its proxy then cancel the player
+        event.setCancelled(proxyList.contains(event.getConnection().getAddress().getAddress().getHostAddress()));
     }
 }

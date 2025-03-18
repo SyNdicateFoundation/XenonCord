@@ -171,7 +171,7 @@ public class YamlConfig implements ConfigurationAdapter {
         Collection<ListenerInfo> ret = new HashSet<>();
 
         for (Map<String, Object> val : base) {
-            String default_bungee_motd = get("default_bungee_motd", "&b&lPlease wait until XenonCord loads completely....", val);
+            String default_bungee_motd = get("default_bungee_motd", "Another bungee server", val);
             default_bungee_motd = Message.translateColor(default_bungee_motd);
 
             int maxPlayers = get("max_players", 1, val);
