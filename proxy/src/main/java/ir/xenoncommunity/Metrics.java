@@ -4,18 +4,16 @@ import org.bstats.MetricsBase;
 import org.bstats.charts.SingleLineChart;
 import org.bstats.config.MetricsConfig;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.apache.logging.log4j.Logger;
-import org.bstats.json.JsonObjectBuilder;
 
 public class Metrics {
 
     public Metrics(Logger logger, int id){
         MetricsConfig config;
         try {
-            config = new MetricsConfig(new File("bstats", "bstats.txt"), true);
+            config = new MetricsConfig(XenonCore.instance.getConfiguration().getBstatsFile(), true);
         } catch (IOException e) {
             e.printStackTrace();
             return;

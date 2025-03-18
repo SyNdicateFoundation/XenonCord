@@ -15,10 +15,14 @@ import java.util.Objects;
 @Getter
 public class Configuration {
     private final File configFile;
+    private final File bstatsFile;
+    private final File socketBackendSecretFile;
     private final Logger logger;
 
     public Configuration() {
+        this.bstatsFile = new File("bstats", "bstats.txt");
         this.configFile = new File("XenonCord.yml");
+        this.socketBackendSecretFile = new File("socket-backend-secret.txt");
         this.logger = XenonCore.instance.getLogger();
     }
 
