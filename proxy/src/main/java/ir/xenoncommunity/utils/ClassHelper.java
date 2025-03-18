@@ -1,8 +1,5 @@
 package ir.xenoncommunity.utils;
 
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfo;
-import io.github.classgraph.ScanResult;
 import ir.xenoncommunity.XenonCore;
 import ir.xenoncommunity.annotations.ModuleInfo;
 import ir.xenoncommunity.module.ModuleBase;
