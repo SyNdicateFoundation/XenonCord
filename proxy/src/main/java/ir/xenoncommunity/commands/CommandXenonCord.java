@@ -9,17 +9,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("unused")
-public class XenonCord extends Command {
+public class CommandXenonCord extends Command {
     public static final Set<String> ABstatusPlayers = new HashSet<>();
     public boolean log = false;
 
-    public XenonCord() {
+    public CommandXenonCord() {
         super("xenoncord", XenonCore.instance.getConfigData().getXenoncord_permission());
     }
 
     public void execute(CommandSender sender, String[] args) {
         if (args.length == 0) {
-            Message.send(sender, "&7This server is using &b&lXenonCord &r&7by &fRealStresser.&7\nPlease, report bugs on:\nhttps://github.com/SyNdicateFoundation/XenonCord", false);
+            Message.send(sender, "&7This server is using &b&lXenonCord &7Version " + XenonCore.instance.getVersion() + " &r&7by &fRealStresser.&7\nPlease, report bugs on:\nhttps://github.com/SyNdicateFoundation/XenonCord", false);
             return;
         }
 

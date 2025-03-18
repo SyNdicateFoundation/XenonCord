@@ -19,10 +19,10 @@ import java.util.jar.JarFile;
 import java.util.logging.Handler;
 
 @SuppressWarnings("unused")
-public class BPluginsCommand extends Command {
+public class CommandBPlugins extends Command {
     private final String doesntExistMessage = "&cPlugin doesn't exist!";
 
-    public BPluginsCommand() {
+    public CommandBPlugins() {
         super("BPlugins", "xenoncord.bplugins");
     }
 

@@ -1,7 +1,10 @@
 package ir.xenoncommunity;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import ir.xenoncommunity.utils.ClassHelper;
 import ir.xenoncommunity.utils.Configuration;
+import ir.xenoncommunity.utils.HttpClient;
 import ir.xenoncommunity.utils.TaskManager;
 import lombok.Cleanup;
 import lombok.Getter;
@@ -16,6 +19,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +36,7 @@ public class XenonCore {
     private final Configuration configuration;
     @Setter
     private Configuration.ConfigData configData;
+    private String version;
     /**
      * Initializes all required variables.
      */
@@ -41,6 +46,18 @@ public class XenonCore {
         this.taskManager = new TaskManager();
         this.bungeeInstance = BungeeCord.getInstance();
         this.configuration = new Configuration();
+        final StringBuilder sb = new StringBuilder();
+        try {
+            HttpClient.get(new URL("https://api.github.com/repos/SyNdicateFoundation/XenonCord/releases/latest")).get().forEach(
+                    sb::append
+            );
+
+            this.version = JsonParser.parseString(sb.toString()).getAsJsonObject().get("tag_name").getAsString();
+        } catch(Exception e){
+            this.version = "unknown";
+            e.printStackTrace();
+        }
+
         if(!isDev)
             new Metrics(this.logger, 25130);
 
@@ -50,10 +67,8 @@ public class XenonCore {
      * Called when proxy is loaded.
      */
     public void init(long startTime) {
-        getTaskManager().async(() -> {
-            ClassHelper.registerModules();
-            getLogger().info("Successfully booted! Loading the proxy server with plugins took: {}ms", System.currentTimeMillis() - startTime);
-        });
+        ClassHelper.registerModules();
+        getLogger().info("Successfully booted! Loading the proxy server with plugins took: {}ms", System.currentTimeMillis() - startTime);
 
         if (configData.isSocket_backend()) XenonCore.instance.getTaskManager().async(this::initBackend);
     }
@@ -72,14 +87,6 @@ public class XenonCore {
         List<String> players = new ArrayList<>();
         bungeeInstance.getPlayers().forEach(player -> players.add(player.getName()));
         return players;
-    }
-
-    /**
-     * Returns XenonCord's version
-     * TODO: add github integration
-     */
-    public String getVersion() {
-        return "V1";
     }
 
     /**
