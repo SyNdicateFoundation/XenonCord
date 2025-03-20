@@ -15,10 +15,14 @@ import java.util.Objects;
 @Getter
 public class Configuration {
     private final File configFile;
+    private final File bstatsFile;
+    private final File socketBackendSecretFile;
     private final Logger logger;
 
     public Configuration() {
+        this.bstatsFile = new File("bstats", "bstats.txt");
         this.configFile = new File("XenonCord.yml");
+        this.socketBackendSecretFile = new File("socket-backend-secret.txt");
         this.logger = XenonCore.instance.getLogger();
     }
 
@@ -60,7 +64,6 @@ public class Configuration {
         private String cannot_execute_as_console_message,
                 unknown_option_message, xenoncord_permission, reload_permission, reload_message, reload_complete_message;
         private boolean debug, socket_backend;
-        private long gui_refresh_rate;
         private Modules modules;
     }
 
@@ -70,12 +73,22 @@ public class Configuration {
         private GuiModule gui_module;
         private IPWhitelist ip_whitelist_module;
         private BrandModule brand_module;
+        private AntiProxyModule anti_proxy_module;
     }
 
     @Getter
     @Setter
     public static class GuiModule {
+        private long gui_refresh_rate;
         private boolean enabled;
+    }
+
+    @Getter
+    @Setter
+    public static class AntiProxyModule {
+        private boolean enabled;
+        private int update_interval;
+        private String[] proxy_links;
     }
 
     @Getter

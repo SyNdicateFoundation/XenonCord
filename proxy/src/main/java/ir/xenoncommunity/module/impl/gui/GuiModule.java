@@ -45,7 +45,7 @@ public class GuiModule extends ModuleBase {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        Timer timer = new Timer((int) XenonCore.instance.getConfigData().getGui_refresh_rate(), e -> {
+        Timer timer = new Timer((int) XenonCore.instance.getConfigData().getModules().getGui_module().getGui_refresh_rate(), e -> {
             onlinePlayersLabel.setText("Online Players: " + XenonCore.instance.getBungeeInstance().getOnlineCount());
             memoryUsageLabel.setText(getMemoryUsageText());
             cpuUsageLabel.setText(getCPUUsageText());

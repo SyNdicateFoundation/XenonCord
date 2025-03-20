@@ -5,7 +5,6 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Check {
 
-
     public void checkNull(Object obj, String reason) throws AssertionError {
         Check.checkNull(obj, new String[]{reason});
     }

@@ -1,8 +1,5 @@
 # General Settings
 debug: true
-
-# GUI refresh rate in milliseconds
-gui_refresh_rate: 3000
 # Console error messages
 cannot_execute_as_console_message: "&b&lXenonCord &cCannot execute this command as console."
 # Command error messages
@@ -21,6 +18,7 @@ reload_complete_message: "&b&lXenonCord Reload is now complete!"
 
 modules:
   gui_module:
+    gui_refresh_rate: 3000
     enabled: false
 
   # Limits remote hosts that can connect to your server
@@ -35,3 +33,15 @@ modules:
   brand_module:
     enabled: true
     brand_name: "XenonCord"
+
+  anti_proxy_module:
+    enabled: true
+    update_interval: 15 #Updates every 15min (Note: Each unit counts as **1 min**
+    proxy_links:
+      - "https://raw.githubusercontent.com/proxifly/free-proxy-list/refs/heads/main/proxies/protocols/socks4/data.txt"
+      - "https://raw.githubusercontent.com/proxifly/free-proxy-list/refs/heads/main/proxies/protocols/socks5/data.txt"
+      - "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/refs/heads/master/socks4.txt"
+      - "https://raw.githubusercontent.com/TheSpeedX/SOCKS-List/master/socks5.txt"
+      - "https://raw.githubusercontent.com/fyvri/fresh-proxy-list/archive/storage/classic/socks4.txt"
+      - "https://raw.githubusercontent.com/fyvri/fresh-proxy-list/archive/storage/classic/socks5.txt"
+      - "https://gist.githubusercontent.com/lucarupp/bc7024d1ee206408b3252e31ea5473cc/raw/93d1dc09227d740773e65a7cc05db6e22233b151/free-proxies-2024-09-18.txt"

@@ -6,9 +6,9 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
 @SuppressWarnings("unused")
-public class ClearChatCommand extends Command {
+public class CommandClearChat extends Command {
 
-    public ClearChatCommand() {
+    public CommandClearChat() {
         super("clearchat", "xenoncord.clearchat", "cls");
     }
 
