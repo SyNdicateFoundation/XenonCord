@@ -7,6 +7,7 @@ import io.netty.handler.codec.CorruptedFrameException;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.haproxy.HAProxyMessage;
 import io.netty.handler.timeout.ReadTimeoutException;
+import io.netty.handler.timeout.WriteTimeoutException;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.connection.CancelSendSignal;
 import net.md_5.bungee.connection.InitialHandler;
@@ -129,6 +130,9 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
             if (logExceptions) {
                 if (cause instanceof ReadTimeoutException) {
                     ProxyServer.getInstance().getLogger().log(Level.WARNING, "{0} - read timed out", handler);
+                } else if (cause instanceof WriteTimeoutException)
+                {
+                    ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} - write timed out", handler );
                 } else if (cause instanceof DecoderException) {
                     // Waterfall start
                     if (net.md_5.bungee.protocol.MinecraftDecoder.DEBUG) {
