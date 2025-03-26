@@ -67,3 +67,10 @@ Special thanks to:
 Need help or want to contribute? **Join our community on Discord!**  
 
 [![Discord](https://img.shields.io/discord/1189580010957324298?color=5865F2&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/vTF2W5UKxr)  
+
+--- 
+
+## 📊 Live Statistics  
+
+Track XenonCord’s usage and performance via **bStats**:  
+[View XenonCord Stats on bStats](https://bstats.org/plugin/server-implementation/XenonCord/25130)  
