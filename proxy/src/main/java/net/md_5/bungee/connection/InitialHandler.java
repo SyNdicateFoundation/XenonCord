@@ -134,7 +134,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         }
     }
 
-    @Override
+    /*@Override
     public void handle(PluginMessage pluginMessage) throws Exception {
         // Waterfall start
         try {
@@ -143,7 +143,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
             throw new QuietException(ex.getMessage());
         }
         // Waterfall end
-    }
+    }*/
 
     private ServerPing getPingInfo(String motd, int protocol) {
         return new ServerPing(

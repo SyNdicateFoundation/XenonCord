@@ -13,6 +13,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.channel.unix.DomainSocketAddress;
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder;
 import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import io.netty.incubator.channel.uring.*;
 import io.netty.util.AttributeKey;
 import io.netty.util.internal.PlatformDependent;
@@ -36,6 +37,7 @@ public class PipelineUtils {
     public static final Base BASE = new Base(false);
     public static final Base BASE_SERVERSIDE = new Base(true);
     public static final String TIMEOUT_HANDLER = "timeout";
+    public static final String WRITE_TIMEOUT_HANDLER = "write-timeout";
     public static final String PACKET_DECODER = "packet-decoder";
     public static final String PACKET_ENCODER = "packet-encoder";
     public static final String BOSS_HANDLER = "inbound-boss";
@@ -181,6 +183,7 @@ public class PipelineUtils {
 
             ch.pipeline().addLast(FRAME_DECODER, new Varint21FrameDecoder());
             ch.pipeline().addLast(TIMEOUT_HANDLER, new ReadTimeoutHandler(BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS));
+            ch.pipeline().addLast( WRITE_TIMEOUT_HANDLER, new WriteTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
             ch.pipeline().addLast(FRAME_PREPENDER, (toServer) ? serverFramePrepender : new Varint21LengthFieldPrepender());
             ch.pipeline().addLast(BOSS_HANDLER, new HandlerBoss());
         }
