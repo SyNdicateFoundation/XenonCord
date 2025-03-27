@@ -34,6 +34,7 @@ public class XenonCore {
     @Setter
     private Configuration.ConfigData configData;
     private String version;
+
     /**
      * Initializes all required variables.
      */
@@ -50,13 +51,23 @@ public class XenonCore {
             );
 
             this.version = JsonParser.parseString(sb.toString()).getAsJsonObject().get("tag_name").getAsString();
-        } catch(Exception e){
+        } catch (Exception e) {
             this.version = "unknown";
             e.printStackTrace();
         }
-
-        if(!isDev)
+        if (!isDev)
             new Metrics(this.logger, 25130);
+
+        System.out.println((Colorize.console(String.format(
+                "&b\n__   __                       _____               _  \n" +
+                        "\\ \\ / /                      /  __ \\             | | \n" +
+                        " \\ V /  ___ _ __   ___  _ __ | /  \\/ ___  _ __ __| | \n" +
+                        " /   \\ / _ \\ '_ \\ / _ \\| '_ \\| |    / _ \\| '__/ _` | \n" +
+                        "/ /^\\ \\  __/ | | | (_) | | | | \\__/\\ (_) | | | (_| | \n" +
+                        "\\/   \\/\\___|_| |_|\\___/|_| |_|\\____/\\___/|_|  \\__,_| \n" +
+                        "        \n" +
+                        "       &av%s - &cBy SyNdicateFoundation\n", this.version))));
+
 
     }
 
@@ -109,10 +120,10 @@ public class XenonCore {
      */
     @SneakyThrows
     private void initBackend() {
-        if(!getConfiguration().getSocketBackendSecretFile().exists())
+        if (!getConfiguration().getSocketBackendSecretFile().exists())
             getConfiguration().getSocketBackendSecretFile().createNewFile();
 
-        if(getConfiguration().getSocketBackendSecretFile().length() == 0){
+        if (getConfiguration().getSocketBackendSecretFile().length() == 0) {
             getLogger().info(Colorize.console("&c[NOTICE] &rsocket-backend-secret.txt is empty"));
             getLogger().info(Colorize.console("&c[NOTICE] &rXenonCord &fwill generate a secret inside this file"));
             getLogger().info(Colorize.console("&c[NOTICE] &rplease configure your plugins/XenonBanBackend with this secret, to avoid issues."));
@@ -131,7 +142,7 @@ public class XenonCore {
             while ((req = br.readLine()) != null) {
                 final String reqWithoutSecret = req.replaceAll(secret, "").startsWith(" ") ? req.replaceAll(secret, "").substring(1) : req.replaceAll(secret, "");
                 getLogger().info("Received a request from socket backend, request: " + reqWithoutSecret);
-                if(!req.contains(secret)) {
+                if (!req.contains(secret)) {
                     getLogger().info(Colorize.console("&c[NOTICE] &rBlocked a request without secret via command exec backend. please be careful with what's happening."));
                     break;
                 }

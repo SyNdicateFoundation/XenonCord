@@ -6,8 +6,7 @@ import ir.xenoncommunity.utils.Configuration;
 import ir.xenoncommunity.utils.TaskManager;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.plugin.Listener;
-
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Logger;
 
 public abstract class ModuleBase implements Listener {
 
@@ -26,7 +25,7 @@ public abstract class ModuleBase implements Listener {
     }
 
     public Logger getLogger() {
-        return getServer().getLogger();
+        return XenonCore.instance.getLogger();
     }
 
     public TaskManager getTaskManager() {

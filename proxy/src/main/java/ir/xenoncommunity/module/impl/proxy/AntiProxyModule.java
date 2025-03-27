@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@ModuleInfo(name = "AntiProxy", version = 1.0, description = "Restricts ")
+@ModuleInfo(name = "AntiProxy", version = 1.0, description = "Restricts connections from known proxies")
 public class AntiProxyModule extends ModuleBase {
 
 
@@ -30,7 +30,6 @@ public class AntiProxyModule extends ModuleBase {
         if (!getConfig().getModules().getAnti_proxy_module().isEnabled())
             return;
         getServer().getPluginManager().registerListener(null, this);
-
         getTaskManager().repeatingTask(this::fetchProxies, 0, getConfig().getModules().getAnti_proxy_module().getUpdate_interval(), TimeUnit.MINUTES);
 
     }
@@ -59,6 +58,7 @@ public class AntiProxyModule extends ModuleBase {
 
     @EventHandler
     public void onHandshake(PlayerHandshakeEvent event) {
-        if(proxyList.contains(event.getConnection().getAddress().getAddress().getHostAddress())) event.setCancelled(true);
+        if (proxyList.contains(event.getConnection().getAddress().getAddress().getHostAddress()))
+            event.setCancelled(true);
     }
 }
