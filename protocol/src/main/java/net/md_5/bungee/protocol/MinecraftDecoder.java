@@ -14,6 +14,10 @@ import java.util.List;
 
 @AllArgsConstructor
 public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
+    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion)
+    {
+        this( protocol, server, protocolVersion, shouldCopyBuffer( protocol, protocolVersion ) );
+    }
 
     // Waterfall start: Additional DoS mitigations, courtesy of Velocity
     public static final boolean DEBUG = Boolean.getBoolean("waterfall.packet-decode-logging");
@@ -31,7 +35,6 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
     private final int MAX_PACKET_SIZE = 4096;
     private final int MAX_HANDSHAKE_LENGTH = 255;
     @Getter
-    @Setter
     private Protocol protocol;
     @Setter
     private int protocolVersion;
@@ -94,7 +97,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
 
 
         Protocol.DirectionData prot = (server) ? protocol.TO_SERVER : protocol.TO_CLIENT;
-        ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
+        ByteBuf slice = ( copyBuffer ) ? in.copy() : in.retainedSlice();; // Can't slice this one due to EntityMap :(
 
 
         Object packetTypeInfo = null;
@@ -199,4 +202,14 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
         }
     }
     // Waterfall end
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
+        this.copyBuffer = shouldCopyBuffer(protocol, protocolVersion);
+    }
+    private static boolean shouldCopyBuffer(Protocol protocol, int protocolVersion)
+    {
+        // We only use the entity map in game state, we can avoid many buffer copies by checking this
+        // EntityMap is removed for 1.20.2 and up
+        return protocol == Protocol.GAME && protocolVersion < ProtocolConstants.MINECRAFT_1_20_2;
+    }
 }

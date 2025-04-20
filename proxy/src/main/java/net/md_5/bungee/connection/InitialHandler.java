@@ -157,6 +157,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
     public void handle(StatusRequest statusRequest) throws Exception {
         Preconditions.checkState(thisState == State.STATUS, "Not expecting STATUS");
 
+        thisState = null; // don't accept multiple status requests and set state to ping in async event callback
+
         ServerInfo forced = AbstractReconnectHandler.getForcedHost(this);
         final String motd = (forced != null) ? forced.getMotd() : listener.getDefault_bungee_motd();
         final int protocol = (ProtocolConstants.SUPPORTED_VERSION_IDS.contains(handshake.getProtocolVersion())) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
@@ -172,9 +174,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
                 Callback<ProxyPingEvent> callback = (pingResult, error1) -> {
                     Gson gson = BungeeCord.getInstance().gson;
                     unsafe.sendPacket(new StatusResponse(gson.toJson(pingResult.getResponse())));
-                    if (bungee.getConnectionThrottle() != null) {
-                        bungee.getConnectionThrottle().unthrottle(getSocketAddress());
-                    }
+                    thisState = State.PING;
                 };
                 bungee.getPluginManager().callEvent(new ProxyPingEvent(InitialHandler.this, result, eventLoopCallback(callback)));
             }
@@ -185,8 +185,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         } else {
             pingBack.done(getPingInfo(motd, protocol), null);
         }
-
-        thisState = State.PING;
     }
 
     @Override
@@ -194,6 +192,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
         Preconditions.checkState(thisState == State.PING, "Not expecting PING");
         unsafe.sendPacket(ping);
         disconnect("");
+        if ( bungee.getConnectionThrottle() != null )
+        {
+            bungee.getConnectionThrottle().unthrottle( getSocketAddress() );
+        }
     }
 
     @Override

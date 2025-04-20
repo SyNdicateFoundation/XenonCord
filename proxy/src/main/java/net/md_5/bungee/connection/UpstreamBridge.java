@@ -324,11 +324,6 @@ public class UpstreamBridge extends PacketHandler {
     }
 
     @Override
-    public void handle(FinishConfiguration finishConfiguration) throws Exception {
-        con.sendQueuedPackets();
-    }
-
-    @Override
     public void handle(CookieResponse cookieResponse) throws Exception {
         con.getPendingConnection().handle(cookieResponse);
     }

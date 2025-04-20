@@ -746,6 +746,18 @@ public class DownstreamBridge extends PacketHandler {
     }
 
     @Override
+
+
+    public void handle(FinishConfiguration finishConfiguration) throws Exception
+    {
+        // the clients protocol will change to GAME after this packet
+        con.unsafe().sendPacket( finishConfiguration );
+        // send queued packets as early as possible
+        con.sendQueuedPackets();
+        throw CancelSendSignal.INSTANCE;
+    }
+
+    @Override
     public String toString() {
         return "[" + con.getAddress() + "|" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
     }
