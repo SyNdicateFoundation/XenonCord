@@ -14,11 +14,6 @@ import java.util.List;
 
 @AllArgsConstructor
 public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
-    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion)
-    {
-        this( protocol, server, protocolVersion, shouldCopyBuffer( protocol, protocolVersion ) );
-    }
-
     // Waterfall start: Additional DoS mitigations, courtesy of Velocity
     public static final boolean DEBUG = Boolean.getBoolean("waterfall.packet-decode-logging");
     // Cached Exceptions:
@@ -40,6 +35,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
     private int protocolVersion;
     @Setter
     private boolean supportsForge = false;
+    private boolean copyBuffer;
 
     public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion) {
         this.protocol = protocol;
@@ -97,7 +93,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
 
 
         Protocol.DirectionData prot = (server) ? protocol.TO_SERVER : protocol.TO_CLIENT;
-        ByteBuf slice = ( copyBuffer ) ? in.copy() : in.retainedSlice();; // Can't slice this one due to EntityMap :(
+        ByteBuf slice = ( copyBuffer ) ? in.copy() : in.retainedSlice();
 
 
         Object packetTypeInfo = null;
@@ -170,6 +166,12 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
 
     }
 
+    public void setProtocol(Protocol protocol)
+    {
+        this.protocol = protocol;
+        this.copyBuffer = protocol == Protocol.GAME && protocolVersion < ProtocolConstants.MINECRAFT_1_20_2;
+    }
+
     private void doLengthSanityChecks(ByteBuf buf, DefinedPacket packet,
                                       ProtocolConstants.Direction direction, int packetId) throws Exception {
         int expectedMinLen = packet.expectedMinLength(buf, direction, protocolVersion);
@@ -202,14 +204,4 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf> {
         }
     }
     // Waterfall end
-    public void setProtocol(Protocol protocol) {
-        this.protocol = protocol;
-        this.copyBuffer = shouldCopyBuffer(protocol, protocolVersion);
-    }
-    private static boolean shouldCopyBuffer(Protocol protocol, int protocolVersion)
-    {
-        // We only use the entity map in game state, we can avoid many buffer copies by checking this
-        // EntityMap is removed for 1.20.2 and up
-        return protocol == Protocol.GAME && protocolVersion < ProtocolConstants.MINECRAFT_1_20_2;
-    }
 }
