@@ -178,7 +178,6 @@ public class PipelineUtils {
             } catch (ChannelException ex) {
             }
             ch.config().setOption(ChannelOption.TCP_NODELAY, true);
-            ch.config().setAllocator(PooledByteBufAllocator.DEFAULT);
             ch.config().setWriteBufferWaterMark(MARK);
 
             ch.pipeline().addLast(FRAME_DECODER, new Varint21FrameDecoder());

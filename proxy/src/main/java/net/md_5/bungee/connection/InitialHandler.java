@@ -79,6 +79,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
     private EncryptionRequest request;
     @Getter
     private PluginMessage brandMessage;
+    @Getter
+    private String clientBrand;
     private State thisState = State.HANDSHAKE;
     private int loginPayloadId;
     @Getter
@@ -633,6 +635,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
             }
         } else if (input.getTag().equals("MC|Brand") || input.getTag().equals("minecraft:brand")) {
             brandMessage = input;
+            clientBrand = DefinedPacket.readString( Unpooled.wrappedBuffer( input.getData() ) );
         }
     }
 

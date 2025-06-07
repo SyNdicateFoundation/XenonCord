@@ -12,6 +12,8 @@ import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
 import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
 import io.github.waterfallmc.waterfall.exception.ProxyPluginEnableDisableException;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.util.ResourceLeakDetector;
 import ir.xenoncommunity.XenonCore;
@@ -164,8 +166,24 @@ public class BungeeCord extends ProxyServer {
 
         if (Boolean.getBoolean("net.md_5.bungee.native.disable")) return;
 
-        xenonInstance.logdebuginfo("Using " + (EncryptionUtil.nativeFactory.load() ? "mbed TLS based native" : "standard Java JCE") + " cipher.");
-        xenonInstance.logdebuginfo("Using " + (CompressFactory.zlib.load() ? "zlib based native" : "standard Java") + " compressor.");
+        ByteBuf directBuffer = null;
+        boolean hasMemoryAddress;
+        try{
+            directBuffer = Unpooled.directBuffer();
+            hasMemoryAddress = directBuffer.hasMemoryAddress();
+        } finally
+        {
+            if ( directBuffer != null )
+                directBuffer.release();
+        }
+
+        if ( !hasMemoryAddress )
+        {
+            logger.warning( "Memory addresses are not available in direct buffers" );
+        }
+
+        xenonInstance.logdebuginfo("Using " + (hasMemoryAddress && EncryptionUtil.nativeFactory.load() ? "mbed TLS based native" : "standard Java JCE") + " cipher.");
+        xenonInstance.logdebuginfo("Using " + (hasMemoryAddress && CompressFactory.zlib.load() ? "zlib based native" : "standard Java") + " compressor.");
     }
 
     public static BungeeCord getInstance() {
@@ -187,6 +205,14 @@ public class BungeeCord extends ProxyServer {
 
         if (System.getProperty("io.netty.leakDetectionLevel") == null && System.getProperty("io.netty.leakDetection.level") == null)
             ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED); // Eats performance
+
+        // https://github.com/netty/netty/wiki/Netty-4.2-Migration-Guide
+        // The adaptive allocator, the new default allocator since Netty 4.2, has some memory issues.
+        // Setting it globally also ensures that any plugins would also use the pooled allocator.
+        if ( System.getProperty( "io.netty.allocator.type" ) == null )
+        {
+            System.setProperty( "io.netty.allocator.type", "pooled" );
+        }
 
         bossEventLoopGroup = PipelineUtils.newEventLoopGroup(
                 0, new ThreadFactoryBuilder().setNameFormat("Netty Boss IO Thread #%1$d").build());
