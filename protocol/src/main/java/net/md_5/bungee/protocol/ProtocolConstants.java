@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 
 public class ProtocolConstants {
-
     public static final int MINECRAFT_1_8 = 47;
     public static final int MINECRAFT_1_9 = 107;
     public static final int MINECRAFT_1_9_1 = 108;
@@ -49,6 +48,7 @@ public class ProtocolConstants {
     public static final int MINECRAFT_1_21_2 = 768;
     public static final int MINECRAFT_1_21_4 = 769;
     public static final int MINECRAFT_1_21_5 = 770;
+    public static final int MINECRAFT_1_21_6 = 1073742073;
     public static final List<String> SUPPORTED_VERSIONS;
     public static final List<Integer> SUPPORTED_VERSION_IDS;
     private static final boolean SNAPSHOT_SUPPORT = Boolean.getBoolean("net.md_5.bungee.protocol.snapshot");
