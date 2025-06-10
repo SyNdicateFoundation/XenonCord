@@ -25,6 +25,7 @@ import net.md_5.bungee.api.event.PermissionCheckEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.score.Scoreboard;
 import net.md_5.bungee.chat.ComponentSerializer;
+import net.md_5.bungee.chat.VersionedComponentSerializer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.ServerConnector;
 import net.md_5.bungee.entitymap.EntityMap;
@@ -70,6 +71,8 @@ public final class UserConnection implements ProxiedPlayer {
     private final Scoreboard serverSentScoreboard = new Scoreboard();
     @Getter
     private final Collection<UUID> sentBossBars = new HashSet<>();
+    @Getter
+    private VersionedComponentSerializer chatSerializer;
     // Waterfall start
     @Getter
     private final Multimap<Integer, Integer> potions = HashMultimap.create();
@@ -145,6 +148,7 @@ public final class UserConnection implements ProxiedPlayer {
 
     public boolean init() {
         this.entityRewrite = EntityMap.getEntityMap(getPendingConnection().getVersion());
+        this.chatSerializer = ChatSerializer.forVersion( getPendingConnection().getVersion() );
 
         this.displayName = name;
         tabListHandler = new ServerUnique(this);
@@ -462,7 +466,7 @@ public final class UserConnection implements ProxiedPlayer {
                 position = ChatMessageType.SYSTEM;
             sendPacketQueued(new SystemChat(message, position.ordinal()));
         } else {
-            sendPacketQueued(new Chat(ComponentSerializer.toString(message), (byte) position.ordinal(), sender));
+            sendPacketQueued( new Chat( chatSerializer.toString( message ), (byte) position.ordinal(), sender ) );
         }
     }
 

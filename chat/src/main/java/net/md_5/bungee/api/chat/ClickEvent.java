@@ -20,10 +20,6 @@ public final class ClickEvent {
      */
     private final String value;
 
-    @Setter
-    @ApiStatus.Internal
-    private boolean v1_21_5 = false;
-
     public enum Action {
 
         /**

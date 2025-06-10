@@ -77,16 +77,6 @@ public class BungeeCord extends ProxyServer {
      */
     @Getter
     public final PluginManager pluginManager;
-    public final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(BaseComponent.class, new ComponentSerializer())
-            .registerTypeAdapter(TextComponent.class, new TextComponentSerializer())
-            .registerTypeAdapter(TranslatableComponent.class, new TranslatableComponentSerializer())
-            .registerTypeAdapter(KeybindComponent.class, new KeybindComponentSerializer())
-            .registerTypeAdapter(ScoreComponent.class, new ScoreComponentSerializer())
-            .registerTypeAdapter(SelectorComponent.class, new SelectorComponentSerializer())
-            .registerTypeAdapter(ComponentStyle.class, new ComponentStyleSerializer())
-            .registerTypeAdapter(ServerPing.PlayerInfo.class, new PlayerInfoSerializer())
-            .registerTypeAdapter(Favicon.class, Favicon.getFaviconTypeAdapter()).create();
     /**
      * locations.yml save thread.
      */

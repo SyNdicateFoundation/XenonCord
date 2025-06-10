@@ -5,6 +5,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentStyle;
@@ -13,7 +14,10 @@ import net.md_5.bungee.api.chat.hover.content.Content;
 
 import java.util.*;
 
+@RequiredArgsConstructor
 public class BaseComponentSerializer {
+
+    protected final VersionedComponentSerializer serializer;
 
     protected void deserialize(JsonObject object, BaseComponent component, JsonDeserializationContext context) {
         component.applyStyle(context.deserialize(object, ComponentStyle.class));
@@ -49,7 +53,6 @@ public class BaseComponentSerializer {
                         component.setClickEvent(new ClickEvent(action, (clickEvent.has("value")) ? clickEvent.get("value").getAsString() : ""));
                         break;
                 }
-                component.getClickEvent().setV1_21_5(true);
             } else {
                 component.setClickEvent(new ClickEvent(action, (clickEvent.has("value")) ? clickEvent.get("value").getAsString() : ""));
             }
@@ -83,7 +86,6 @@ public class BaseComponentSerializer {
                                 };
                     }
                     hoverEvent = new HoverEvent(action, new ArrayList<>(Arrays.asList(list)));
-                    hoverEvent.setV1_21_5(newHoverEvent);
                 }
             } else {
                 JsonElement value = hoverEventJson.get("value");
@@ -116,13 +118,13 @@ public class BaseComponentSerializer {
 
     protected void serialize(JsonObject object, BaseComponent component, JsonSerializationContext context) {
         boolean first = false;
-        if (ComponentSerializer.serializedComponents.get() == null) {
+        if (VersionedComponentSerializer.serializedComponents.get() == null) {
             first = true;
-            ComponentSerializer.serializedComponents.set(Collections.newSetFromMap(new IdentityHashMap<BaseComponent, Boolean>()));
+            VersionedComponentSerializer.serializedComponents.set(Collections.newSetFromMap(new IdentityHashMap<BaseComponent, Boolean>()));
         }
         try {
-            Preconditions.checkArgument(!ComponentSerializer.serializedComponents.get().contains(component), "Component loop");
-            ComponentSerializer.serializedComponents.get().add(component);
+            Preconditions.checkArgument(!VersionedComponentSerializer.serializedComponents.get().contains(component), "Component loop");
+            VersionedComponentSerializer.serializedComponents.get().add(component);
 
             ComponentStyleSerializer.serializeTo(component.getStyle(), object);
 
@@ -135,7 +137,36 @@ public class BaseComponentSerializer {
                 JsonObject clickEvent = new JsonObject();
                 String actionName = component.getClickEvent().getAction().toString().toLowerCase(Locale.ROOT);
                 clickEvent.addProperty("action", actionName.toLowerCase(Locale.ROOT));
-                if (component.getClickEvent().isV1_21_5()) {
+                switch ( serializer.getVersion() )
+
+                {
+                    case V1_21_5:
+                        ClickEvent.Action action = ClickEvent.Action.valueOf( actionName.toUpperCase( Locale.ROOT ) );
+                        switch ( action )
+                        {
+                            case OPEN_URL:
+                                clickEvent.addProperty( "url", component.getClickEvent().getValue() );
+                                break;
+                            case RUN_COMMAND:
+                            case SUGGEST_COMMAND:
+                                clickEvent.addProperty( "command", component.getClickEvent().getValue() );
+                                break;
+                            case CHANGE_PAGE:
+                                clickEvent.addProperty( "page", Integer.parseInt( component.getClickEvent().getValue() ) );
+                                break;
+                            default:
+                                clickEvent.addProperty( "value", component.getClickEvent().getValue() );
+                                break;
+                        }
+                        object.add( "click_event", clickEvent );
+                        break;
+                    case V1_16:
+                        clickEvent.addProperty( "value", component.getClickEvent().getValue() );
+                        object.add( "clickEvent", clickEvent );
+                        break;
+                    default:
+                        throw new IllegalArgumentException( "Unknown version " + serializer.getVersion() );
+                /*if (component.getClickEvent().isV1_21_5()) {
                     ClickEvent.Action action = ClickEvent.Action.valueOf(actionName.toUpperCase(Locale.ROOT));
                     switch (action) {
                         case OPEN_URL:
@@ -152,45 +183,56 @@ public class BaseComponentSerializer {
                             clickEvent.addProperty("value", component.getClickEvent().getValue());
                             break;
                     }
-                    object.add("click_event", clickEvent);
-                } else {
-                    clickEvent.addProperty("value", component.getClickEvent().getValue());
-                    object.add("clickEvent", clickEvent);
+                    object.add("click_event", clickEvent);*/
                 }
-
             }
             if (component.getHoverEvent() != null) {
                 JsonObject hoverEvent = new JsonObject();
                 hoverEvent.addProperty("action", component.getHoverEvent().getAction().toString().toLowerCase(Locale.ROOT));
-                boolean newFormat = component.getHoverEvent().isV1_21_5();
                 if (component.getHoverEvent().isLegacy()) {
                     hoverEvent.add("value", context.serialize(component.getHoverEvent().getContents().get(0)));
                 } else {
-                    if (newFormat) {
-                        if (component.getHoverEvent().getAction() == HoverEvent.Action.SHOW_ITEM || component.getHoverEvent().getAction() == HoverEvent.Action.SHOW_ENTITY) {
-                            JsonObject inlined = context.serialize((component.getHoverEvent().getContents().size() == 1)
-                                    ? component.getHoverEvent().getContents().get(0) : component.getHoverEvent().getContents()).getAsJsonObject();
-                            inlined.entrySet().forEach(entry -> hoverEvent.add(entry.getKey(), entry.getValue()));
-                        } else {
-                            hoverEvent.add("value", context.serialize((component.getHoverEvent().getContents().size() == 1)
-                                    ? component.getHoverEvent().getContents().get(0) : component.getHoverEvent().getContents()));
-                        }
-                    } else {
-                        hoverEvent.add("contents", context.serialize((component.getHoverEvent().getContents().size() == 1)
-                                ? component.getHoverEvent().getContents().get(0) : component.getHoverEvent().getContents()));
+                    switch (serializer.getVersion()) {
+                        case V1_21_5:
+                            if ( component.getHoverEvent().getAction() == HoverEvent.Action.SHOW_ITEM || component.getHoverEvent().getAction() == HoverEvent.Action.SHOW_ENTITY )
+                            {
+                                JsonObject inlined = context.serialize( ( component.getHoverEvent().getContents().size() == 1 )
+                                        ? component.getHoverEvent().getContents().get( 0 ) : component.getHoverEvent().getContents() ).getAsJsonObject();
+                                inlined.entrySet().forEach( entry -> hoverEvent.add( entry.getKey(), entry.getValue() ) );
+                            } else
+                            {
+                                hoverEvent.add( "value", context.serialize( ( component.getHoverEvent().getContents().size() == 1 )
+                                        ? component.getHoverEvent().getContents().get( 0 ) : component.getHoverEvent().getContents() ) );
+                            }
+                            break;
+                        case V1_16:
+                            hoverEvent.add( "contents", context.serialize( ( component.getHoverEvent().getContents().size() == 1 )
+                                    ? component.getHoverEvent().getContents().get( 0 ) : component.getHoverEvent().getContents() ) );
+                            break;
+                        default:
+                            throw new IllegalArgumentException( "Unknown version " + serializer.getVersion() );
                     }
-
                 }
-                object.add(newFormat ? "hover_event" : "hoverEvent", hoverEvent);
+                switch ( serializer.getVersion() )
+                {
+                    case V1_21_5:
+                        object.add( "hover_event", hoverEvent );
+                        break;
+                    case V1_16:
+                        object.add( "hoverEvent", hoverEvent );
+                        break;
+                    default:
+                        throw new IllegalArgumentException( "Unknown version " + serializer.getVersion() );
+                }
             }
 
             if (component.getExtra() != null) {
                 object.add("extra", context.serialize(component.getExtra()));
             }
         } finally {
-            ComponentSerializer.serializedComponents.get().remove(component);
+            VersionedComponentSerializer.serializedComponents.get().remove(component);
             if (first) {
-                ComponentSerializer.serializedComponents.set(null);
+                VersionedComponentSerializer.serializedComponents.set(null);
             }
         }
     }
