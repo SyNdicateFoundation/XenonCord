@@ -6,9 +6,6 @@ cannot_execute_as_console_message: "&b&lXenonCord &cCannot execute this command 
 unknown_option_message: "&b&lXenonCord &cUnknown option, available: OPTIONS"
 # XenonCord command perm
 xenoncord_permission: "xenoncord.xenoncord"
-# Backend support.
-# this is required by: XenonBanBackend, or any plugin with the need of command execution without plugin message
-socket_backend: true
 # "xenoncord reload" Command Permission
 reload_permission: "xenoncord.xenoncord.reload"
 # Reload Command Message
