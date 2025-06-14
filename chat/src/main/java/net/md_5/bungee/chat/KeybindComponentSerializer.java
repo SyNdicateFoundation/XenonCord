@@ -7,6 +7,12 @@ import java.lang.reflect.Type;
 
 public class KeybindComponentSerializer extends BaseComponentSerializer implements JsonSerializer<KeybindComponent>, JsonDeserializer<KeybindComponent> {
 
+    public KeybindComponentSerializer(VersionedComponentSerializer serializer)
+    {
+        super( serializer );
+    }
+
+
     @Override
     public KeybindComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject object = json.getAsJsonObject();

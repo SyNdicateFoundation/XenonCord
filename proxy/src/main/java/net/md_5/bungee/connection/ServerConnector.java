@@ -132,7 +132,7 @@ public class ServerConnector extends PacketHandler {
                 serverScoreboard.getObjectives().forEach(objective -> {
                     user.unsafe().sendPacket(new ScoreboardObjective(
                             objective.getName(),
-                            (user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13) ? Either.right(ComponentSerializer.deserialize(objective.getValue())) : Either.left(objective.getValue()),
+                            (user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13) ? Either.right(user.getChatSerializer().deserialize(objective.getValue())) : Either.left(objective.getValue()),
                             ScoreboardObjective.HealthDisplay.fromString(objective.getType()),
                             (byte) 1, null)
                     );
@@ -253,7 +253,7 @@ public class ServerConnector extends PacketHandler {
 
             // If we touched any properties, then append them
             if (properties.length > 0) {
-                newHost += "\00" + BungeeCord.getInstance().gson.toJson(properties);
+                newHost += "\00" + LoginResult.GSON.toJson(properties);
             }
 
             copiedHandshake.setHost(newHost);

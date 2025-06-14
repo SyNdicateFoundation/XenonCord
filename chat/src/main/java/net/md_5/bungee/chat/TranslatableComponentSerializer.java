@@ -8,7 +8,10 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 
 public class TranslatableComponentSerializer extends BaseComponentSerializer implements JsonSerializer<TranslatableComponent>, JsonDeserializer<TranslatableComponent> {
-
+    public TranslatableComponentSerializer(VersionedComponentSerializer serializer)
+    {
+        super( serializer );
+    }
     @Override
     public TranslatableComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         TranslatableComponent component = new TranslatableComponent();

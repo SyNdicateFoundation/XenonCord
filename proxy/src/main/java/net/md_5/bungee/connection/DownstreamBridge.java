@@ -173,7 +173,7 @@ public class DownstreamBridge extends PacketHandler {
         final Scoreboard serverScoreboard = con.getServerSentScoreboard();
         switch (objective.getAction()) {
             case 0:
-                serverScoreboard.addObjective(new Objective(objective.getName(), (objective.getValue().isLeft()) ? objective.getValue().getLeft() : ComponentSerializer.toString(objective.getValue().getRight()), objective.getType().toString()));
+                serverScoreboard.addObjective(new Objective(objective.getName(), (objective.getValue().isLeft()) ? objective.getValue().getLeft() : con.getChatSerializer().toString(objective.getValue().getRight()), objective.getType().toString()));
                 break;
             case 1:
                 serverScoreboard.removeObjective(objective.getName());
@@ -181,7 +181,7 @@ public class DownstreamBridge extends PacketHandler {
             case 2:
                 Objective oldObjective = serverScoreboard.getObjective(objective.getName());
                 if (oldObjective != null) {
-                    oldObjective.setValue((objective.getValue().isLeft()) ? objective.getValue().getLeft() : ComponentSerializer.toString(objective.getValue().getRight()));
+                    oldObjective.setValue((objective.getValue().isLeft()) ? objective.getValue().getLeft() : con.getChatSerializer().toString(objective.getValue().getRight()));
                     oldObjective.setType(objective.getType().toString());
                 }
                 break;
@@ -242,9 +242,9 @@ public class DownstreamBridge extends PacketHandler {
         if (t == null) return;
 
         if (team.getMode() == 0 || team.getMode() == 2) {
-            t.setDisplayName(team.getDisplayName().getLeftOrCompute(ComponentSerializer::toString));
-            t.setPrefix(team.getPrefix().getLeftOrCompute(ComponentSerializer::toString));
-            t.setSuffix(team.getSuffix().getLeftOrCompute(ComponentSerializer::toString));
+            t.setDisplayName(team.getDisplayName().getLeftOrCompute((component) -> con.getChatSerializer().toString( component )));
+            t.setPrefix(team.getPrefix().getLeftOrCompute((component) -> con.getChatSerializer().toString( component )));
+            t.setSuffix(team.getSuffix().getLeftOrCompute((component) -> con.getChatSerializer().toString( component )));
             t.setFriendlyFire(team.getFriendlyFire());
             t.setNameTagVisibility(team.getNameTagVisibility().getKey());
             if (team.getCollisionRule() != null)
@@ -481,7 +481,7 @@ public class DownstreamBridge extends PacketHandler {
                 }
                 case "MessageRaw": {
                     final String target = in.readUTF();
-                    final BaseComponent[] message = ComponentSerializer.parse(in.readUTF());
+                    final BaseComponent[] message = con.getChatSerializer().parse(in.readUTF());
                     if (target.equals("ALL")) {
                         bungee.getPlayers().forEach(player -> player.sendMessage(message));
                     } else {
@@ -529,7 +529,7 @@ public class DownstreamBridge extends PacketHandler {
                 case "KickPlayerRaw": {
                     final ProxiedPlayer player = bungee.getPlayer(in.readUTF());
                     if (player != null) {
-                        player.disconnect(ComponentSerializer.parse(in.readUTF()));
+                        player.disconnect(con.getChatSerializer().parse(in.readUTF()));
                     }
                     break;
                 }

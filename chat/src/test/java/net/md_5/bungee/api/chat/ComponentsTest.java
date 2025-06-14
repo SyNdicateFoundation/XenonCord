@@ -816,4 +816,12 @@ public class ComponentsTest {
                 .build();
         assertFalse(style.isEmpty());
     }
+    @Test
+
+
+    public void testArrayParsing()
+    {
+        assertEquals( "Outfluencer is very cool bdfg28dhzcathisisacoolcomponent",
+                ComponentSerializer.deserialize( "[Outfluencer,[\" \",is,[\" very\",\" cool \",[b,dfg28dhz,[c,[a,thisisacoolcomponent]]]]]]" ).toPlainText() );
+    }
 }

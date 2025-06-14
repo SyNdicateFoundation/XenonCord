@@ -16,13 +16,11 @@ import java.util.Objects;
 public class Configuration {
     private final File configFile;
     private final File bstatsFile;
-    private final File socketBackendSecretFile;
     private final Logger logger;
 
     public Configuration() {
         this.bstatsFile = new File("bstats", "bstats.txt");
         this.configFile = new File("XenonCord.yml");
-        this.socketBackendSecretFile = new File("socket-backend-secret.txt");
         this.logger = XenonCore.instance.getLogger();
     }
 
@@ -63,7 +61,7 @@ public class Configuration {
     public static class ConfigData {
         private String cannot_execute_as_console_message,
                 unknown_option_message, xenoncord_permission, reload_permission, reload_message, reload_complete_message;
-        private boolean debug, socket_backend;
+        private boolean debug;
         private Modules modules;
     }
 
