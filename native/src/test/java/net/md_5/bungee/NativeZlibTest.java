@@ -8,7 +8,6 @@ import net.md_5.bungee.jni.zlib.JavaZlib;
 import net.md_5.bungee.jni.zlib.NativeZlib;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.zip.DataFormatException;
 

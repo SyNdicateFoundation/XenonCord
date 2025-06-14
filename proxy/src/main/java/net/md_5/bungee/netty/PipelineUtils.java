@@ -2,7 +2,6 @@ package net.md_5.bungee.netty;
 
 import com.google.common.base.Preconditions;
 import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
-import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.epoll.*;
 import io.netty.channel.nio.NioEventLoopGroup;

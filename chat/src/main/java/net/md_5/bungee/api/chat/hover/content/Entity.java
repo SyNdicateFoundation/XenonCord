@@ -3,7 +3,6 @@ package net.md_5.bungee.api.chat.hover.content;
 import lombok.*;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
-import org.jetbrains.annotations.ApiStatus;
 
 @Data
 @AllArgsConstructor

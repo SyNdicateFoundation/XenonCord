@@ -3,12 +3,10 @@ package net.md_5.bungee.api.chat.hover.content;
 import com.google.gson.*;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.BaseComponentSerializer;
+import net.md_5.bungee.chat.VersionedComponentSerializer;
 
 import java.lang.reflect.Type;
 import java.util.UUID;
-
-import net.md_5.bungee.chat.ChatVersion;
-import net.md_5.bungee.chat.VersionedComponentSerializer;
 
 public class EntitySerializer extends BaseComponentSerializer implements JsonSerializer<Entity>, JsonDeserializer<Entity> {
 

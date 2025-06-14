@@ -1,6 +1,5 @@
 package net.md_5.bungee;
 
-import ir.xenoncommunity.XenonCore;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 

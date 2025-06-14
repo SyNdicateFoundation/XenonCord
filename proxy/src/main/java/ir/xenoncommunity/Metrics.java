@@ -1,12 +1,11 @@
 package ir.xenoncommunity;
 
+import org.apache.logging.log4j.Logger;
 import org.bstats.MetricsBase;
 import org.bstats.charts.SingleLineChart;
 import org.bstats.config.MetricsConfig;
 
 import java.io.IOException;
-
-import org.apache.logging.log4j.Logger;
 
 public class Metrics {
 

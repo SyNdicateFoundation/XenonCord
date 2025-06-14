@@ -1,11 +1,14 @@
 package net.md_5.bungee.chat;
 
-import com.google.gson.*;
-import net.md_5.bungee.api.chat.*;
-import net.md_5.bungee.api.chat.hover.content.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentStyle;
+import net.md_5.bungee.api.chat.hover.content.Content;
 
 import java.lang.reflect.Type;
-import java.util.Set;
 
 public class ComponentSerializer implements JsonDeserializer<BaseComponent> {
 
