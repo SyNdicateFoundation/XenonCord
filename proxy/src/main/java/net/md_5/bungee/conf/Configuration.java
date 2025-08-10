@@ -1,8 +1,13 @@
 package net.md_5.bungee.conf;
 
 import com.google.common.base.Preconditions;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.Level;
+import javax.imageio.ImageIO;
+
 import com.google.common.collect.ImmutableMap;
-import gnu.trove.map.TMap;
 import lombok.Getter;
 import lombok.Synchronized;
 import net.md_5.bungee.BungeeCord;
@@ -15,15 +20,6 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.util.CaseInsensitiveMap;
 import net.md_5.bungee.util.CaseInsensitiveSet;
-
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Level;
 
 /**
  * Core configuration for the proxy.
@@ -47,7 +43,7 @@ public abstract class Configuration implements ProxyConfig {
     /**
      * Set of all servers.
      */
-    private TMap<String, ServerInfo> servers;
+    private Map<String, ServerInfo> servers;
     /**
      * Should we check minecraft.net auth.
      */

@@ -4,9 +4,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import gnu.trove.TCollections;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
@@ -21,7 +21,7 @@ public class BungeeScheduler implements TaskScheduler {
 
     private final Object lock = new Object();
     private final AtomicInteger taskCounter = new AtomicInteger();
-    private final TIntObjectMap<BungeeTask> tasks = TCollections.synchronizedMap(new TIntObjectHashMap<BungeeTask>());
+    private final Int2ObjectMap<BungeeTask> tasks = Int2ObjectMaps.synchronize(new Int2ObjectOpenHashMap<BungeeTask>());
     private final Multimap<Plugin, BungeeTask> tasksByPlugin = Multimaps.synchronizedMultimap(HashMultimap.create());
     //
     private final Unsafe unsafe = new Unsafe() {
