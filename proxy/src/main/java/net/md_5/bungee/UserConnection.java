@@ -119,6 +119,14 @@ public final class UserConnection implements ProxiedPlayer {
     // Used for trying multiple servers in order
     @Setter
     private Queue<String> serverJoinQueue;
+    @Getter
+    @Setter
+    private boolean bundling;
+
+    public void toggleBundling()
+    {
+        bundling = !bundling;
+    }
     /*========================================================================*/
     @Getter
     @Setter
@@ -699,6 +707,12 @@ public final class UserConnection implements ProxiedPlayer {
     public void showDialog(Dialog dialog)
     {
         Preconditions.checkState( getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_21_6, "Dialogs are only supported in 1.21.6 and above" );
+
+        if ( ch.getEncodeProtocol() == Protocol.CONFIGURATION )
+        {
+            unsafe.sendPacket( new ShowDialogDirect( dialog ) );
+            return;
+        }
 
         unsafe.sendPacket( new ShowDialog( Either.right( dialog ) ) );
     }

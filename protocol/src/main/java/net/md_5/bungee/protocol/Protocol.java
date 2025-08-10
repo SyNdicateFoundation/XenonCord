@@ -29,6 +29,11 @@ public enum Protocol {
 
         {
             TO_CLIENT.registerPacket(
+                    BundleDelimiter.class,
+                    BundleDelimiter::new,
+                    map( ProtocolConstants.MINECRAFT_1_19_4, 0x00 )
+            );
+            TO_CLIENT.registerPacket(
                     KeepAlive.class,
                     KeepAlive::new,
                     map(ProtocolConstants.MINECRAFT_1_8, 0x00),
@@ -738,6 +743,11 @@ public enum Protocol {
                     CookieResponse::new,
                     map(ProtocolConstants.MINECRAFT_1_20_5, 0x04)
             );
+            TO_SERVER.registerPacket(
+                    CustomClickAction.class,
+                    CustomClickAction::new,
+                    map( ProtocolConstants.MINECRAFT_1_21_6, 0x08 )
+            );
         }
     },
     // 3
@@ -793,6 +803,17 @@ public enum Protocol {
                     ServerLinks.class,
                     ServerLinks::new,
                     map(ProtocolConstants.MINECRAFT_1_21, 0x10)
+            );
+            TO_CLIENT.registerPacket(
+                    ClearDialog.class,
+                    ClearDialog::new,
+                    map( ProtocolConstants.MINECRAFT_1_21_6, 0x11 )
+            );
+
+            TO_CLIENT.registerPacket(
+                    ShowDialogDirect.class,
+                    ShowDialogDirect::new,
+                    map( ProtocolConstants.MINECRAFT_1_21_6, 0x12 )
             );
 
             TO_SERVER.registerPacket(

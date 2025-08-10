@@ -341,6 +341,11 @@ public class ServerConnector extends PacketHandler {
             if (user.getServer() != null) {
                 // Begin config mode
                 if (user.getCh().getEncodeProtocol() != Protocol.CONFIGURATION) {
+                    if ( user.isBundling() )
+                    {
+                        user.toggleBundling();
+                        user.unsafe().sendPacket( new BundleDelimiter() );
+                    }
                     user.unsafe().sendPacket(new StartConfiguration());
                 }
             } else {

@@ -757,6 +757,12 @@ public class DownstreamBridge extends PacketHandler {
     }
 
     @Override
+    public void handle(BundleDelimiter bundleDelimiter) throws Exception
+    {
+        con.toggleBundling();
+    }
+
+    @Override
     public String toString() {
         return "[" + con.getAddress() + "|" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
     }

@@ -181,4 +181,10 @@ public abstract class AbstractPacketHandler {
     public void handle(CustomClickAction customClickAction) throws Exception
     {
     }
+    public void handle(BundleDelimiter bundleDelimiter) throws Exception
+    {
+    }
+    public void handle(ShowDialogDirect showDialogDirect) throws Exception
+    {
+    }
 }
