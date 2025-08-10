@@ -33,12 +33,7 @@ public class CustomClickAction extends DefinedPacket
     public void write(ByteBuf buf, Protocol protocol, ProtocolConstants.Direction direction, int protocolVersion)
     {
         writeString( id, buf );
-        writeNullable( data, (data0, buf0) -> writeTag( data0, buf0, protocolVersion ), buf );
-    }
-
-    @Override
-    public void write(ByteBuf buf)
-    {
+        writeLengthPrefixed( data, (data0, buf0) -> writeTag( data0, buf0, protocolVersion ), buf, 65536 );
     }
 
     @Override

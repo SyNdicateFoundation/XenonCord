@@ -72,7 +72,8 @@ public enum Protocol {
                     map(ProtocolConstants.MINECRAFT_1_21_2, 0x2C),
                     map(ProtocolConstants.MINECRAFT_1_21_5, 0x2B)
             );
-            TO_CLIENT.registerPacket(Chat.class,
+            TO_CLIENT.registerPacket(
+                    Chat.class,
                     Chat::new,
                     map(ProtocolConstants.MINECRAFT_1_8, 0x02),
                     map(ProtocolConstants.MINECRAFT_1_9, 0x0F),
@@ -278,6 +279,7 @@ public enum Protocol {
             TO_CLIENT.registerPacket(
                     Title.class,
                     Title::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_8, 0x45),
                     map(ProtocolConstants.MINECRAFT_1_12, 0x47),
                     map(ProtocolConstants.MINECRAFT_1_12_1, 0x48),
@@ -299,6 +301,7 @@ public enum Protocol {
             TO_CLIENT.registerPacket(
                     ClearTitles.class,
                     ClearTitles::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_17, 0x10),
                     map(ProtocolConstants.MINECRAFT_1_19, 0x0D),
                     map(ProtocolConstants.MINECRAFT_1_19_3, 0x0C),
@@ -309,6 +312,7 @@ public enum Protocol {
             TO_CLIENT.registerPacket(
                     Subtitle.class,
                     Subtitle::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_17, 0x57),
                     map(ProtocolConstants.MINECRAFT_1_18, 0x58),
                     map(ProtocolConstants.MINECRAFT_1_19_1, 0x5B),
@@ -323,6 +327,7 @@ public enum Protocol {
             TO_CLIENT.registerPacket(
                     TitleTimes.class,
                     TitleTimes::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_17, 0x5A),
                     map(ProtocolConstants.MINECRAFT_1_18, 0x5B),
                     map(ProtocolConstants.MINECRAFT_1_19_1, 0x5E),
@@ -337,6 +342,7 @@ public enum Protocol {
             TO_CLIENT.registerPacket(
                     SystemChat.class,
                     SystemChat::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_19, 0x5F),
                     map(ProtocolConstants.MINECRAFT_1_19_1, 0x62),
                     map(ProtocolConstants.MINECRAFT_1_19_3, 0x60),
@@ -350,6 +356,7 @@ public enum Protocol {
             TO_CLIENT.registerPacket(
                     PlayerListHeaderFooter.class,
                     PlayerListHeaderFooter::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_8, 0x47),
                     map(ProtocolConstants.MINECRAFT_1_9, 0x48),
                     map(ProtocolConstants.MINECRAFT_1_9_4, 0x47),
@@ -374,6 +381,7 @@ public enum Protocol {
             TO_CLIENT.registerPacket(
                     EntityStatus.class,
                     EntityStatus::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_8, 0x1A),
                     map(ProtocolConstants.MINECRAFT_1_9, 0x1B),
                     map(ProtocolConstants.MINECRAFT_1_13, 0x1C),
@@ -423,6 +431,7 @@ public enum Protocol {
             TO_CLIENT.registerPacket(
                     ViewDistance.class,
                     ViewDistance::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_14, 0x41),
                     map(ProtocolConstants.MINECRAFT_1_15, 0x42),
                     map(ProtocolConstants.MINECRAFT_1_16, 0x41),
@@ -488,6 +497,7 @@ public enum Protocol {
             TO_CLIENT.registerPacket(
                     StoreCookie.class,
                     StoreCookie::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_20_5, 0x6B),
                     map(ProtocolConstants.MINECRAFT_1_21_2, 0x72),
                     map(ProtocolConstants.MINECRAFT_1_21_5, 0x71)
@@ -495,18 +505,21 @@ public enum Protocol {
             TO_CLIENT.registerPacket(
                     Transfer.class,
                     Transfer::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_20_5, 0x73),
                     map(ProtocolConstants.MINECRAFT_1_21_2, 0x7A)
             );
             TO_CLIENT.registerPacket(
                     DisconnectReportDetails.class,
                     DisconnectReportDetails::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_21, 0x7A),
                     map(ProtocolConstants.MINECRAFT_1_21_2, 0x81)
             );
             TO_CLIENT.registerPacket(
                     ServerLinks.class,
                     ServerLinks::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_21, 0x7B),
                     map(ProtocolConstants.MINECRAFT_1_21_2, 0x82)
             );
@@ -514,12 +527,14 @@ public enum Protocol {
             TO_CLIENT.registerPacket(
                     ClearDialog.class,
                     ClearDialog::new,
+                    RegisterType.ENCODE,
                     map( ProtocolConstants.MINECRAFT_1_21_6, 0x84)
             );
 
             TO_CLIENT.registerPacket(
                     ShowDialog.class,
                     ShowDialog::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_21_6, 0x85)
             );
 
@@ -787,32 +802,38 @@ public enum Protocol {
             TO_CLIENT.registerPacket(
                     StoreCookie.class,
                     StoreCookie::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_20_5, 0x0A)
             );
             TO_CLIENT.registerPacket(
                     Transfer.class,
                     Transfer::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_20_5, 0x0B)
             );
             TO_CLIENT.registerPacket(
                     DisconnectReportDetails.class,
                     DisconnectReportDetails::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_21, 0x0F)
             );
             TO_CLIENT.registerPacket(
                     ServerLinks.class,
                     ServerLinks::new,
+                    RegisterType.ENCODE,
                     map(ProtocolConstants.MINECRAFT_1_21, 0x10)
             );
             TO_CLIENT.registerPacket(
                     ClearDialog.class,
                     ClearDialog::new,
+                    RegisterType.ENCODE,
                     map( ProtocolConstants.MINECRAFT_1_21_6, 0x11 )
             );
 
             TO_CLIENT.registerPacket(
                     ShowDialogDirect.class,
                     ShowDialogDirect::new,
+                    RegisterType.ENCODE,
                     map( ProtocolConstants.MINECRAFT_1_21_6, 0x12 )
             );
 
@@ -870,6 +891,25 @@ public enum Protocol {
             if (packet != null) {
                 System.out.println(version + " " + data.protocolPhase + " " + data.direction + " " + id + " " + packet.getClass().getSimpleName());
             }
+        }
+    }
+
+    private enum RegisterType
+    {
+        // packet is registered to be encoded (only sent, never handled)
+        ENCODE,
+        // packet is registered to be decoded (only handled never modified)
+        DECODE,
+        // packet is registered to be both, encoded and decoded
+        BOTH;
+        public boolean encode()
+        {
+            return this == BOTH || this == ENCODE;
+        }
+
+        public boolean decode()
+        {
+            return this == BOTH || this == DECODE;
         }
     }
 
@@ -940,7 +980,13 @@ public enum Protocol {
             return (constructor == null) ? null : constructor.get();
         }
 
-        private void registerPacket(Class<? extends DefinedPacket> packetClass, Supplier<? extends DefinedPacket> constructor, ProtocolMapping... mappings) {
+        private void registerPacket(Class<? extends DefinedPacket> packetClass, Supplier<? extends DefinedPacket> constructor, ProtocolMapping... mappings)
+        {
+            registerPacket( packetClass, constructor, RegisterType.BOTH, mappings );
+        }
+
+        private void registerPacket(Class<? extends DefinedPacket> packetClass, Supplier<? extends DefinedPacket> constructor, RegisterType registerType, ProtocolMapping... mappings)
+        {
             int mappingIndex = 0;
             ProtocolMapping mapping = mappings[mappingIndex];
             for (int protocol : ProtocolConstants.SUPPORTED_VERSION_IDS) {
@@ -967,8 +1013,15 @@ public enum Protocol {
 
                 ProtocolData data = protocols.get(protocol);
                 Preconditions.checkState(data.packetConstructors[mapping.packetID] == null, "Duplicate packet mapping (%s)", mapping.packetID);
-                data.packetMap.put(packetClass, mapping.packetID);
-                data.packetConstructors[mapping.packetID] = constructor;
+                Preconditions.checkState( !data.packetMap.containsKey( packetClass ), "Duplicate packet mapping (%s)", mapping.packetID );
+
+                if ( registerType.encode()) {
+                    data.packetMap.put( packetClass, mapping.packetID );
+                }
+                if ( registerType.decode() )
+                {
+                    data.packetConstructors[mapping.packetID] = constructor;
+                }
             }
         }
 

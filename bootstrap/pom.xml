@@ -47,7 +47,7 @@
                             <Main-Class>net.md_5.bungee.Bootstrap</Main-Class>
                             <Implementation-Version>${describe}</Implementation-Version>
                             <Specification-Version>${maven.build.timestamp}</Specification-Version>
-
+                            <Enable-Native-Access>ALL-UNNAMED</Enable-Native-Access>
                             <!-- Log4j includes custom classes for Java 9+ (#293) -->
                             <Multi-Release>true</Multi-Release>
                         </manifestEntries>

@@ -26,8 +26,8 @@ public class Team extends DefinedPacket {
     private Either<String, BaseComponent> displayName;
     private Either<String, BaseComponent> prefix;
     private Either<String, BaseComponent> suffix;
-    private NameTagVisibility nameTagVisibility;
-    private CollisionRule collisionRule;
+    private Either<String, NameTagVisibility> nameTagVisibility;
+    private Either<String, CollisionRule> collisionRule;
     private int color;
     private byte friendlyFire;
     private String[] players;
@@ -56,13 +56,13 @@ public class Team extends DefinedPacket {
             }
             friendlyFire = buf.readByte();
             if (protocolVersion >= ProtocolConstants.MINECRAFT_1_21_5) {
-                nameTagVisibility = NameTagVisibility.BY_ID[readVarInt(buf)];
-                collisionRule = CollisionRule.BY_ID[readVarInt(buf)];
+                nameTagVisibility = Either.right( NameTagVisibility.BY_ID[readVarInt( buf )] );
+                collisionRule = Either.right( CollisionRule.BY_ID[readVarInt( buf )] );
             } else {
-                nameTagVisibility = readStringMapKey(buf, NameTagVisibility.BY_NAME);
+                nameTagVisibility = Either.left( readString( buf ) );
 
                 if (protocolVersion >= ProtocolConstants.MINECRAFT_1_9) {
-                    collisionRule = readStringMapKey(buf, CollisionRule.BY_NAME);
+                    collisionRule = Either.left( readString( buf ) );
                 }
             }
             color = (protocolVersion >= ProtocolConstants.MINECRAFT_1_13) ? readVarInt(buf) : buf.readByte();
@@ -92,12 +92,12 @@ public class Team extends DefinedPacket {
             }
             buf.writeByte(friendlyFire);
             if (protocolVersion >= ProtocolConstants.MINECRAFT_1_21_5) {
-                writeVarInt(nameTagVisibility.ordinal(), buf);
-                writeVarInt(collisionRule.ordinal(), buf);
+                writeVarInt( nameTagVisibility.getRight().ordinal(), buf );
+                writeVarInt( collisionRule.getRight().ordinal(), buf );
             } else {
-                writeString(nameTagVisibility.getKey(), buf);
+                writeString( nameTagVisibility.getLeft(), buf );
                 if (protocolVersion >= ProtocolConstants.MINECRAFT_1_9) {
-                    writeString(collisionRule.getKey(), buf);
+                    writeString(collisionRule.getLeft(), buf);
                 }
             }
 
@@ -133,28 +133,10 @@ public class Team extends DefinedPacket {
         ALWAYS("always"),
         NEVER("never"),
         HIDE_FOR_OTHER_TEAMS("hideForOtherTeams"),
-        HIDE_FOR_OWN_TEAM("hideForOwnTeam"),
-        // 1.9 (and possibly other versions) appear to treat unknown values differently (always render rather than subject to spectator mode, friendly invisibles, etc).
-        // we allow the empty value to achieve this in case it is potentially useful even though this is unsupported and its usage may be a bug (#3780).
-        UNKNOWN("");
-        //
-        private static final Map<String, NameTagVisibility> BY_NAME;
-        private static final NameTagVisibility[] BY_ID;
+        HIDE_FOR_OWN_TEAM( "hideForOwnTeam" );
 
-        static {
-            NameTagVisibility[] values = NameTagVisibility.values();
-            ImmutableMap.Builder<String, NameTagVisibility> builder = ImmutableMap.builderWithExpectedSize(values.length);
-
-            for (NameTagVisibility e : values) {
-                builder.put(e.key, e);
-            }
-
-            BY_NAME = builder.build();
-            BY_ID = Arrays.copyOf(values, values.length - 1); // Ignore dummy UNKNOWN value
-        }
-
-        //
         private final String key;
+        private static final NameTagVisibility[] BY_ID = values();
     }
 
     @Getter
@@ -165,22 +147,8 @@ public class Team extends DefinedPacket {
         NEVER("never"),
         PUSH_OTHER_TEAMS("pushOtherTeams"),
         PUSH_OWN_TEAM("pushOwnTeam");
-        //
-        private static final Map<String, CollisionRule> BY_NAME;
-        private static final CollisionRule[] BY_ID;
 
-        static {
-            CollisionRule[] values = BY_ID = CollisionRule.values();
-            ImmutableMap.Builder<String, CollisionRule> builder = ImmutableMap.builderWithExpectedSize(values.length);
-
-            for (CollisionRule e : values) {
-                builder.put(e.key, e);
-            }
-
-            BY_NAME = builder.build();
-        }
-
-        //
         private final String key;
+        private static final CollisionRule[] BY_ID = CollisionRule.values();
     }
 }
