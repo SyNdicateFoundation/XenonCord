@@ -58,7 +58,6 @@
         <module>proxy</module>
         <module>query</module>
         <module>native</module>
-        <module>dialog</module>
         <module>serializer</module>
     </modules>
 
