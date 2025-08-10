@@ -222,19 +222,16 @@ public class BungeeCord extends ProxyServer {
 
         isRunning = true;
 
-        XenonCore.instance.getTaskManager().cachedAsync(() -> {
-            xenonInstance.logdebuginfo("ASYNC task command registerer is starting...");
-            new Reflections("ir.xenoncommunity.commands").getSubTypesOf(Command.class).stream().filter(
-                    command -> !command.getSimpleName().toLowerCase().contains("playercommand")).forEach(command -> {
-                try {
-                    this.getPluginManager().registerCommand(null, command.newInstance());
-                } catch (Exception e) {
-                    XenonCore.instance.getLogger().error(e.getMessage());
-                }
-            });
-            xenonInstance.logdebuginfo("Commands are loaded!");
-            xenonInstance.logdebuginfo("ASYNC task command registerer is shutting down...");
+        xenonInstance.logdebuginfo("command registerer is starting...");
+        new Reflections("ir.xenoncommunity.commands").getSubTypesOf(Command.class).stream().filter(
+                command -> !command.getSimpleName().toLowerCase().contains("playercommand")).forEach(command -> {
+            try {
+                this.getPluginManager().registerCommand(null, command.newInstance());
+            } catch (Exception e) {
+                XenonCore.instance.getLogger().error(e.getMessage());
+            }
         });
+        xenonInstance.logdebuginfo("Commands are loaded!");
 
         xenonInstance.logdebuginfo("plugin loader is starting...");
         pluginManager.detectPlugins(pluginsFolder);

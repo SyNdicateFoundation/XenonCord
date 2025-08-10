@@ -21,6 +21,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.dialog.Dialog;
 import net.md_5.bungee.api.event.PermissionCheckEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.score.Scoreboard;
@@ -685,4 +686,20 @@ public final class UserConnection implements ProxiedPlayer {
 
 
     // Waterfall end
+
+    @Override
+    public void clearDialog()
+    {
+        Preconditions.checkState( getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_21_6, "Dialogs are only supported in 1.21.6 and above" );
+
+        unsafe().sendPacket( new ClearDialog() );
+    }
+
+    @Override
+    public void showDialog(Dialog dialog)
+    {
+        Preconditions.checkState( getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_21_6, "Dialogs are only supported in 1.21.6 and above" );
+
+        unsafe.sendPacket( new ShowDialog( Either.right( dialog ) ) );
+    }
 }

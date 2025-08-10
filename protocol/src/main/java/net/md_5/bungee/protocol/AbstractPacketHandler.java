@@ -172,4 +172,13 @@ public abstract class AbstractPacketHandler {
     public void handle(net.md_5.bungee.protocol.packet.ClientChatAcknowledgement clientChatAcknowledgement) {
     }
     // Waterfall end
+    public void handle(ShowDialog showDialog) throws Exception
+    {
+    }
+    public void handle(ClearDialog clearDialog) throws Exception
+    {
+    }
+    public void handle(CustomClickAction customClickAction) throws Exception
+    {
+    }
 }

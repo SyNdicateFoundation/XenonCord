@@ -73,5 +73,11 @@
             <version>2.4</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.waterfallmc</groupId>
+            <artifactId>waterfall-dialog</artifactId>
+            <version>1.21-R0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public final class ClickEvent {
+public class ClickEvent {
 
     /**
      * The type of action to perform on click.
@@ -51,10 +51,18 @@ public final class ClickEvent {
          */
         CHANGE_PAGE,
         /**
+         * Must use the subclass ShowDialogueClickEvent
+         */
+        SHOW_DIALOG,
+        /**
          * Copy the string given by
          * {@link net.md_5.bungee.api.chat.ClickEvent#value} into the player's
          * clipboard.
          */
-        COPY_TO_CLIPBOARD
+        COPY_TO_CLIPBOARD,
+        /**
+         * Must use subclass {@link ClickEventCustom}
+         */
+        CUSTOM
     }
 }

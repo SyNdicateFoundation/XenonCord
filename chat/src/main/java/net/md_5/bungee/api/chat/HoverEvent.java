@@ -89,21 +89,6 @@ public final class HoverEvent {
         }
     }
 
-
-    @Deprecated
-    public BaseComponent[] getValue() {
-        Content content = contents.get(0);
-        if (content instanceof Text && ((Text) content).getValue() instanceof BaseComponent[]) {
-            return (BaseComponent[]) ((Text) content).getValue();
-        }
-
-        TextComponent component = new TextComponent(VersionedComponentSerializer.getDefault().toString(content));
-        return new BaseComponent[]
-                {
-                        component
-                };
-    }
-
     /**
      * Adds a content to this hover event.
      *

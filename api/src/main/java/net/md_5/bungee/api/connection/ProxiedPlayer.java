@@ -3,6 +3,7 @@ package net.md_5.bungee.api.connection;
 import net.md_5.bungee.api.*;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.dialog.Dialog;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.score.Scoreboard;
 import org.jetbrains.annotations.ApiStatus;
@@ -410,6 +411,28 @@ public interface ProxiedPlayer extends Connection, CommandSender {
      */
     String getClientBrand();
 
+
+
+
+    /**
+     * Clear the player's open dialog.
+     *
+     * @throws IllegalStateException if the players version is not at least
+     * 1.21.6
+     */
+    @ApiStatus.Experimental
+    void clearDialog();
+
+
+    /**
+     * Show a dialog to the player.
+     *
+     * @param dialog the dialog to show
+     * @throws IllegalStateException if the players version is not at least
+     * 1.21.6
+     */
+    @ApiStatus.Experimental
+    void showDialog(Dialog dialog);
 
     /**
      * Represents the player's chat state.
