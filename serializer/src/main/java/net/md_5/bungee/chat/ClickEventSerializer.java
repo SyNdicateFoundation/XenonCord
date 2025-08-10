@@ -1,4 +1,4 @@
-package net.md_5.bungee.serializer.chat;
+package net.md_5.bungee.chat;
 
 
 import com.google.common.base.Preconditions;

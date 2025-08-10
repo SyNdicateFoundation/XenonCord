@@ -1,10 +1,10 @@
-package net.md_5.bungee.serializer.chat.hover.content;
+package net.md_5.bungee.chat.hover.content;
 
 import com.google.gson.*;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.hover.content.Entity;
-import net.md_5.bungee.serializer.chat.BaseComponentSerializer;
-import net.md_5.bungee.serializer.chat.VersionedComponentSerializer;
+import net.md_5.bungee.chat.BaseComponentSerializer;
+import net.md_5.bungee.chat.VersionedComponentSerializer;
 
 import java.lang.reflect.Type;
 import java.util.UUID;

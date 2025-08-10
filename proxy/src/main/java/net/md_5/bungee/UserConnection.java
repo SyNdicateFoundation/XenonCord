@@ -25,7 +25,7 @@ import net.md_5.bungee.api.dialog.Dialog;
 import net.md_5.bungee.api.event.PermissionCheckEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.score.Scoreboard;
-import net.md_5.bungee.serializer.chat.VersionedComponentSerializer;
+import net.md_5.bungee.chat.VersionedComponentSerializer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.ServerConnector;
 import net.md_5.bungee.entitymap.EntityMap;

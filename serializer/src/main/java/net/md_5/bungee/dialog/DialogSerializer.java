@@ -1,4 +1,4 @@
-package net.md_5.bungee.serializer.dialog;
+package net.md_5.bungee.dialog;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
@@ -25,7 +25,7 @@ import net.md_5.bungee.api.dialog.DialogListDialog;
 import net.md_5.bungee.api.dialog.MultiActionDialog;
 import net.md_5.bungee.api.dialog.NoticeDialog;
 import net.md_5.bungee.api.dialog.ServerLinksDialog;
-import net.md_5.bungee.serializer.chat.VersionedComponentSerializer;
+import net.md_5.bungee.chat.VersionedComponentSerializer;
 
 @RequiredArgsConstructor
 public class DialogSerializer implements JsonDeserializer<Dialog>, JsonSerializer<Dialog>

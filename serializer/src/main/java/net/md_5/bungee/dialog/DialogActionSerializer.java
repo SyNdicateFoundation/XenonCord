@@ -1,4 +1,4 @@
-package net.md_5.bungee.serializer.dialog;
+package net.md_5.bungee.dialog;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
@@ -17,7 +17,7 @@ import net.md_5.bungee.api.dialog.action.Action;
 import net.md_5.bungee.api.dialog.action.CustomClickAction;
 import net.md_5.bungee.api.dialog.action.RunCommandAction;
 import net.md_5.bungee.api.dialog.action.StaticAction;
-import net.md_5.bungee.serializer.chat.ClickEventSerializer;
+import net.md_5.bungee.chat.ClickEventSerializer;
 
 public class DialogActionSerializer implements JsonDeserializer<Action>, JsonSerializer<Action>
 {

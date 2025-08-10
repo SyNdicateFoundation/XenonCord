@@ -1,4 +1,4 @@
-package net.md_5.bungee.serializer.chat.hover.content;
+package net.md_5.bungee.chat.hover.content;
 
 import com.google.gson.*;
 import net.md_5.bungee.api.chat.BaseComponent;
