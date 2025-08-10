@@ -1,11 +1,8 @@
 package net.md_5.bungee.api.dialog;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
-import net.md_5.bungee.api.dialog.action.DialogClickAction;
+import net.md_5.bungee.api.dialog.action.DialogAction;
 
 @Data
 @ToString
@@ -14,13 +11,13 @@ import net.md_5.bungee.api.dialog.action.DialogClickAction;
 @Accessors(fluent = true)
 public class ConfirmationDialog implements Dialog
 {
-
+    @NonNull
     @Accessors(fluent = false)
     private DialogBase base;
-    private DialogClickAction yes;
-    private DialogClickAction no;
+    private DialogAction yes;
+    private DialogAction no;
 
-    public ConfirmationDialog(DialogBase base)
+    public ConfirmationDialog(@NonNull DialogBase base)
     {
         this( base, null, null );
     }

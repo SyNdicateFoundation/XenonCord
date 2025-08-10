@@ -6,10 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.dialog.action.DialogClickAction;
+import net.md_5.bungee.api.dialog.action.DialogAction;
 
 @Data
 @ToString
@@ -17,26 +18,32 @@ import net.md_5.bungee.api.dialog.action.DialogClickAction;
 @Accessors(fluent = true)
 public class MultiActionDialog implements Dialog
 {
-
+    @NonNull
     @Accessors(fluent = false)
     private DialogBase base;
-    private List<DialogClickAction> actions;
-    private int columns;
-    @SerializedName("on_cancel")
-    private ClickEvent onCancel;
+    @NonNull
+    private List<DialogAction> actions;
+    private Integer columns;
+    @SerializedName("exit_action")
+    private DialogAction exitAction;
 
-    public MultiActionDialog(DialogBase base, DialogClickAction... actions)
+    public MultiActionDialog(@NonNull DialogBase base, @NonNull DialogAction... actions)
     {
-        this( base, Arrays.asList( actions ), 2, null );
+        this( base, Arrays.asList( actions ), null, null );
     }
 
-    public MultiActionDialog(DialogBase base, List<DialogClickAction> actions, int columns, ClickEvent onCancel)
+    public MultiActionDialog(@NonNull DialogBase base, @NonNull List<DialogAction> actions, Integer columns, DialogAction exitAction)
     {
-        Preconditions.checkArgument( actions != null && !actions.isEmpty(), "At least one action must be provided" );
-
+        Preconditions.checkArgument( !actions.isEmpty(), "At least one action must be provided" );
         this.base = base;
         this.actions = actions;
+        columns( columns );
+        this.exitAction = exitAction;
+    }
+    public MultiActionDialog columns(Integer columns)
+    {
+        Preconditions.checkArgument( columns == null || columns > 0, "At least one column is required" );
         this.columns = columns;
-        this.onCancel = onCancel;
+        return this;
     }
 }

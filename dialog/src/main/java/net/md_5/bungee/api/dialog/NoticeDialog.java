@@ -1,11 +1,8 @@
 package net.md_5.bungee.api.dialog;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
-import net.md_5.bungee.api.dialog.action.DialogClickAction;
+import net.md_5.bungee.api.dialog.action.DialogAction;
 
 @Data
 @ToString
@@ -16,8 +13,9 @@ public class NoticeDialog implements Dialog
 {
 
     @Accessors(fluent = false)
+    @NonNull
     private DialogBase base;
-    private DialogClickAction action;
+    private DialogAction action;
 
     public NoticeDialog(DialogBase base)
     {

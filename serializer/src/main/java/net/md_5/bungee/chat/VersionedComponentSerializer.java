@@ -9,6 +9,7 @@ import net.md_5.bungee.api.dialog.chat.ShowDialogClickEvent;
 import net.md_5.bungee.chat.hover.content.EntitySerializer;
 import net.md_5.bungee.chat.hover.content.ItemSerializer;
 import net.md_5.bungee.chat.hover.content.TextSerializer;
+import net.md_5.bungee.dialog.ChatClickEventWrapperSerializer;
 import net.md_5.bungee.dialog.DialogSerializer;
 import net.md_5.bungee.dialog.ShowDialogClickEventSerializer;
 import org.jetbrains.annotations.ApiStatus;
@@ -48,6 +49,7 @@ public class VersionedComponentSerializer implements JsonDeserializer<BaseCompon
                 registerTypeAdapter( ItemTag.class, new ItemTag.Serializer() ).
                 registerTypeAdapter( Dialog.class, dialogSerializer ).
                 registerTypeAdapter( ShowDialogClickEvent.class, new ShowDialogClickEventSerializer() ).
+                registerTypeAdapter( ChatClickEventWrapperSerializer.class, new ChatClickEventWrapperSerializer() ).
                 create();
     }
 

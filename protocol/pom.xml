@@ -50,9 +50,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>se.llbit</groupId>
-            <artifactId>jo-nbt</artifactId>
-            <version>1.3.0</version>
+            <groupId>io.github.waterfallmc</groupId>
+            <artifactId>waterfall-nbt</artifactId>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

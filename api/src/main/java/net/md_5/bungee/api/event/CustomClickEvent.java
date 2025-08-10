@@ -1,12 +1,15 @@
 package net.md_5.bungee.api.event;
 
 import java.util.Map;
+
+import com.google.gson.JsonElement;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Cancellable;
 import net.md_5.bungee.api.plugin.Event;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Called after a {@link ProxiedPlayer} runs a custom action from a chat event
@@ -15,6 +18,7 @@ import net.md_5.bungee.api.plugin.Event;
 @Data
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
+@ApiStatus.Experimental
 public class CustomClickEvent extends Event implements Cancellable
 {
 
@@ -32,10 +36,9 @@ public class CustomClickEvent extends Event implements Cancellable
      */
     private final String id;
     /**
-     * Form data, may be null. If a form submission, usually contains a key
-     * {@link ACTION_KEY} with the ID of the relevant submission action.
+     * The data as submitted.
      */
-    private final Map<String, String> data;
+    private final JsonElement data;
     /**
      * Cancelled state.
      */

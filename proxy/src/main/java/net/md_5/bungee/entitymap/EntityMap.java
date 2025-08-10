@@ -5,12 +5,13 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.md_5.bungee.nbt.NamedTag;
+import net.md_5.bungee.nbt.limit.NBTLimiter;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.ProtocolConstants;
-import se.llbit.nbt.NamedTag;
-import se.llbit.nbt.Tag;
 
 import java.io.DataInputStream;
+import java.io.IOException;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public abstract class EntityMap {
@@ -210,9 +211,13 @@ public abstract class EntityMap {
                     DefinedPacket.skipVarInt(packet);
                     break;
                 case 13:
-                    final Tag tag = NamedTag.read(new DataInputStream(new ByteBufInputStream(packet)));
-                    if (tag.isError()) {
-                        throw new RuntimeException(tag.error());
+                    NamedTag tag = new NamedTag();
+                    try
+                    {
+                        tag.read( new DataInputStream( new ByteBufInputStream( packet ) ), NBTLimiter.unlimitedSize() );
+                    } catch ( IOException ioException )
+                    {
+                        throw new RuntimeException( ioException );
                     }
                     break;
                 case 15:
@@ -250,9 +255,13 @@ public abstract class EntityMap {
             final int position = packet.readerIndex();
             if (packet.readByte() != 0) {
                 packet.readerIndex(position);
-                final Tag tag = NamedTag.read(new DataInputStream(new ByteBufInputStream(packet)));
-                if (tag.isError()) {
-                    throw new RuntimeException(tag.error());
+                NamedTag tag = new NamedTag();
+                try
+                {
+                    tag.read( new DataInputStream( new ByteBufInputStream( packet ) ), NBTLimiter.unlimitedSize() );
+                } catch ( IOException ioException )
+                 {
+                    throw new RuntimeException(ioException);
                 }
             }
         }

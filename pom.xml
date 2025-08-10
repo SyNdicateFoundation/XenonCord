@@ -59,6 +59,7 @@
         <module>query</module>
         <module>native</module>
         <module>serializer</module>
+        <module>nbt</module>
     </modules>
 
     <scm>

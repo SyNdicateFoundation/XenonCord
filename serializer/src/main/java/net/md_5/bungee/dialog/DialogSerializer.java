@@ -13,22 +13,24 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Set;
+
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.dialog.ConfirmationDialog;
 import net.md_5.bungee.api.dialog.Dialog;
 import net.md_5.bungee.api.dialog.DialogBase;
 import net.md_5.bungee.api.dialog.DialogListDialog;
 import net.md_5.bungee.api.dialog.MultiActionDialog;
-import net.md_5.bungee.api.dialog.MultiActionInputFormDialog;
 import net.md_5.bungee.api.dialog.NoticeDialog;
 import net.md_5.bungee.api.dialog.ServerLinksDialog;
-import net.md_5.bungee.api.dialog.SimpleInputFormDialog;
 import net.md_5.bungee.chat.VersionedComponentSerializer;
 
 @RequiredArgsConstructor
 public class DialogSerializer implements JsonDeserializer<Dialog>, JsonSerializer<Dialog>
 {
-
+    private static final ThreadLocal<Set<Dialog>> serializedDialogs = new ThreadLocal<>();
     private static final BiMap<String, Class<? extends Dialog>> TYPES;
     private final VersionedComponentSerializer serializer;
 
@@ -41,8 +43,6 @@ public class DialogSerializer implements JsonDeserializer<Dialog>, JsonSerialize
         builder.put( "minecraft:multi_action", MultiActionDialog.class );
         builder.put( "minecraft:server_links", ServerLinksDialog.class );
         builder.put( "minecraft:dialog_list", DialogListDialog.class );
-        builder.put( "minecraft:simple_input_form", SimpleInputFormDialog.class );
-        builder.put( "minecraft:multi_action_input_form", MultiActionInputFormDialog.class );
 
         TYPES = builder.build();
     }
@@ -97,21 +97,36 @@ public class DialogSerializer implements JsonDeserializer<Dialog>, JsonSerialize
     @Override
     public JsonElement serialize(Dialog src, Type typeOfSrc, JsonSerializationContext context)
     {
-        if ( src == null )
+        if ( src == null ) return JsonNull.INSTANCE;
+
+        final boolean first = serializedDialogs.get() == null;
+
+        if ( first )
         {
-            return JsonNull.INSTANCE;
+            serializedDialogs.set( Collections.newSetFromMap(new IdentityHashMap<>() ) );
         }
 
-        Class<? extends Dialog> realType = src.getClass();
-        String type = TYPES.inverse().get( realType );
-        Preconditions.checkArgument( type != null, "Unknown type %s", typeOfSrc );
+        try
+        {
+            Preconditions.checkArgument( !serializedDialogs.get().contains( src ), "Dialog loop" );
 
-        JsonObject object = (JsonObject) context.serialize( src, realType );
-        object.addProperty( "type", type );
+            serializedDialogs.get().add( src );
+            final Class<? extends Dialog> realType = src.getClass();
+            final String type = TYPES.inverse().get( realType );
 
-        JsonObject base = (JsonObject) context.serialize( src.getBase() );
-        object.asMap().putAll( base.asMap() );
+            Preconditions.checkArgument( type != null, "Unknown type %s", typeOfSrc );
 
-        return object;
+            final JsonObject object = (JsonObject) context.serialize( src, realType );
+            object.addProperty( "type", type );
+
+            final JsonObject base = (JsonObject) context.serialize( src.getBase() );
+            object.asMap().putAll( base.asMap() );
+            return object;
+        } finally
+        {
+            serializedDialogs.get().remove( src );
+            if ( first )
+                serializedDialogs.remove();
+        }
     }
 }

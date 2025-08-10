@@ -1,7 +1,6 @@
 package net.md_5.bungee.connection;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -20,6 +19,7 @@ import net.md_5.bungee.netty.PacketHandler;
 import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
+import net.md_5.bungee.protocol.TagUtil;
 import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.util.AllowedCharacters;
 
@@ -329,21 +329,7 @@ public class UpstreamBridge extends PacketHandler {
     @Override
     public void handle(CustomClickAction customClickAction) throws Exception
     {
-        Map<String, String> data = null;
-        if ( customClickAction.getData() != null )
-        {
-            ImmutableMap.Builder<String, String> parsed = ImmutableMap.builder();
-
-            String[] lines = customClickAction.getData().split( "\n" );
-            for ( String line : lines )
-            {
-                String[] split = line.split( "\t", 2 );
-                parsed.put( split[0], ( split.length > 1 ) ? split[1] : "" );
-            }
-            data = parsed.build();
-        }
-
-        CustomClickEvent event = new CustomClickEvent( con, customClickAction.getId(), data );
+        CustomClickEvent event = new CustomClickEvent( con, customClickAction.getId(), TagUtil.toJson( customClickAction.getData() ) );
         if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
         {
             throw CancelSendSignal.INSTANCE;

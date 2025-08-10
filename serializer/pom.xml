@@ -7,6 +7,7 @@
         <groupId>io.github.waterfallmc</groupId>
         <artifactId>waterfall-parent</artifactId>
         <version>1.21-R0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>waterfall-serializer</artifactId>
@@ -14,15 +15,16 @@
     <version>1.21-R0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <description>
-        Minecraft JSON serializer intended for use with Waterfall
-    </description>
-
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <description>
+        Minecraft JSON serializer intended for use with Waterfall
+    </description>
+
     <dependencies>
         <dependency>
             <groupId>com.google.code.gson</groupId>
