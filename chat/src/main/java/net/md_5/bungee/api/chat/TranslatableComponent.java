@@ -137,63 +137,74 @@ public final class TranslatableComponent extends BaseComponent {
     }
 
     @Override
-    protected void toPlainText(StringBuilder builder) {
+    protected void toPlainText(StringVisitor builder) {
         convert(builder, false);
         super.toPlainText(builder);
     }
 
     @Override
-    protected void toLegacyText(StringBuilder builder) {
+    protected void toLegacyText(StringVisitor builder) {
         convert(builder, true);
         super.toLegacyText(builder);
     }
 
-    private void convert(StringBuilder builder, boolean applyFormat) {
-        String trans = TranslationRegistry.INSTANCE.translate(translate);
+    private void convert(StringVisitor builder, boolean applyFormat)
+    {
+        String trans = TranslationRegistry.INSTANCE.translate( translate );
 
-        if (trans.equals(translate) && fallback != null) {
+        if ( trans.equals( translate ) && fallback != null )
+        {
             trans = fallback;
         }
 
-        Matcher matcher = FORMAT.matcher(trans);
+        Matcher matcher = FORMAT.matcher( trans );
         int position = 0;
         int i = 0;
-        while (matcher.find(position)) {
+        while ( matcher.find( position ) )
+        {
             int pos = matcher.start();
-            if (pos != position) {
-                if (applyFormat) {
-                    addFormat(builder);
+            if ( pos != position )
+            {
+                if ( applyFormat )
+                {
+                    addFormat( builder );
                 }
-                builder.append(trans, position, pos);
+                builder.append( trans.substring( position, pos ) );
             }
             position = matcher.end();
 
-            String formatCode = matcher.group(2);
-            switch (formatCode.charAt(0)) {
+            String formatCode = matcher.group( 2 );
+            switch ( formatCode.charAt( 0 ) )
+            {
                 case 's':
                 case 'd':
-                    String withIndex = matcher.group(1);
+                    String withIndex = matcher.group( 1 );
 
-                    BaseComponent withComponent = with.get(withIndex != null ? Integer.parseInt(withIndex) - 1 : i++);
-                    if (applyFormat) {
-                        withComponent.toLegacyText(builder);
-                    } else {
-                        withComponent.toPlainText(builder);
+                    BaseComponent withComponent = with.get( withIndex != null ? Integer.parseInt( withIndex ) - 1 : i++ );
+                    if ( applyFormat )
+                    {
+                        withComponent.toLegacyText( builder );
+                    } else
+                    {
+                        withComponent.toPlainText( builder );
                     }
                     break;
                 case '%':
-                    if (applyFormat) {
-                        addFormat(builder);
+                    if ( applyFormat )
+                    {
+                        addFormat( builder );
                     }
-                    builder.append('%');
+                    builder.append( '%' );
                     break;
             }
         }
-        if (trans.length() != position) {
-            if (applyFormat) {
-                addFormat(builder);
+        if ( trans.length() != position )
+        {
+            if ( applyFormat )
+            {
+                addFormat( builder );
             }
-            builder.append(trans, position, trans.length());
+            builder.append( trans.substring( position, trans.length() ) );
         }
     }
 }

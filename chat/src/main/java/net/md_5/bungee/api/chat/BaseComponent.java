@@ -592,11 +592,11 @@ public abstract class BaseComponent {
      */
     public String toPlainText() {
         StringBuilder builder = new StringBuilder();
-        toPlainText(builder);
+        toPlainText( new LimitedStringVisitor( builder, Short.MAX_VALUE ) );
         return builder.toString();
     }
 
-    void toPlainText(StringBuilder builder) {
+    void toPlainText(StringVisitor builder) {
         if (extra != null) {
             for (BaseComponent e : extra) {
                 e.toPlainText(builder);
@@ -612,11 +612,11 @@ public abstract class BaseComponent {
      */
     public String toLegacyText() {
         StringBuilder builder = new StringBuilder();
-        toLegacyText(builder);
+        toLegacyText( new LimitedStringVisitor( builder, Short.MAX_VALUE ) );
         return builder.toString();
     }
 
-    void toLegacyText(StringBuilder builder) {
+    void toLegacyText(StringVisitor builder) {
         if (extra != null) {
             for (BaseComponent e : extra) {
                 e.toLegacyText(builder);
@@ -624,7 +624,7 @@ public abstract class BaseComponent {
         }
     }
 
-    void addFormat(StringBuilder builder) {
+    void addFormat(StringVisitor builder) {
         builder.append(getColor());
         if (isBold()) {
             builder.append(ChatColor.BOLD);
@@ -640,6 +640,31 @@ public abstract class BaseComponent {
         }
         if (isObfuscated()) {
             builder.append(ChatColor.MAGIC);
+        }
+    }
+    @FunctionalInterface
+    protected static interface StringVisitor
+    {
+        void append(String s);
+        default void append(Object obj)
+        {
+            append( String.valueOf( obj ) );
+        }
+    }
+    @Data
+    protected static class LimitedStringVisitor implements StringVisitor {
+        private final StringBuilder builder;
+        private final int maxLength;
+
+        @Override
+        public void append(String s)
+        {
+            if ( builder.length() >= maxLength )
+            {
+                throw new IllegalArgumentException( "String exceeded maximum length " + maxLength );
+            }
+
+            builder.append( s );
         }
     }
 }
