@@ -30,7 +30,7 @@ public class ComponentStyleSerializer implements JsonSerializer<ComponentStyle>,
         return false;
     }
 
-    static void serializeTo(ComponentStyle style, JsonObject object) {
+    public static void serializeTo(ComponentStyle style, JsonObject object) {
         if (style.isBoldRaw() != null) {
             object.addProperty("bold", style.isBoldRaw());
         }

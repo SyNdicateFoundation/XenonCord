@@ -9,8 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.dialog.action.DialogAction;
+import net.md_5.bungee.api.dialog.action.ActionButton;
 
 @Data
 @ToString
@@ -23,7 +22,7 @@ public class DialogListDialog implements Dialog
     private DialogBase base;
     private List<Dialog> dialogs;
     @SerializedName("exit_action")
-    private DialogAction exitAction;
+    private ActionButton exitAction;
     private Integer columns;
     @SerializedName("button_width")
     private Integer buttonWidth;
@@ -33,7 +32,7 @@ public class DialogListDialog implements Dialog
         this( base, Arrays.asList( dialogs ), null, null, null );
     }
 
-    public DialogListDialog(@NonNull DialogBase base, List<Dialog> dialogs, DialogAction exitAction, Integer columns, Integer buttonWidth)
+    public DialogListDialog(@NonNull DialogBase base, List<Dialog> dialogs, ActionButton exitAction, Integer columns, Integer buttonWidth)
     {
         this.base = base;
         this.dialogs = dialogs;

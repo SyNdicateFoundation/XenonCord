@@ -1,4 +1,4 @@
-package net.md_5.bungee.chat;
+package net.md_5.bungee.serializer.chat;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

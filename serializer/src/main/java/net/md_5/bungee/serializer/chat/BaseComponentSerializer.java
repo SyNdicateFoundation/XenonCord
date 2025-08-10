@@ -1,4 +1,4 @@
-package net.md_5.bungee.chat;
+package net.md_5.bungee.serializer.chat;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonDeserializationContext;
@@ -8,7 +8,7 @@ import com.google.gson.JsonSerializationContext;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.chat.hover.content.Content;
-import net.md_5.bungee.api.dialog.chat.ShowDialogClickEvent;
+import net.md_5.bungee.chat.ComponentStyleSerializer;
 
 import java.util.*;
 

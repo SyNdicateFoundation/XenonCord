@@ -1,17 +1,20 @@
-package net.md_5.bungee.chat;
+package net.md_5.bungee.serializer.chat;
 
 import com.google.gson.*;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.chat.hover.content.*;
 import net.md_5.bungee.api.dialog.Dialog;
+import net.md_5.bungee.api.dialog.action.Action;
 import net.md_5.bungee.api.dialog.chat.ShowDialogClickEvent;
-import net.md_5.bungee.chat.hover.content.EntitySerializer;
-import net.md_5.bungee.chat.hover.content.ItemSerializer;
-import net.md_5.bungee.chat.hover.content.TextSerializer;
-import net.md_5.bungee.dialog.ChatClickEventWrapperSerializer;
-import net.md_5.bungee.dialog.DialogSerializer;
-import net.md_5.bungee.dialog.ShowDialogClickEventSerializer;
+import net.md_5.bungee.chat.ChatVersion;
+import net.md_5.bungee.chat.ComponentStyleSerializer;
+import net.md_5.bungee.serializer.chat.hover.content.EntitySerializer;
+import net.md_5.bungee.serializer.chat.hover.content.ItemSerializer;
+import net.md_5.bungee.serializer.chat.hover.content.TextSerializer;
+import net.md_5.bungee.serializer.dialog.DialogActionSerializer;
+import net.md_5.bungee.serializer.dialog.DialogSerializer;
+import net.md_5.bungee.serializer.dialog.ShowDialogClickEventSerializer;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.Type;
@@ -49,7 +52,7 @@ public class VersionedComponentSerializer implements JsonDeserializer<BaseCompon
                 registerTypeAdapter( ItemTag.class, new ItemTag.Serializer() ).
                 registerTypeAdapter( Dialog.class, dialogSerializer ).
                 registerTypeAdapter( ShowDialogClickEvent.class, new ShowDialogClickEventSerializer() ).
-                registerTypeAdapter( ChatClickEventWrapperSerializer.class, new ChatClickEventWrapperSerializer() ).
+                registerTypeAdapter( Action.class, new DialogActionSerializer() ).
                 create();
     }
 
