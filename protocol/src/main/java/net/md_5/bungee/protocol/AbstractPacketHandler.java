@@ -48,9 +48,6 @@ public abstract class AbstractPacketHandler {
     public void handle(ClientSettings settings) throws Exception {
     }
 
-    public void handle(ClientStatus clientStatus) throws Exception {
-    }
-
     public void handle(PlayerListItem playerListItem) throws Exception {
     }
 
