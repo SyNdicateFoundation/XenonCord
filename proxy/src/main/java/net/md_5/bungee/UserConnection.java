@@ -718,8 +718,6 @@ public final class UserConnection implements ProxiedPlayer {
         unsafe.sendPacket( new ShowDialog( Either.right( dialog ) ) );
     }
     @Override
-
-
     public void sendServerLinks(List<ServerLink> serverLinks)
     {
         Preconditions.checkState( getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_21, "Server links are only supported in 1.21 and above" );
