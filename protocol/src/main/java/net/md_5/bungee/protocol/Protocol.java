@@ -990,33 +990,39 @@ public enum Protocol {
         {
             int mappingIndex = 0;
             ProtocolMapping mapping = mappings[mappingIndex];
-            for (int protocol : ProtocolConstants.SUPPORTED_VERSION_IDS) {
-                if (protocol < mapping.protocolVersion) {
+            for ( int protocol : ProtocolConstants.SUPPORTED_VERSION_IDS )
+            {
+                if ( protocol < mapping.protocolVersion )
+                {
                     // This is a new packet, skip it till we reach the next protocol
                     continue;
                 }
 
-                if (mapping.protocolVersion < protocol && mappingIndex + 1 < mappings.length) {
+                if ( mapping.protocolVersion < protocol && mappingIndex + 1 < mappings.length )
+                {
                     // Mapping is non current, but the next one may be ok
                     ProtocolMapping nextMapping = mappings[mappingIndex + 1];
 
-                    if (nextMapping.protocolVersion == protocol) {
-                        Preconditions.checkState(nextMapping.packetID != mapping.packetID, "Duplicate packet mapping (%s, %s)", mapping.protocolVersion, nextMapping.protocolVersion);
+                    if ( nextMapping.protocolVersion == protocol )
+                    {
+                        Preconditions.checkState( nextMapping.packetID != mapping.packetID, "Duplicate packet mapping (%s, %s)", mapping.protocolVersion, nextMapping.protocolVersion );
 
                         mapping = nextMapping;
                         mappingIndex++;
                     }
                 }
 
-                if (mapping.packetID < 0) {
+                if ( mapping.packetID < 0 )
+                {
                     break;
                 }
 
-                ProtocolData data = protocols.get(protocol);
-                Preconditions.checkState(data.packetConstructors[mapping.packetID] == null, "Duplicate packet mapping (%s)", mapping.packetID);
+                ProtocolData data = protocols.get( protocol );
+                Preconditions.checkState( data.packetConstructors[mapping.packetID] == null, "Duplicate packet mapping (%s)", mapping.packetID );
                 Preconditions.checkState( !data.packetMap.containsKey( packetClass ), "Duplicate packet mapping (%s)", mapping.packetID );
 
-                if ( registerType.encode()) {
+                if ( registerType.encode() )
+                {
                     data.packetMap.put( packetClass, mapping.packetID );
                 }
                 if ( registerType.decode() )
