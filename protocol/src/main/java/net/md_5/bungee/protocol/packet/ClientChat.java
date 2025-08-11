@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import net.md_5.bungee.protocol.*;
+import net.md_5.bungee.protocol.data.ChatChain;
+import net.md_5.bungee.protocol.data.SeenMessages;
 
 @Data
 @NoArgsConstructor

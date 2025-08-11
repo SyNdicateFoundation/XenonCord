@@ -30,6 +30,7 @@ import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.netty.cipher.CipherDecoder;
 import net.md_5.bungee.netty.cipher.CipherEncoder;
 import net.md_5.bungee.protocol.*;
+import net.md_5.bungee.protocol.data.PlayerPublicKey;
 import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.util.AllowedCharacters;
 import net.md_5.bungee.util.BufUtil;

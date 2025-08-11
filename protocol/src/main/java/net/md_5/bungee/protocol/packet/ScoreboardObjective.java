@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.protocol.*;
+import net.md_5.bungee.protocol.data.NumberFormat;
+import net.md_5.bungee.protocol.util.Either;
 
 import java.util.Locale;
 

@@ -28,7 +28,9 @@ import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.HandlerBoss;
 import net.md_5.bungee.netty.PacketHandler;
 import net.md_5.bungee.protocol.*;
+import net.md_5.bungee.protocol.data.Property;
 import net.md_5.bungee.protocol.packet.*;
+import net.md_5.bungee.protocol.util.Either;
 import net.md_5.bungee.util.AddressUtil;
 import net.md_5.bungee.util.BufUtil;
 import net.md_5.bungee.util.QuietException;
@@ -220,7 +222,7 @@ public class ServerConnector extends PacketHandler {
             final LoginResult profile = user.getPendingConnection().getLoginProfile();
 
             // Handle properties.
-            net.md_5.bungee.protocol.Property[] properties = new net.md_5.bungee.protocol.Property[0];
+            Property[] properties = new Property[0];
 
             if (profile != null && profile.getProperties() != null && profile.getProperties().length > 0)
                 properties = profile.getProperties();
@@ -238,13 +240,13 @@ public class ServerConnector extends PacketHandler {
 
             if (user.getForgeClientHandler().isFmlTokenInHandshake()) {
                 // Get the current properties and copy them into a slightly bigger array.
-                final net.md_5.bungee.protocol.Property[] newp = Arrays.copyOf(properties, properties.length + 2);
+                final Property[] newp = Arrays.copyOf(properties, properties.length + 2);
 
                 // Add a new profile property that specifies that this user is a Forge user.
-                newp[newp.length - 2] = new net.md_5.bungee.protocol.Property(ForgeConstants.FML_LOGIN_PROFILE, "true", null);
+                newp[newp.length - 2] = new Property(ForgeConstants.FML_LOGIN_PROFILE, "true", null);
 
                 // If we do not perform the replacement, then the IP Forwarding code in Spigot et. al. will try to split on this prematurely.
-                newp[newp.length - 1] = new net.md_5.bungee.protocol.Property(ForgeConstants.EXTRA_DATA, user.getExtraDataInHandshake().replaceAll("\0", "\1"), "");
+                newp[newp.length - 1] = new Property(ForgeConstants.EXTRA_DATA, user.getExtraDataInHandshake().replaceAll("\0", "\1"), "");
 
                 // All done.
                 properties = newp;

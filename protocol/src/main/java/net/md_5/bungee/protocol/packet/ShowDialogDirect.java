@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import net.md_5.bungee.api.dialog.Dialog;
 import net.md_5.bungee.protocol.AbstractPacketHandler;
-import net.md_5.bungee.protocol.Either;
+import net.md_5.bungee.protocol.util.Either;
 import net.md_5.bungee.protocol.ProtocolConstants;
 
 @Data

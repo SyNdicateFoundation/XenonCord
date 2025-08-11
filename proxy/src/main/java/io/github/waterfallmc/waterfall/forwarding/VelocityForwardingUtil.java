@@ -6,7 +6,7 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.Property;
+import net.md_5.bungee.protocol.data.Property;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;

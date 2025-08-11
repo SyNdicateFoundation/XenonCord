@@ -8,10 +8,12 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.score.Scoreboard;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import net.md_5.bungee.api.ServerLink;
 
 /**
  * Represents a player whose connection is being connected to somewhere else,
@@ -433,6 +435,22 @@ public interface ProxiedPlayer extends Connection, CommandSender {
      */
     @ApiStatus.Experimental
     void showDialog(Dialog dialog);
+
+    /**
+
+
+     * Sends server links to the player.
+
+
+     *
+     * Note: The links already sent to the player will be overwritten. Also, the
+     * backend server is able to override links sent by the proxy.
+     *
+     * @param serverLinks the server links to send
+     * @throws IllegalStateException if the player's version is not at least
+     * 1.21
+     */
+    void sendServerLinks(List<ServerLink> serverLinks);
 
     /**
      * Represents the player's chat state.

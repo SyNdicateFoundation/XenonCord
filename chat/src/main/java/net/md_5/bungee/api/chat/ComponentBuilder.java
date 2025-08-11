@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -447,6 +448,19 @@ public final class ComponentBuilder {
      */
     public ComponentBuilder retain(FormatRetention retention) {
         getCurrentComponent().retain(retention);
+        return this;
+    }
+
+    /**
+     * Sets the shadow color of the current part.
+     *
+     * @param color the new shadow color
+     * @return this ComponentBuilder for chaining
+     * @since Minecraft 1.21.4-pre1
+     */
+    public ComponentBuilder shadowColor(Color color)
+    {
+        getCurrentComponent().setShadowColor( color );
         return this;
     }
 

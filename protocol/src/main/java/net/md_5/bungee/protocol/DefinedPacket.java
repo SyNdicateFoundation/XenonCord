@@ -14,6 +14,11 @@ import net.md_5.bungee.nbt.Tag;
 import net.md_5.bungee.nbt.TypedTag;
 import net.md_5.bungee.nbt.limit.NBTLimiter;
 import net.md_5.bungee.nbt.type.EndTag;
+import net.md_5.bungee.protocol.data.NumberFormat;
+import net.md_5.bungee.protocol.data.PlayerPublicKey;
+import net.md_5.bungee.protocol.data.Property;
+import net.md_5.bungee.protocol.util.Either;
+import net.md_5.bungee.protocol.util.TagUtil;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -73,8 +78,7 @@ public abstract class DefinedPacket {
             throw new OverflowPacketException("Cannot receive string longer than " + maxLen * 3 + " (got " + len + " bytes)");
         }
 
-        String s = buf.toString(buf.readerIndex(), len, StandardCharsets.UTF_8);
-        buf.readerIndex(buf.readerIndex() + len);
+        String s = buf.readString( len, StandardCharsets.UTF_8 );
 
         if (s.length() > maxLen) {
             if (!MinecraftDecoder.DEBUG) throw STRING_TOO_LONG_EXCEPTION; // Waterfall start: Additional DoS mitigations
@@ -509,42 +513,14 @@ public abstract class DefinedPacket {
     }
 
     public <T> T readLengthPrefixed(Function<ByteBuf, T> reader, ByteBuf buf, int maxSize)
-
-
-
     {
-
-
         int size = readVarInt( buf );
-
-
-
-
-
         if ( size > maxSize )
-
-
         {
-
-
             throw new OverflowPacketException( "Cannot read length prefixed with limit " + maxSize + " (got size of " + size + ")" );
-
-
         }
-
-
-
-
-
         return reader.apply( buf.readSlice( size ) );
-
-
     }
-
-
-
-
-
     public <T> void writeLengthPrefixed(T value, BiConsumer<T, ByteBuf> writer, ByteBuf buf, int maxSize)
     {
         ByteBuf tempBuffer = buf.alloc().buffer();

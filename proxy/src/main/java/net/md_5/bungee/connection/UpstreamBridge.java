@@ -19,7 +19,7 @@ import net.md_5.bungee.netty.PacketHandler;
 import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
-import net.md_5.bungee.protocol.TagUtil;
+import net.md_5.bungee.protocol.util.TagUtil;
 import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.util.AllowedCharacters;
 

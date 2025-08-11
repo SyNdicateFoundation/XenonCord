@@ -1,6 +1,7 @@
 package net.md_5.bungee.api.plugin;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
 import lombok.ToString;
 import net.md_5.bungee.api.ProxyServer;
@@ -12,11 +13,19 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.CodeSigner;
 import java.security.CodeSource;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.commons.ClassRemapper;
+import org.objectweb.asm.commons.SimpleRemapper;
 
 @ToString(of = "desc")
 final class PluginClassloader extends URLClassLoader {
@@ -103,6 +112,15 @@ final class PluginClassloader extends URLClassLoader {
                 throw new ClassNotFoundException(name, ex);
             }
 
+            try
+            {
+                classBytes = remap( classBytes );
+            } catch ( Exception ex )
+            {
+                Logger logger = ( plugin != null ) ? plugin.getLogger() : proxy.getLogger();
+                logger.log( Level.SEVERE, "Error trying to remap class " + path, ex );
+            }
+
             int dot = name.lastIndexOf('.');
             if (dot != -1) {
                 String pkgName = name.substring(0, dot);
@@ -148,5 +166,24 @@ final class PluginClassloader extends URLClassLoader {
 
         this.plugin = plugin;
         plugin.init(proxy, desc);
+    }
+
+    private static final Map<String, String> MAPPINGS = ImmutableMap.of(
+            "net/md_5/bungee/protocol/ChatChain", "net/md_5/bungee/protocol/data/ChatChain",
+            "net/md_5/bungee/protocol/Location", "net/md_5/bungee/protocol/data/Location",
+            "net/md_5/bungee/protocol/NumberFormat", "net/md_5/bungee/protocol/data/NumberFormat",
+            "net/md_5/bungee/protocol/PlayerPublicKey", "net/md_5/bungee/protocol/data/PlayerPublicKey",
+            "net/md_5/bungee/protocol/Property", "net/md_5/bungee/protocol/data/Property",
+            "net/md_5/bungee/protocol/SeenMessages", "net/md_5/bungee/protocol/data/SeenMessages",
+            "net/md_5/bungee/protocol/Either", "net/md_5/bungee/protocol/util/Either",
+            "net/md_5/bungee/protocol/TagUtil", "net/md_5/bungee/protocol/util/TagUtil"
+    );
+
+    private static byte[] remap(byte[] b)
+    {
+        final ClassReader cr = new ClassReader( b );
+        final ClassWriter cw = new ClassWriter( cr, 0 );
+        cr.accept( new ClassRemapper( cw, new SimpleRemapper( MAPPINGS ) ), 0 );
+        return cw.toByteArray();
     }
 }

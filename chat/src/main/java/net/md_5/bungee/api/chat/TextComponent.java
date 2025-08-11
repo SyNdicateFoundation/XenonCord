@@ -183,7 +183,7 @@ public final class TextComponent extends BaseComponent {
                 }
                 continue;
             }
-            int pos = message.indexOf(' ', i);
+            int pos = indexOfSpecial( message, i );
             if (pos == -1) {
                 pos = message.length();
             }
@@ -255,6 +255,19 @@ public final class TextComponent extends BaseComponent {
         addFormat(builder);
         builder.append(text);
         super.toLegacyText(builder);
+    }
+
+    private static int indexOfSpecial(String message, int pos)
+    {
+        for ( int i = pos; i < message.length(); i++ )
+        {
+            char c = message.charAt( i );
+            if ( c == ' ' || Character.isISOControl( c ) )
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override

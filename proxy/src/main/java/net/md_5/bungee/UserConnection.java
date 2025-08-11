@@ -37,6 +37,7 @@ import net.md_5.bungee.netty.HandlerBoss;
 import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.*;
 import net.md_5.bungee.protocol.packet.*;
+import net.md_5.bungee.protocol.util.Either;
 import net.md_5.bungee.tab.ServerUnique;
 import net.md_5.bungee.tab.TabList;
 import net.md_5.bungee.util.CaseInsensitiveSet;
@@ -715,5 +716,16 @@ public final class UserConnection implements ProxiedPlayer {
         }
 
         unsafe.sendPacket( new ShowDialog( Either.right( dialog ) ) );
+    }
+    @Override
+
+
+    public void sendServerLinks(List<ServerLink> serverLinks)
+    {
+        Preconditions.checkState( getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_21, "Server links are only supported in 1.21 and above" );
+
+        unsafe.sendPacket( new ServerLinks( serverLinks.stream()
+                .map( link -> new ServerLinks.Link( link.getType() != null ? Either.left( link.getType().ordinal() ) : Either.right( link.getLabel() ), link.getUrl() ) )
+                .toArray( ServerLinks.Link[]::new ) ) );
     }
 }
