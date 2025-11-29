@@ -1,7 +1,7 @@
 package net.md_5.bungee.forge;
 
 import net.md_5.bungee.UserConnection;
-import net.md_5.bungee.connection.ServerConnector;
+import net.md_5.bungee.ServerConnector;
 import net.md_5.bungee.protocol.packet.PluginMessage;
 
 import java.util.Map;
