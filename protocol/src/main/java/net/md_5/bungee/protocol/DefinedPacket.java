@@ -499,11 +499,11 @@ public abstract class DefinedPacket {
         input.skipBytes(16);
     }
 
-    public <T> T readNullable(Function<ByteBuf, T> reader, ByteBuf buf) {
+    public static <T> T readNullable(Function<ByteBuf, T> reader, ByteBuf buf) {
         return buf.readBoolean() ? reader.apply(buf) : null;
     }
 
-    public <T> void writeNullable(T t0, BiConsumer<T, ByteBuf> writer, ByteBuf buf) {
+    public static <T> void writeNullable(T t0, BiConsumer<T, ByteBuf> writer, ByteBuf buf) {
         if (t0 != null) {
             buf.writeBoolean(true);
             writer.accept(t0, buf);
@@ -512,7 +512,7 @@ public abstract class DefinedPacket {
         }
     }
 
-    public <T> T readLengthPrefixed(Function<ByteBuf, T> reader, ByteBuf buf, int maxSize)
+    public static <T> T readLengthPrefixed(Function<ByteBuf, T> reader, ByteBuf buf, int maxSize)
     {
         int size = readVarInt( buf );
         if ( size > maxSize )
@@ -521,7 +521,7 @@ public abstract class DefinedPacket {
         }
         return reader.apply( buf.readSlice( size ) );
     }
-    public <T> void writeLengthPrefixed(T value, BiConsumer<T, ByteBuf> writer, ByteBuf buf, int maxSize)
+    public static <T> void writeLengthPrefixed(T value, BiConsumer<T, ByteBuf> writer, ByteBuf buf, int maxSize)
     {
         ByteBuf tempBuffer = buf.alloc().buffer();
 

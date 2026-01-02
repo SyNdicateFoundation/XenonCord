@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.github.waterfallmc</groupId>
         <artifactId>waterfall-parent</artifactId>
-        <version>1.21-R0.1-SNAPSHOT</version>
+        <version>1.21-R0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>waterfall-api</artifactId>
-    <version>1.21-R0.1-SNAPSHOT</version>
+    <version>1.21-R0.1</version>
     <packaging>jar</packaging>
 
     <name>Waterfall-API</name>
@@ -76,7 +76,7 @@
         <dependency>
             <groupId>io.github.waterfallmc</groupId>
             <artifactId>waterfall-dialog</artifactId>
-            <version>1.21-R0.1-SNAPSHOT</version>
+            <version>1.21-R0.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

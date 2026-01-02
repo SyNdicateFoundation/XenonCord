@@ -97,7 +97,6 @@ public interface PendingConnection extends Connection {
      *
      * @return true if the connection has been transferred
      */
-    @ApiStatus.Experimental
     boolean isTransferred();
 
     /**
@@ -111,7 +110,6 @@ public interface PendingConnection extends Connection {
      * @throws IllegalStateException if the player's version is not at least
      *                               1.20.5
      */
-    @ApiStatus.Experimental
     CompletableFuture<byte[]> retrieveCookie(String cookie);
 
     /**
@@ -125,6 +123,5 @@ public interface PendingConnection extends Connection {
      * @throws IllegalStateException if the player's version is not at least
      *                               1.13
      */
-    @ApiStatus.Experimental
     CompletableFuture<byte[]> sendData(String channel, byte[] data);
 }

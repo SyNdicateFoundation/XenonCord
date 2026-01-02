@@ -20,13 +20,18 @@ public class ServerUnique extends TabList {
 
     @Override
     public void onUpdate(PlayerListItem playerListItem) {
-        for (PlayerListItem.Item item : playerListItem.getItems()) {
-            if (playerListItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                uuids.add(item.getUuid());
-            } else if (playerListItem.getAction() == PlayerListItem.Action.REMOVE_PLAYER) {
-                uuids.remove(item.getUuid());
+        PlayerListItem.Action action = playerListItem.getAction();
+
+        if (action == PlayerListItem.Action.ADD_PLAYER || action == PlayerListItem.Action.REMOVE_PLAYER) {
+            for (PlayerListItem.Item item : playerListItem.getItems()) {
+                if (action == PlayerListItem.Action.ADD_PLAYER) {
+                    uuids.add(item.getUuid());
+                } else {
+                    uuids.remove(item.getUuid());
+                }
             }
         }
+
         player.unsafe().sendPacket(playerListItem);
     }
 
@@ -40,14 +45,14 @@ public class ServerUnique extends TabList {
 
     @Override
     public void onUpdate(PlayerListItemUpdate playerListItem) {
-        for (PlayerListItem.Item item : playerListItem.getItems()) {
-            for (PlayerListItemUpdate.Action action : playerListItem.getActions()) {
-                if (action == PlayerListItemUpdate.Action.ADD_PLAYER) {
-                    uuids.add(item.getUuid());
-                }
+        if ( playerListItem.getActions().contains( PlayerListItemUpdate.Action.ADD_PLAYER ) )
+        {
+            for ( PlayerListItem.Item item : playerListItem.getItems() )
+            {
+                uuids.add( item.getUuid() );
             }
         }
-        player.unsafe().sendPacket(playerListItem);
+        player.unsafe().sendPacket( playerListItem );
     }
 
     @Override
@@ -59,7 +64,7 @@ public class ServerUnique extends TabList {
     public void onServerChange() {
         if (player.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_19_3) {
             PlayerListItemRemove packet = new PlayerListItemRemove();
-            packet.setUuids(uuids.stream().toArray(UUID[]::new));
+            packet.setUuids(uuids.toArray(new UUID[0]));
             player.unsafe().sendPacket(packet);
         } else {
             PlayerListItem packet = new PlayerListItem();

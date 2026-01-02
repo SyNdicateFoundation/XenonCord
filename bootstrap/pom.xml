@@ -5,18 +5,19 @@
     <parent>
         <groupId>io.github.waterfallmc</groupId>
         <artifactId>waterfall-parent</artifactId>
-        <version>1.21-R0.1-SNAPSHOT</version>
+        <version>1.21-R0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>waterfall-bootstrap</artifactId>
-    <version>1.21-R0.1-SNAPSHOT</version>
+    <version>1.21-R0.1</version>
     <packaging>jar</packaging>
 
     <name>Waterfall-Bootstrap</name>
     <description>Java 1.6 loader for Waterfall</description>
 
     <properties>
+        <skipPublishing>true</skipPublishing>
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <!-- use java 1.8, literally nobody is using 1.6-7 anymore, and, if they are, that's their own stupidity. -->

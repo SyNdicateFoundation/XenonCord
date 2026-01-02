@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.github.waterfallmc</groupId>
         <artifactId>waterfall-parent</artifactId>
-        <version>1.21-R0.1-SNAPSHOT</version>
+        <version>1.21-R0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>waterfall-native</artifactId>
-    <version>1.21-R0.1-SNAPSHOT</version>
+    <version>1.21-R0.1</version>
     <packaging>jar</packaging>
 
     <name>Waterfall-Native</name>

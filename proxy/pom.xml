@@ -5,18 +5,19 @@
     <parent>
         <groupId>io.github.waterfallmc</groupId>
         <artifactId>waterfall-parent</artifactId>
-        <version>1.21-R0.1-SNAPSHOT</version>
+        <version>1.21-R0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>waterfall-proxy</artifactId>
-    <version>1.21-R0.1-SNAPSHOT</version>
+    <version>1.21-R0.1</version>
     <packaging>jar</packaging>
 
     <name>Waterfall-Proxy</name>
     <description>Proxy component of the Elastic Portal Suite</description>
 
     <properties>
+        <skipPublishing>true</skipPublishing>
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>

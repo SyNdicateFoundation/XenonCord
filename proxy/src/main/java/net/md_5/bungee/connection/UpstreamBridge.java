@@ -53,36 +53,8 @@ public class UpstreamBridge extends PacketHandler {
         con.getTabListHandler().onDisconnect();
         BungeeCord.getInstance().removeConnection(con);
 
-        if (con.getServer() == null) return;
-
-        final PlayerListItem oldPacket = new PlayerListItem();
-        final PlayerListItem.Item item = new PlayerListItem.Item();
-        oldPacket.setAction(PlayerListItem.Action.REMOVE_PLAYER);
-        item.setUuid(con.getRewriteId());
-        oldPacket.setItems(new PlayerListItem.Item[]
-                {
-                        item
-                });
-
-        final PlayerListItemRemove newPacket = new PlayerListItemRemove();
-        newPacket.setUuids(new UUID[]
-                {
-                        con.getRewriteId()
-                });
-
-        XenonCore.instance.getTaskManager().add(() -> {
-            con.getServer().getInfo().getPlayers().forEach(player -> {
-                if (player.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_19_3) {
-                    player.unsafe().sendPacket(newPacket);
-                } else {
-                    player.unsafe().sendPacket(oldPacket);
-                }
-            });
-            con.getServer().disconnect("Quitting");
-        });
-
-        DownstreamBridge.CHANNELS_REGISTERED.remove(event.getPlayer());
-        DownstreamBridge.PACKET_USAGE.remove(event.getPlayer());
+        if ( con.getServer() != null )
+            con.getServer().disconnect( "Quitting" );
     }
 
     @Override
@@ -314,6 +286,8 @@ public class UpstreamBridge extends PacketHandler {
             ch.setDecodeProtocol(Protocol.CONFIGURATION);
             ch.write(new LoginAcknowledged());
             ch.setEncodeProtocol(Protocol.CONFIGURATION);
+
+            ch.write( BungeeCord.getInstance().registerChannels( con.getPendingConnection().getVersion() ) );
 
             con.getServer().sendQueuedPackets();
 

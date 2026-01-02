@@ -64,7 +64,9 @@ public class ServerConnector extends PacketHandler {
 
         bungee.getPluginManager().callEvent(new ServerConnectedEvent(user, server));
 
-        ch.write(BungeeCord.getInstance().registerChannels(user.getPendingConnection().getVersion()));
+        if ( user.getPendingConnection().getVersion() < ProtocolConstants.MINECRAFT_1_20_2 )
+            ch.write( BungeeCord.getInstance().registerChannels( user.getPendingConnection().getVersion() ) );
+
         final Queue<DefinedPacket> packetQueue = target.getPacketQueue();
 
         synchronized (packetQueue) {

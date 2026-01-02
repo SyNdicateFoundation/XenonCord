@@ -6,6 +6,7 @@ import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ConfigurationAdapter;
 import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.File;
 import java.io.InputStream;
@@ -105,7 +106,14 @@ public class Plugin {
         this.logger = Logger.getLogger(description.getName()); // Waterfall - Handle plugin prefixes in implementation
     }
 
+    /**
+     * Returns the executor service associated with this plugin.
+     *
+     * @return the executor service for this plugin
+     * @deprecated internal API. Use {@link ProxyServer#getScheduler()} instead
+     */
     @Deprecated
+    @ApiStatus.Internal
     public ExecutorService getExecutorService() {
         if (service == null) {
             String name = (getDescription() == null) ? "unknown" : getDescription().getName();
